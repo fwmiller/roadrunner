@@ -1,0 +1,134 @@
+\section{The \roadrunner\  File System (\rrfs)}
+
+The specific file system format used by the \roadrunner\ 
+kernel as its primary data storage is the \roadrunner\ 
+file system (\rrfs).  The \rrfs\  is a 32-bit
+File-Allocation Table (FAT) based file system.  The main
+goal of \rrfs\  design is implementation simplicity.
+
+
+\subsection{Path Name Conventions}
+
+\rrfs\  file names are limited to 48 characters.  There
+is no separation of the file name into a name and extension.
+File names are case-sensitive, upper and lower case are
+preserved internally.  The file name character set is:
+
+\begin{verbatim}
+A-Z a-z 0-9 _ . - % ( ) + , $ # : ; < = > ? @ [ ] ^ ! { | } ~
+\end{verbatim}
+
+
+\subsection{\rrfs\  Organization}
+
+The \rrfs\  organization is similar to DOS FAT file systems.
+In fact, a DOS FAT16 implementation was completed first and
+the \rrfs\  design was then initiated to bypass some of it's
+deficiencies.  Microsoft's FAT32 file system also served as
+an influence but was not strictly adhered to since backward
+compatibility was not a priority.
+
+
+\subsubsection{Partition Layout}
+
+Figure \ref{rrfspart} illustrates the layout of a disk
+partition that contains an {\tt rrfs} file system.  The
+Master Boot Record (MBR) contains the first stage boot
+program and some global parameters that describe the file
+system.  The {\tt rrfs} MBR is illustrated in Figure
+\ref{rrfsmbr}.  The boot loader is responsible for loading
+and starting execution of the operating system.  The
+operating system kernel is assumed to reside in the root
+directory and must be named {\tt kernel}.  The file
+allocation table (FAT) contains pointers to all of the
+data clusters in the partition.  Each FAT entry is an
+unsigned 32-bit integer.  Each FAT contains entries for
+all clusters, including the first root directory cluster.
+The only cluster that has a known location in the partition
+is the first cluster of the root directory, which is assumed
+to reside in the first data cluster of the partition.  The
+size of the root directory is not limited.
+
+\begin{table}[t] \begin{center}
+\begin{tabular}{|l|l|} \hline
+Sectors & Description \\ \hline \hline
+1 & Master boot record \\ \hline
+15 & Boot loader (second stage) \\ \hline
+??? & File allocation table (FAT) \\ \hline
+??? & File allocation table copy (FAT) \\ \hline
+??? & First root directory cluster \\ \hline
+??? & Data clusters \\ \hline
+\end{tabular}
+\caption{\label{rrfspart} {\tt rrfs} partition layout}
+\end{center} \end{table}
+
+\begin{table}[t] \begin{center}
+\begin{tabular}{|l|l|l|} \hline
+Size & Offset & Field \\ \hline \hline
+4 & 0 & Jump: {\tt EB XX 90 90} \\ \hline
+4 & 4 & Tracks (or cylinders) \\ \hline
+4 & 8 & Heads \\ \hline
+4 & 12 & Sectors \\ \hline
+2 & 14 & Bytes per sector \\ \hline
+4 & 18 & Total sectors \\ \hline
+2 & 20 & Boot sectors \\ \hline
+4 & 24 & Fat sectors \\ \hline
+2 & 26 & Sectors per cluster \\ \hline
+4 & 30 & Data clusters \\ \hline
+\end{tabular}
+\caption{\label{rrfsmbr} {\tt rrfs} master boot record}
+\end{center} \end{table}
+
+
+\subsubsection{Directory Entry}
+
+Each {\tt rrfs} directory entry has a total length of 64
+bytes.  This allows 8 directory entries in a 512 byte disk
+sector.  Figure \ref{rrfsde} illustrates the layout of
+a directory entry.  The name field holds the file name
+character string and is case-sensitive.  The size field
+holds the file size in an unsigned 32-bit integer.  The
+start cluster field holds the first cluster of the file
+in an unsigned 32-bit integer.
+
+The attributes field is an unsigned 16-bit integer whose
+individual bits are used as indicators.  The time field
+is a sequence of 3 bytes.  Each byte is interpreted as
+an unsigned 8-bit integer.  The values for each of these
+bytes is given in Figure \ref{rrfsdetime}.  The date
+field is a sequence of 3 bytes.  Each byte is interpreted
+as an unsigned 8-bit integer.  The values for each of
+these bytes is given in Figure \ref{rrfsdedate}.
+
+\begin{table}[t] \begin{center}
+\begin{tabular}{|l|l|l|} \hline
+Size & Offset & Field \\ \hline \hline
+48 & 0 & Name \\ \hline
+2 & 48 & Attributes \\ \hline
+3 & 50 & Time \\ \hline
+3 & 53 & Date \\ \hline
+4 & 56 & Size \\ \hline
+4 & 60 & Start cluster \\ \hline
+\end{tabular}
+\caption{\label{rrfsde} {\tt rrfs} directory entry}
+\end{center} \end{table}
+
+\begin{table}[t] \begin{center}
+\begin{tabular}{|l|l|} \hline
+Offset & Field \\ \hline \hline
+0 & Hour (0-23) \\ \hline
+1 & Minute (0-59) \\ \hline
+2 & Second (0-59) \\ \hline
+\end{tabular}
+\caption{\label{rrfsdetime} {\tt rrfs} directory entry time format}
+\end{center} \end{table}
+
+\begin{table}[t] \begin{center}
+\begin{tabular}{|l|l|} \hline
+Offset & Field \\ \hline \hline
+0 & Month (0-11) \\ \hline
+1 & Day of month \\ \hline
+2 & Year (+1900) \\ \hline
+\end{tabular}
+\caption{\label{rrfsdedate} {\tt rrfs} directory entry date format}
+\end{center} \end{table}

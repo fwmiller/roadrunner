@@ -1,0 +1,106 @@
+\chapter{Bootstrap}
+
+Bootstrapping is the initialization sequence required to begin
+nominal kernel operations.  This same process is used whether
+the power on the hardware is cycled or a soft reset occurs.
+
+Bootstrapping occurs in two stages.  The first stage boot program
+executes in x86 Real Mode and the second stage boot program
+executes in x86 Protected Mode.  The first and second stage boot
+programs are located in the first 16 sectors of the \roadrunner\ 
+file system from which the computer boots.  The first sector
+contains the first stage boot program and the remaining 15 sectors
+contain the second stage boot program.
+
+Data that describes system parameters is passed through the
+bootstrap to the kernel.  The first stage boot program passes
+information to the second stage boot program which then fowards
+the information to the kernel.
+
+
+\section{First Stage}
+
+The first stage is responsible for loading the second stage boot
+program into memory.  When the computer is started, either at power
+on or after a reset, the first stage boot program is loaded at
+location 07c0:0000 in real memory.  The first stage boot program
+displays a simple boot message:
+
+\begin{verbatim}
+Roadrunner boot
+\end{verbatim}
+
+\noindent The first stage boot program then copies itself to
+location 9000:0000 in real memory, zeros the memory starting at
+location 0000:2000 in real memory in which the second stage boot
+program will be loaded, stores the BIOS view of the hard disk
+geometry at location 0000:1000 in real memory, and finally begins
+to load the second stage boot program.
+
+Loading the second stage is dependent on whether the bootstrap
+is occuring from a floppy disk or a hard disk.  In both cases,
+the second stage boot program is stored in the 15 sectors
+immediately following the boot sector.  For a floppy based
+bootstrap, these sectors are located immediately after the boot
+sector.  For a hard disk based bootstrap, these sectors are
+located in the partition from which the bootstrap is occuring.
+The first stage boot program transfers control to the second
+stage by jumping to the first location in the second stage
+boot program memory.
+
+
+\section{Second Stage}
+
+The second stage is responsible for loading the operating system
+kernel into memory.  When control is handed to the second stage,
+the x86 CPU is still in Real Mode and the second stage program is
+executing from memory starting at 0000:2000.  The second stage
+first shifts the CPU to Protected Mode.  The use of Protected Mode
+for kernel loading allows the second stage program to load the
+kernel directly into memory above 1 Mbyte (20-bit Real Mode
+addressing is limited to 1 Mbyte).  However, Protected Mode does
+not allow the use of BIOS functions to accomplish loading from
+secondary storage devices.  The second stage boot program includes
+minimal device drivers for various secondary storage devices from
+which kernel loading can take place.
+
+After switching to Protected Mode, various hardware-oriented tasks
+are performed, including setting the mode of the A20 address line,
+initializing an Interrupt Descriptor Table, clearing the display.
+and copying of the boot parameters passed in from the first
+stage boot program.  The boot parameters are copied because the
+memory at location 0x1000 (the Protected Mode equivalent of
+0000:1000) is used to buffer data read from secondary storage
+during the kernel load.  Once this copy is complete, loading
+of the kernel commences.
+
+Kernel loading is dependent on what secondary storage device is
+being used.  The kernel is assumed to be present in the root
+directory of a \roadrunner\  file system on whatever secondary
+storage device the computer booted from.  The second stage boot
+program loads the Master Boot Record (MBR), File Allocation
+Table (FAT), and the root directory.  These data are used to
+locate the kernel file.  The kernel file contains an Executable
+and Linkable Format (ELF) executable program.  The program is
+assume to be linked for location 0x100000 (1 Mbyte).  The second
+stage boot program loads the kernel file section by section,
+placing only loadable sections into their proper locations in
+physical memory.  During the load, the second stage boot program
+displays information about the kernel file sections in the
+following format:
+
+\begin{verbatim}
+text=0x274d0 data=0x1628+0x3600
+\end{verbatim}
+
+\noindent This line indicates the size of the kernel file text,
+data, and bss (zeroed data) areas in memory.  The data and bss
+section sizes are displayed as two summed parameters.
+
+Once loading is complete, the saved copy of the boot parameters
+provided by the first stage boot program is copied back to location
+0x1000 for use by the kernel.  The kernel assumes, similar to the
+second stage boot program, that the boot parameters are located
+at 0x1000.  The second stage boot program starts the kernel by
+jumping to the start address indicated in the kernel file,
+typically location 0x100000.

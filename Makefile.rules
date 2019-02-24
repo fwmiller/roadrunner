@@ -1,0 +1,29 @@
+INCDIR	= $(ROOTDIR)/include
+LIBDIR	= $(ROOTDIR)/sys/lib
+
+MAKE	= make
+CC	= gcc
+AR	= ar -r
+RANLIB	= ranlib
+LD	= ld
+SIZE	= size
+RM	= rm -f
+
+CFLAGS	= -c -Wall -ffreestanding
+CFLAGS += -m32
+
+#
+# PCI device support.  The _PCI definition enables scanning for PCI
+# devices so that PCI device drivers can obtain information about them.
+# This functionality does not work with the Bochs emulator and must
+# be disabled to boot Roadrunner using Bochs.
+#
+CFLAGS += -D_PCI
+
+.S.o: $<
+#	$(CC) $(CFLAGS) -nostdinc -I. -I- -I$(INCDIR) -o $@ $<
+	$(CC) $(CFLAGS) -nostdinc -iquote . -I$(INCDIR) -o $@ $<
+
+.c.o: $<
+#	$(CC) $(CFLAGS) -nostdinc -I. -I- -I$(INCDIR) -o $@ $<
+	$(CC) $(CFLAGS) -nostdinc -iquote . -I$(INCDIR) -o $@ $<

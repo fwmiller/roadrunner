@@ -1,0 +1,132 @@
+%%\documentstyle[twocolumn,psfig]{article}
+\documentstyle[11pt,psfig]{book}
+%%\topmargin=-.32in
+%%\headsep=.4in
+%%\textheight=8.5in
+%%\textwidth=6in
+%%\oddsidemargin=.15in
+%%\evensidemargin=.25in
+\pagestyle{empty}
+\begin{document}
+
+\def\roadrunner{{\em Roadrunner}}
+\def\rrfs{{\tt rrfs}}
+
+
+\input{bootstrap}
+\input{memory}
+\input{interrupts}
+
+
+\chapter{Time}
+
+The kernel tracks the progress of time.  The kernel uses a timer
+interrupt to indicate the passage of time and keeps the time of
+day for use by the kernel and application programs.  The kernel
+also implements time-slicing of the CPU to implement
+multi-processing.
+
+
+\section{Time of Day}
+
+
+\section{Time-Slicing}
+
+
+\chapter{Processes}
+
+Processes represent executing application programs.  Each process
+requires a collection of hardware and kernel resources to execute
+an application program.  The \roadrunner\  kernel implements
+fully preemptible multi-processing, i.e. any process can be
+interrupted at any time.
+
+
+\section{Process States}
+
+
+\section{Process Queues}
+
+
+\chapter{Mutexes}
+
+Mutexes are used within the kernel to synchronize simultaneous
+accesses by multiple processes to certain hardware and kernel
+elements.  Processes that want to access a shared resource may
+be forced to wait in a process queue.
+
+
+\chapter{Events}
+
+Events are analogous to interrupts.  The difference is that
+handling of events is done using processes rather than interrupt
+service routines.  Processes are placed in a process list and
+all are scheduled for execution when a specified event occurs.
+
+
+\chapter{Device Drivers}
+
+Input/Output (I/O) is handled by peripheral device hardware.
+Device drivers represent the kernel elements that manage I/O to
+and from hardware devices.  The kernel provides a uniform view of
+all hardware devices, despite their differing I/O characteristics.
+
+
+\chapter{File Systems}
+
+There are various file system formats in which data can be
+stored and presented.  The kernel has the ability to use multiple
+file system format simultaneously within a single file system
+name space.  A generic Application Programming Interface (API)
+is provided to access data regardless of the underlying file
+system format.
+
+
+\section{The System File System ({\tt sysfs})}
+
+
+\section{The Device File System ({\tt devfs})}
+
+
+\input{rrfs}
+
+
+\chapter{Lexical Analysis}
+
+Lexical analysis provides capabilities for complex ASCII string
+manipulation.  Capabilities are provided to decompose a string
+into a sequence of arguments, to provide argument typing, and
+to convert number strings into numeric values.
+
+
+\chapter{Pathnames}
+
+Files represent a generic mechanism for storing and presenting
+data.  Files are stored in a hierarchical file system and
+pathnames are used to locate files in a file system.  Routines
+are provided that allow construction and decomposition of
+pathnames.
+
+
+\chapter{Files}
+
+File represent the basic mechanism for storing and presenting
+data.  The kernel implements a POSIX interface for access to
+all file data.
+
+
+\chapter{Program Loading}
+
+Programs are loaded via the file system interface into memory
+for execution.  \roadrunner\  uses the Executable and Linkable
+Format (ELF) executable file format for application programs.
+
+
+\chapter{System Calls}
+
+System calls are used by application programs or libraries to
+invoke kernel services.  The \roadrunner\  system call interface
+is based on the POSIX standards.
+
+
+\end{document}

@@ -1,0 +1,246 @@
+\documentstyle{article}
+\pagestyle{empty}
+\flushbottom
+\begin{document}
+
+\def\roadrunner{{\em Roadrunner/pk}}
+
+\title{\roadrunner\  Installation}
+\date{}
+\maketitle
+\thispagestyle{empty}
+
+
+There are several ways to run the \roadrunner\  operating system.  The
+system can be run as a program on another operating system using an
+emulator, e.g. bochs ({\tt http://www.bochs.com}) or VMware
+({\tt http://www.vmware.com}).  The system can be built to boot
+standalone off a single floppy disk and the system can be installed
+and booted off an IDE hard disk.
+
+The first step is to extract and build the source code distribution.  A
+FreeBSD or Linux host can be used for this purpose.  The source code
+distribution is usually contained in a tarball with a name like,
+{\tt roadrunner.tgz}.  To extract the distribution, execute the following
+command:
+
+\begin{verbatim}
+% tar xzvf roadrunner.tgz
+\end{verbatim}
+
+\noindent The result is a source code distribution tree rooted by a
+directory named {\tt roadrunner}.
+
+\subsection*{Building for Emulation}
+
+To build the system for use with an emulator, a file is generated that
+is equivalent to a floppy disk image.  This file can be used in place of
+a floppy disk to boot the emulator.  To create the image file, execute
+the following commands:
+
+\begin{verbatim}
+% cd roadrunner
+% make
+\end{verbatim}
+
+\noindent The result is a file called {\tt image} in the {\tt roadrunner}
+directory.  This image file can be used to boot the emulator.  It can also
+be transferred to a 3 1/2'' 1.44 Mbyte floppy disk using a command such
+as:
+
+\begin{verbatim}
+% dd if=roadrunner/image of=/dev/fd0
+\end{verbatim}
+
+\noindent Once this command is complete, the floppy disk can be used to
+boot a computer into \roadrunner.  The use of {\tt dd} copies an image
+that is the entire floppy disk, all 1.44 Mbytes of it.  To build a bootable
+floppy disk, it is faster to follow the procedure in the next section,
+which copies only the elements needed to the floppy disk.
+
+
+\subsection*{Building a Bootable Floppy Disk}
+
+To build the system on a 3 1/2'' 1.44 Mbyte floppy disk, insert a floppy
+disk in the floppy disk drive and execute the following commands:
+
+\begin{verbatim}
+% cd roadrunner
+% make floppy
+\end{verbatim}
+
+\noindent The result is a bootable \roadrunner\  floppy disk.
+
+
+\subsection*{Installation on a Hard Disk}
+
+Before describing the procedure for installing the system on a hard
+disk, the customary warning is appropriate.  {\em The procedure has
+the potential to destroy all the data on you hard disk.  Backup all your
+data before attempting it.  Cornfed Systems is not responsible for any
+loss incurred by following these instructions.}
+
+The procedure used to install the system on an IDE hard disk uses the
+bootable floppy disk we built in the last section.  {\em The current
+release of \roadrunner\  allows installation on the primary master
+IDE disk only.}  To install the \roadrunner\  system on the hard disk,
+execute the following procedure:
+
+\begin{enumerate}
+\item Boot the computer using the \roadrunner\  floppy disk.
+
+\item It may be necessary to partition the hard drive.  Use the
+{\tt fdisk} program to do this by executing the following command:
+
+\begin{verbatim}
+/> fdisk
+\end{verbatim}
+
+\noindent A quick tutorial on the \roadrunner\  {\tt fdisk} program is
+provided at the end of this document.
+
+\item The partition into which the system is to be installed must be
+formatted with the {\tt rrfs} file system.  To format the first partition
+on the primary master IDE hard disk, execute the following command:
+
+\begin{verbatim}
+/> format /dev/wd0a -b /boot
+\end{verbatim}
+
+\noindent This command will install a bootable file system into the
+partition only.  If the hard disk is to be shared with other operating
+systems, this is the appropriate command.  If \roadrunner\  will be the
+only operating system on the hard disk, a boot program must be written
+to the Master Boot Record (MBR) as well.  This can be accomplished by
+adding the {\tt -mbr} option to the format command.  The remaining
+partitions on the primary master IDE hard disk can be addressed using
+{\tt wd0b}, {\tt wd0c}, and {\tt wd0d} in place of {\tt wd0a}.
+
+\item The remaining steps will copy the kernel and executable command
+programs to the new file system.  Before these copies can take place
+the new file system must be mounted.  Execute the following command:
+
+\begin{verbatim}
+/> mount wd0a /mnt
+\end{verbatim}
+
+\noindent The new file system is mounted at the {\tt /mnt} mount point.
+
+\item A series of commands are now executed to place necessary files in
+their proper locations on the hard disk.  Execute the following sequence
+of commands:
+
+\begin{verbatim}
+/> cp /kernel /mnt
+/> mkdir /mnt/bin
+/> cp /bin/* /mnt/bin
+/> mkdir /mnt/man
+/> cp /man/* /mnt/man
+\end{verbatim}
+
+\noindent The sequence will copy the kernel to the root directory of the
+new file system and then create a {\tt bin} directory on the new file
+system and copy several command programs into the directory.  The
+sequence also creates a {\tt man} directory on the new file system
+and copies the man pages into it.
+
+\item At this point the file system on the hard disk is capable of booting
+\roadrunner.  All that is left is to unmount the file system, eject the
+floppy disk, and boot into \roadrunner\  off the hard drive by performing
+the following commands:
+
+\begin{verbatim}
+/> umount /mnt
+/> reboot
+\end{verbatim}
+
+\end{enumerate}
+
+
+\subsection*{Appendix: Using \roadrunner\  {\tt fdisk}}
+
+When the {\tt fdisk} program starts up, you are presented with the
+current contents of the partition table in tabular form.  The following
+example shows this table for a fresh, unpartitioned hard drive.
+
+{\small \begin{verbatim}
+     ------start------ -------end-------
+part track head sector track head sector   offset       size type
+   0     0    0      0     0    0      0        0          0 unused
+   1     0    0      0     0    0      0        0          0 unused
+   2     0    0      0     0    0      0        0          0 unused
+   3     0    0      0     0    0      0        0          0 unused
+(a)dd (b)oot (t)ype (c)ommit (d)elete (p)rint e(x)it
+fdisk>
+\end{verbatim}}
+
+The add command will create a new partition, subject to a number of
+geometrical constraints.  The boot command will mark a partition as
+active, i.e. the partition to boot from at startup time.  The commit
+command writes the contents of the partition table to the MBR on the
+disk.  The delete command will remove a partition.  The print command
+dumps the table in the form given in the example.  The exit command
+terminates the {\tt fdisk} program.
+
+Here's and example creation of an 8 Mbyte bootable {\tt rrfs} partition
+in the first slot of the partition table:
+
+{\small \begin{verbatim}
+fdisk> a
+enter partition number (0-3)? 0
+partition size (in Kbytes)? 8192
+no next partition
+no previous partition
+add partition 0 offset 63 size 16443
+
+     ------start------ -------end-------
+part track head sector track head sector   offset       size type
+   0     0    1      1   130    1     63       63      16443 rrfs
+   1     0    0      0     0    0      0        0          0 unused
+   2     0    0      0     0    0      0        0          0 unused
+   3     0    0      0     0    0      0        0          0 unused
+(a)dd (b)oot (t)ype (c)ommit (d)elete (p)rint e(x)it
+fdisk> b
+enter partition number (0-3)? 0
+
+     ------start------ -------end-------
+part track head sector track head sector   offset       size type
+*  0     0    1      1   130    1     63       63      16443 rrfs
+   1     0    0      0     0    0      0        0          0 unused
+   2     0    0      0     0    0      0        0          0 unused
+   3     0    0      0     0    0      0        0          0 unused
+(a)dd (b)oot (t)ype (c)ommit (d)elete (p)rint e(x)it
+fdisk> c
+write partition table
+
+ARE YOU SURE (uppercase 'Y' to confirm)? Y
+(a)dd (b)oot (t)ype (c)ommit (d)elete (p)rint e(x)it
+fdisk> e
+/>
+\end{verbatim}}
+
+The {\tt a} command adds a new partition.  You are prompted for the
+partition number and the desired size.  {\tt fdisk} will try to fit
+the size request in based on the constraints presented by other
+partitions already present.  You will be informed if the size request
+cannot be implemented.
+The {\tt b} command sets the partition as the active partition that
+will be booted from.
+The {\tt c} command writes the in-memory copy of the partition table
+to the disk.  No changes to the partition table are made permanent
+until a commit is performed.  You are prompted for confirmation.  An
+uppercase `{\tt Y}' is the only response that results in the partition
+table being written to disk.
+The {\tt d} command deletes a partition from the table.
+The {\tt p} command simply prints contents of the current
+in-memory partition table.
+The {\tt t} assigns a file system type for a partition.  The type
+is specified as a hex value in the range, $0$ to $ff$.
+The {\tt x} command exits {\tt fdisk}.
+
+Partition 0 corresponds to {\tt wd0a} in the \roadrunner\  device naming
+scheme.  Parition 1 corresponds {\tt wd0b}, partition 2 corresponds to
+{\tt wd0c}, and partition 3 corresponds to {\tt wd0d}.
+
+
+\end{document}

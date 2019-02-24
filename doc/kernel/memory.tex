@@ -1,0 +1,351 @@
+\chapter{Memory Management}
+
+Memory management encompasses two functions, allocation and
+protection.  Allocation refers to the mechanisms for granting
+regions of memory for use by applications.  Protection refers
+to the mechanisms used to prevent the access by one thread to
+memory allocated to another thread or the kernel.  Memory
+allocation is handled by tracking requests to allocate and
+free memory.  Protection is provided using page-based Memory
+Management Unit (MMU) hardware.
+
+There are three basic memory management data structures used
+in \roadrunner.  Each of the data structures in the following
+list is described in greater detail in following sections.
+
+\begin{enumerate}
+\item {\em Region Table:} an array of regions that track the
+allocations of all the physical memory in the system
+
+\item {\em Page Tables:} each process belongs to a protection
+domain that is defined by the page tables that are associated
+with that process
+
+\item {\em Kernel Map:} a list of mappings that are entered
+into all the page tables in the system but are accessible
+only when the CPU is in supervisor mode
+\end{enumerate}
+
+\noindent The first data structure is used for allocation.
+The second two data structures are used to implement protection.
+All three data structures are used by the kernel memory
+management routines that are exported for use by the rest
+of the kernel subsystems and by user applications through
+the system call interface.
+
+Figure \ref{memmgmt} illustrates these three data structures
+in in use.  The Region Table is not shown here.  Rather, the
+{\tt freelist} and {\tt alloclist} pointers reference lists
+that partition the Region Table.  {\tt kmaptab[]} is a table of
+Kernel Map entries.  The Page Tables are shown for one process.
+
+\begin{center}\begin{figure}[h]
+\centerline{\psfig{figure=fig/memmgmt.eps,height=3.75in}}
+\caption{\label{memmgmt} \roadrunner\  Memory Management}
+\end{figure}\end{center}
+
+
+\section{Allocation}
+
+The basic unit of memory allocation is the {\em region}.
+A region is defined as a page-aligned, contiguous sequence
+of addressable locations that are tracked by a starting address
+and a length that must be a multiple of the page size.  The
+entire physical memory on a given machine is managed using
+a boundary-tag heap implementation in \roadrunner.  Figure
+\ref{region} illustrates the basic data structure used to
+track the allocations of memory regions.  Each region is
+tracked using its starting address, {\tt start}, and length,
+{\tt len}.  Each region is owned by the process that allocated
+it originally, or by a process to which ownership has been
+transferred after allocation.  The {\tt proc} field tracks
+which process currently owns the region.  Two double-linked
+lists of region data structures are maintained, using the
+{\tt prev} and {\tt next} fields, each in ascending order
+of starting address.  The first is the free list, those
+regions that are not allocated to any process.  The second
+is the allocated list, those regions that are being used
+by some process.
+
+\begin{center}\begin{figure}[h]
+\centerline{\psfig{figure=fig/region.eps,height=1.25in}}
+\caption{\label{region} A region on one of the heap lists}
+\end{figure}\end{center}
+
+Table \ref{regionroutines} lists the routines used to manage
+the heap.  The {\tt valid\_region()} routine provides a check
+for whether a pointer, specified by the {\tt start} parameter,
+corresponds to the starting address of some region.  It also
+serves as a general lookup routine for locating a region data
+structure given a starting address.  The rest of the routines
+take a pointer to a region data structure like the one
+illustrated in Figure \ref{region} as their first parameter.
+The {\tt region\_clear()} routine sets the fields of a region
+data structure to initialized values.  The {\tt region\_insert()}
+routine inserts a region in ascending starting address order
+into a double-linked region list, specified by the {\tt list}
+parameter.  This routine is used to insert a region into either
+the free or allocated region lists.  The {\tt region\_remove()}
+routine removes a region from the specified {\tt list}.  The
+{\tt region\_split()} routine takes one region and splits it
+into two regions.  The {\tt size} parameter specifies the
+offset from the beginning of the original region where the
+split is to occur.
+
+\begin{table}[h]
+\caption{\label{regionroutines} Region management routines}
+\begin{tabbing}
+\hspace{0.25in} \= \kill
+{\tt valid\_region(start)} \\
+\> Check whether pointer corresponds to the starting address of a region \\
+
+{\tt region\_clear(region)} \\
+\> Initialize a region data structure \\
+
+{\tt region\_insert(region, list)} \\
+\> Insert a region into a double-linked region list \\
+
+{\tt region\_remove(region, list)} \\
+\> Remove a region from a region list \\
+
+{\tt region\_split(region, size)} \\
+\> Split a region into two regions \\
+\end{tabbing} \end{table}
+
+
+\section{Protection}
+
+The basic memory protection design is based on logical
+(or virtual) addresses being mapped one-to-one to physical
+addresses.  This means that the value of logical address
+is the same as its corresponding physical address and that
+all processes reside in the same logical as well as physical
+address space.
+
+Protection is based on {\em domains}.  A domain is a set of
+memory pages that are mapped using a set of page tables.
+In addition, a set of memory pages associated with the operating
+system kernel called the {\em kernel map} is kept.  The kernel
+map is mapped into all domains but is accessible only in
+supervisor mode.
+
+Table \ref{vmroutines} lists the routines in the \roadrunner\ 
+kernel that implement basic memory protection operations.
+
+\begin{table}[h]
+\caption{\label{vmroutines} Page table management routines}
+\begin{tabbing}
+\hspace{0.25in} \= \kill
+{\tt vm\_map(pt, page, attr)} \\
+\> Map a single page into a set of page tables \\
+
+{\tt vm\_map\_range(pt, start, len, attr)} \\
+\> Map a sequence of contigous pages into a set of page tables \\
+
+{\tt vm\_unmap(pt, page)} \\
+\> Remove the mapping for a single page from a set of page tables \\
+
+{\tt vm\_unmap\_range(pt, start, len)} \\
+\> Remove the mapping for a contiguous sequence of pages from a set \\
+\> of page tables \\
+
+{\tt vm\_kmap\_insert(entry)} \\
+\> Insert a sequence of pages into the kernel map \\
+
+{\tt vm\_kmap\_remove(entry)} \\
+\> Remove a sequence of pages from the kernel map \\
+
+{\tt vm\_kmap(pt)} \\
+\> Update specified page tables to reflect the current mappings in the \\
+\> kernel map \\
+\end{tabbing} \end{table}
+
+
+\subsection{Page Tables}
+
+The kernel keeps track of the page tables present in the
+system by maintaining a list of page table records.  Figure
+\ref{ptrec} illustrates the page table record data structure
+and the associated page tables.  The page table records are
+kept in a single-linked list using the {\tt next} field.
+If multiple threads are executed within a single protection
+domain, the {\tt refcnt} field tracks the total number of
+threads within the domain.  The {\tt pd} field points to
+the actual page table data structures.  Note that there
+is a single pointer to the page tables themselves.  This
+design implies that the page tables are arranged contiguously
+in memory.  An assessment of current MMU implementations in
+several popular CPU architectures indicates that this is
+a reasonable assumption.  More details on the page table
+structures of several popular processor architectures are
+given in Section 4.
+
+\begin{center}\begin{figure}[h]
+\centerline{\psfig{figure=fig/ptrec.eps,height=1.25in}}
+\caption{\label{ptrec} A page table record and its associated
+page tables}
+\end{figure}\end{center}
+
+The first four routines in Table \ref{vmroutines} implement
+the basic protection mechanism.  They enter and remove address
+mappings to and from page tables, respectively.  All four of
+these routines operate on a set of page tables specified by
+their first parameter, {\tt pt}.  The {\tt vm\_map()} routine
+provides the fundamental operation of inserting a mapping for
+a single page into a set of page tables.  The page found at
+the location specified by the {\tt start} parameter is inserted
+with the protection attributes specified by the {\tt attr}
+parameter into the specified page tables.  {\tt vm\_map\_range()}
+is provided for convenience as a front-end to {\tt vm\_map()}
+to allow mapping a sequence of contiguous pages with a single
+call.  The {\tt start} parameter specifies the address of the
+first of a contiguous sequence of pages.  The {\tt len}
+parameter specifies the length, in bytes, of the page sequence.
+The initial implementation or the {\tt vm\_map\_range()}
+routine makes calls to {\tt vm\_map()} for each page in the
+specified range.  This implementation is obviously ripe for
+optimization.
+
+The {\tt vm\_unmap()} routine balances {\tt vm\_map()} by
+providing the removal of a single page mapping from a page
+table.  The {\tt page} parameter specifies the starting
+address of the page that is to be unmapped.
+{\tt vm\_unmap\_range()} is provided as a front-end to
+{\tt vm\_unmap()} to allow removal of a sequence of contiguous
+entries with a single call.  {\tt start} specifies the starting
+address of the page sequence and {\tt len} gives the byte
+length of the page sequence to be unmapped.  The
+{\tt vm\_unmap\_range()} routine also make individual calls
+to {\tt vm\_unmap()} for each page in the specified range
+and can also be optimized.
+
+
+\subsection{The Kernel Map}
+
+In some virtual memory system designs that provide
+separate address spaces, the kernel has been maintained
+in its own address space.  In the \roadrunner\  system,
+the memory used to hold the kernel and its associated data
+structures are mapped into all the page tables in the
+system.  Kernel memory protection is provided by making
+these pages accessible only when the CPU has entered
+supervisor mode and that happens only when an interrupt
+occurs or a system call is made.  The result is that
+system calls require only a transition from user to
+supervisor mode rather than a full context switch.
+
+The kernel map is an array of kernel map entries where
+each entry represents a region that is entered in the
+kernel map.  Figure \ref{kmap} illustrates the structure
+of one of these kernel map entries and the region of
+memory that it represents.  The {\tt start} and {\tt len}
+fields track the starting address and length of the region.
+The {\tt attr} field stores the attributes that are
+associated with the pages in the region.  This information
+is used when the pages are entered into a set of page
+tables by the {\tt vm\_kmap()} routine.
+
+\begin{center}\begin{figure}[h]
+\centerline{\psfig{figure=fig/kmap.eps,height=1.25in}}
+\caption{\label{kmap} A kernel map entry and its associated
+memory region}
+\end{figure}\end{center}
+
+The last three routines in  Table \ref{vmroutines} provide
+the API for managing the kernel map.  The
+{\tt vm\_kmap\_insert()} routine enters a kernel map entry,
+specified by the {\tt entry} parameter, into the kernel map.
+The {\tt vm\_kmap\_remove()} routine removes a previously
+entered kernel map entry, also specified by the {\tt entry}
+parameter, from the kernel map.  The {\tt vm\_kmap()} routine
+causes a set of page tables, specified by the {\tt pt}
+parameter, to be updated with the current kernel map entries.
+
+
+\subsection{Page Faults}
+
+The most important function of page faults in a system
+using separate virtual address spaces is demand paging.
+Demand paging of user code can also be done using this
+approach under two additional conditions.  First, all of
+the physical memory required to hold the program must be
+allocated when the program is started.  Second, code
+relocation needs to be performed on-the-fly when sections
+of the program were loaded on-demand.
+
+If demand paging of user code is implemented, page fault
+handling is similar to systems where separate virtual
+address spaces are used.  When a page fault occurs, the
+appropriate kernel service determines whether the fault
+occured due to a code reference and if so, it loads the
+appropriated section of code and restarts the faulting
+process.
+
+The initial \roadrunner\  implementation does not
+currently support demand paging of program code.  As
+such, page fault handling is trivial, resulting in the
+termination of the process that caused the fault.
+
+
+\section{Kernel Memory Managment}
+
+Table \ref{kmem} lists the routines that are used by
+kernel subsystems and by applications through the system
+call interface to allocate and free memory from the
+global heap.
+
+\begin{table}[h]
+\caption{\label{kmem} Kernel memory management routines}
+\begin{tabbing}
+\hspace{0.25in} \= \kill
+{\tt malloc(size)} \\
+\> Allocate a region of memory in the calling process's protection \\
+\> domain \\
+
+{\tt free(start)} \\
+\> Free a region of memory previously allocated to the calling process \\
+
+{\tt kmalloc(size)} \\
+\> Allocate a region of memory for the kernel \\
+
+{\tt kfree(start)} \\
+\> Free a region of memory previously allocated to the kernel \\
+\end{tabbing} \end{table}
+
+The {\tt malloc()} routine performs an allocation on behalf
+of a process by performing a first-fit search of the free
+list.  When a region is found that is at least as large as
+a request specified by the {\tt size} parameter, it is
+removed from the free list using the {\tt region\_remove()}
+routine.  The remainder is split off using the
+{\tt region\_split()} routine and returned to the free
+list using the {\tt region\_insert()} routine.  The
+region satisfying the request is then mapped into the
+protection domain of the calling process using the
+{\tt vm\_map\_range()} routine.
+
+The {\tt free()} routine returns a previously allocated
+region to the heap.  After obtaining the region
+corresponding to the specified {\tt start} parameter
+using the {\tt valid\_region()} lookup, the
+{\tt region\_insert()} routine is used to enter the
+region into the free list.  The inserted region is
+then merged with its neighbors, both previous and next
+if they are adjacent.  Adjacency means that the two
+regions together form a contiguous sequence of pages.
+Merging is done to reduce fragmentation.
+
+The {\tt kmalloc()} routine allocates some memory on
+behalf of the kernel.  After obtaining a region from
+the heap in a manner similar to the {\tt malloc()} routine
+based on the specified {\tt size} request, an entry is
+placed into the kernel map using the {\tt vm\_kmap\_insert()}
+routine.  This action records the new region as an element
+of the kernel map.  Subsequent calls to {\tt vm\_kmap()}
+will cause the new region to be accessible as part of the
+kernel when a process is running in supervisor mode.
+
+The {\tt kfree()} routine first removes the kernel mapping
+for the region specified by the {\tt start} parameter using
+{\tt vm\_kmap\_remove()}.  The region is then placed back
+on the free list using {\tt region\_insert()}.
