@@ -26,7 +26,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-char *
+const char *
 strstr(const char *haystack, const char *needle)
 {
     int haystacklen, i, j, needlelen;

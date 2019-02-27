@@ -29,11 +29,11 @@
 #include <sys/part.h>
 
 void
-read_parttab(char *mbr, part_t parttab)
+read_parttab(u_char *mbr, part_t parttab)
 {
     part_t p;
     u_int partent;
-    char *soff, *eoff;
+    u_char *soff, *eoff;
     int i;
 
     bzero(parttab, PARTS * sizeof(struct part));
@@ -58,7 +58,7 @@ read_parttab(char *mbr, part_t parttab)
 }
 
 void
-write_parttab(part_t parttab, char *mbr)
+write_parttab(part_t parttab, u_char *mbr)
 {
     part_t p;
     u_int partent;

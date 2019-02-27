@@ -26,7 +26,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-char *
+const char *
 strrchr(const char *s, int c)
 {
     int i, len;
