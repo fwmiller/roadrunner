@@ -37,6 +37,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <fs/devfs.h>
+#include <fs/ramfs.h>
 #include <fs/rrfs.h>
 #include <fs/sysfs.h>
 #include <sys/boot.h>
@@ -55,8 +56,8 @@ os()
     struct utsname name;
     struct dev_ops devops;
     struct fsops fsops;
-    fsops_t sysfsops, devfsops, rrfsops;
-    fs_t sysfs, devfs, rrfs;
+    fsops_t sysfsops, devfsops, ramfsops, rrfsops;
+    fs_t sysfs, devfs, ramfs, rrfs;
     file_t fdin = NULL, fdout = NULL, fderr = NULL;
 
     intr_init();
@@ -193,6 +194,23 @@ os()
     fsops.unlink = devfile_unlink;
     devfsops = fsops_inst(&fsops);
     fsops_init(devfsops);
+
+    /* Install and initialize ramfs file system */
+    strcpy(fsops.name, "ramfs");
+    fsops.init = ramfs_init;
+    fsops.shut = ramfs_shut;
+    fsops.mount = ramfs_mount;
+    fsops.unmount = ramfs_unmount;
+    fsops.open = ramfile_open;
+    fsops.close = ramfile_close;
+    fsops.ioctl = ramfile_ioctl;
+    fsops.read = ramfile_read;
+    fsops.write = ramfile_write;
+    fsops.attr = ramfile_attr;
+    fsops.readdir = ramfile_readdir;
+    fsops.unlink = ramfile_unlink;
+    ramfsops = fsops_inst(&fsops);
+    fsops_init(ramfsops);
 
     /* Install and initialize rrfs file system */
     strcpy(fsops.name, "rrfs");
