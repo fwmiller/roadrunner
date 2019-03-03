@@ -1,3 +1,6 @@
+RAMFS = ../bin/ramfs
+RAMFS_C = ../bin/ramfs.c
+
 all:
 	cd cat; make
 	cd cp; make
@@ -10,6 +13,8 @@ all:
 	cd sh; make
 	cd umount; make
 	cd vi; make
+	./mkramfs.py
+	xxd --include $(RAMFS) > $(RAMFS_C)
 
 clean:
 	$(RM) *~
@@ -24,6 +29,7 @@ clean:
 	cd sh; make clean
 	cd umount; make clean
 	cd vi; make clean
+	rm -f $(RAMFS) $(RAMFS_C)
 
 indent: clean
 	cd cat; Indent
