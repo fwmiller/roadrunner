@@ -5,7 +5,6 @@ from os.path import isfile, join
 
 binpath = '../bin'
 ramfs = 'ramfs'
-ramfs_c = 'ramfs.c'
 
 # Get list of binary files to include in ramfs
 files = [f for f in os.listdir(binpath) if isfile(join(binpath, f))]

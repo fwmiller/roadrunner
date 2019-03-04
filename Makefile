@@ -2,7 +2,7 @@
 KERNEL = sys/src/kern/os
 IMAGE = ./image
 
-all: elements
+#all: elements
 #	rm -f $(IMAGE)
 #	dd if=/dev/zero of=$(IMAGE) ibs=512 count=2880
 #	bsd/bin/rformat -d $(IMAGE) -b $(BOOT)
@@ -18,7 +18,7 @@ all: elements
 #	bsd/bin/rmkdir /bin
 #	bsd/bin/rcopy bin/* /bin
 
-elements:
+all:
 #	cd bsd; make
 	cd libsrc; make
 	cd src; make
@@ -37,16 +37,16 @@ clean:
 #	cd sys/boot; make clean
 	cd sys/src/kern; make clean
 
-indent:
-	rm -f *~ $(IMAGE)
+#indent:
+#	rm -f *~ $(IMAGE)
 #	cd bsd; make indent
-	cd doc; make clean
-	cd libsrc; make indent
-	cd src; make indent
+#	cd doc; make clean
+#	cd libsrc; make indent
+#	cd src; make indent
 #	cd sys/boot; make indent
-	cd include; Indent
-	cd include/bus; Indent
-	cd include/dev; Indent
-	cd include/fs; Indent
-	cd include/sys; Indent
-	cd sys/src/kern; make indent
+#	cd include; Indent
+#	cd include/bus; Indent
+#	cd include/dev; Indent
+#	cd include/fs; Indent
+#	cd include/sys; Indent
+#	cd sys/src/kern; make indent
