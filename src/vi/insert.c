@@ -29,100 +29,99 @@
 #include "vi.h"
 
 /* Insert a newline in the buffer */
-static int
-insert_newline()
+static int insert_newline()
 {
-    int result;
+	int result;
 
-    if ((result = incr_buflen()) < 0)
-	return result;
+	if ((result = incr_buflen()) < 0)
+		return result;
 
-    cursor_off();
+	cursor_off();
 
-    if (bufpos < buflen - 1)
-	shift_right(buf + bufpos + 1, buf + bufpos, buflen - bufpos - 1);
-    buf[bufpos++] = '\n';
-    bufdirty = 1;
+	if (bufpos < buflen - 1)
+		shift_right(buf + bufpos + 1, buf + bufpos,
+			    buflen - bufpos - 1);
+	buf[bufpos++] = '\n';
+	bufdirty = 1;
 
-    if (y == width - 1) {
-	home += dist_to_end_of_line(home);
-	if (buf[home] == '\n')
-	    home++;
-	refresh();
-	x = 0;
-	clrtoeol();
+	if (y == width - 1) {
+		home += dist_to_end_of_line(home);
+		if (buf[home] == '\n')
+			home++;
+		refresh();
+		x = 0;
+		clrtoeol();
 
-    } else {
-	clrtoeol();
-	y++;
-	x = 0;
-	refresh();
-    }
+	} else {
+		clrtoeol();
+		y++;
+		x = 0;
+		refresh();
+	}
 
-    cursor_on();
-    return 0;
+	cursor_on();
+	return 0;
 }
 
 /* Insert a character other than a newline in the buffer */
-static int
-insert_char(char ch)
+static int insert_char(char ch)
 {
-    int result;
+	int result;
 
-    if ((result = incr_buflen()) < 0)
-	return result;
+	if ((result = incr_buflen()) < 0)
+		return result;
 
-    cursor_off();
+	cursor_off();
 
-    /* Make room for the inserted character */
-    if (bufpos < buflen - 1)
-	shift_right(buf + bufpos + 1, buf + bufpos, buflen - bufpos - 1);
+	/* Make room for the inserted character */
+	if (bufpos < buflen - 1)
+		shift_right(buf + bufpos + 1, buf + bufpos,
+			    buflen - bufpos - 1);
 
-    /* Insert character into buffer and mark buffer dirty */
-    buf[bufpos++] = ch;
-    bufdirty = 1;
+	/* Insert character into buffer and mark buffer dirty */
+	buf[bufpos++] = ch;
+	bufdirty = 1;
 
-    /* Display inserted character at current cursor position */
-    addch(ch);
+	/* Display inserted character at current cursor position */
+	addch(ch);
 
-    /* Advance cursor position */
-    if (x == width - 1) {
-	/* At end of current line */
-	if (y == height - 1) {
-	    int dist;
+	/* Advance cursor position */
+	if (x == width - 1) {
+		/* At end of current line */
+		if (y == height - 1) {
+			int dist;
 
-	    /* Scroll up for end of screen */
-	    dist = dist_to_end_of_line(home);
-	    if (dist >= width)
-		home += width;
-	    else
-		home += dist;
+			/* Scroll up for end of screen */
+			dist = dist_to_end_of_line(home);
+			if (dist >= width)
+				home += width;
+			else
+				home += dist;
 
-	    /* Advance past a newline if necessary */
-	    if (buf[home] == '\n')
-		home++;
+			/* Advance past a newline if necessary */
+			if (buf[home] == '\n')
+				home++;
+		} else
+			y++;
+
+		/* Cursor moves to beginning of next line */
+		x = 0;
+
 	} else
-	    y++;
+		x++;
 
-	/* Cursor moves to beginning of next line */
-	x = 0;
-
-    } else
-	x++;
-
-    refresh();
-    cursor_on();
-    return 0;
+	refresh();
+	cursor_on();
+	return 0;
 }
 
-void
-insert()
+void insert()
 {
-    char ch;
+	char ch;
 
-    while ((ch = getch()) != ESC)
-	if (ch == '\n')
-	    insert_newline();
-	else
-	    insert_char(ch);
+	while ((ch = getch()) != ESC)
+		if (ch == '\n')
+			insert_newline();
+		else
+			insert_char(ch);
 }

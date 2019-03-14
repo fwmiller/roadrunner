@@ -26,8 +26,7 @@
 #include <errno.h>
 #include <fs/devfs.h>
 
-int
-devfs_unmount(fs_t fs)
+int devfs_unmount(fs_t fs)
 {
-    return ENOSYS;
+	return ENOSYS;
 }

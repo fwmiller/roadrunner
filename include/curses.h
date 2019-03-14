@@ -26,14 +26,14 @@
 #ifndef __CURSES_H
 #define __CURSES_H
 
-void addch(char ch);
-void addstr(char *s);
-void clear();
-void clrtoeol();
-char getch();
-char *getstr(char *s);
-void getyx(int *y, int *x);
-char inch();
-void move(int y, int x);
+void addch (char ch);
+void addstr (char *s);
+void clear ();
+void clrtoeol ();
+char getch ();
+char *getstr (char *s);
+void getyx (int *y, int *x);
+char inch ();
+void move (int y, int x);
 
 #endif

@@ -38,172 +38,170 @@ void printmbr(mbr_t mbr);
  * Find the next cluster number in a fat chain.  Returns the next cluster
  * number if it is found and the value FAT_CHAIN_END otherwise.
  */
-uint32_t
-rrfs_nextclust(uint32_t clust, char *fat, uint32_t clusters)
+uint32_t rrfs_nextclust(uint32_t clust, char *fat, uint32_t clusters)
 {
-    uint32_t c;
+	uint32_t c;
 
-    if (VALIDCLUST(clust)) {
-	c = ((uint32_t *) fat)[clust];
-	if (VALIDCLUST(c))
-	    return c;
+	if (VALIDCLUST(clust)) {
+		c = ((uint32_t *) fat)[clust];
+		if (VALIDCLUST(c))
+			return c;
+		return FAT_CHAIN_END;
+	}
 	return FAT_CHAIN_END;
-    }
-    return FAT_CHAIN_END;
 }
 
 /* 
  * Allocate a cluster in a fat.  Returns the number of the allocated cluster
  * if one is found and the value FAT_CHAIN_END otherwise.
  */
-uint32_t
-rrfs_clustalloc(char *fat, uint32_t clusters)
+uint32_t rrfs_clustalloc(char *fat, uint32_t clusters)
 {
-    uint32_t c;
+	uint32_t c;
 
-    /* 
-     * XXX Use a simple linear search beginning from the start of the
-     * partition.  This won't be adequate for very long.
-     */
-    for (c = 0; c < clusters; c++)
-	if (((uint32_t *) fat)[c] == 0) {
-	    ((uint32_t *) fat)[c] = FAT_CHAIN_END;
-	    return c;
-	}
-    return FAT_CHAIN_END;
+	/* 
+	 * XXX Use a simple linear search beginning from the start of the
+	 * partition.  This won't be adequate for very long.
+	 */
+	for (c = 0; c < clusters; c++)
+		if (((uint32_t *) fat)[c] == 0) {
+			((uint32_t *) fat)[c] = FAT_CHAIN_END;
+			return c;
+		}
+	return FAT_CHAIN_END;
 }
 
 /* 
  * Append a cluster to a fat chain. Returns the cluster number added to the
  * chain if one is found and the value FAT_CHAIN_END otherwise.
  */
-uint32_t
-rrfs_clustappend(uint32_t clust, char *fat, uint32_t clusters)
+uint32_t rrfs_clustappend(uint32_t clust, char *fat, uint32_t clusters)
 {
-    if (VALIDCLUST(clust)) {
-	uint32_t c;
+	if (VALIDCLUST(clust)) {
+		uint32_t c;
 
-	if ((c = rrfs_clustalloc(fat, clusters)) == FAT_CHAIN_END)
-	    return FAT_CHAIN_END;
-	((uint32_t *) fat)[clust] = c;
-	return c;
-    } else if (clust == FAT_CHAIN_END)
-	return rrfs_clustalloc(fat, clusters);
+		if ((c = rrfs_clustalloc(fat, clusters)) == FAT_CHAIN_END)
+			return FAT_CHAIN_END;
+		((uint32_t *) fat)[clust] = c;
+		return c;
+	} else if (clust == FAT_CHAIN_END)
+		return rrfs_clustalloc(fat, clusters);
 
-    return FAT_CHAIN_END;
+	return FAT_CHAIN_END;
 }
 
-int
-rrfs_readmbr(int devno, char *mbrbuf)
+int rrfs_readmbr(int devno, char *mbrbuf)
 {
-    mbr_t mbr;
+	mbr_t mbr;
 
-    if (lseek(devno, 0, SEEK_SET) < 0) {
+	if (lseek(devno, 0, SEEK_SET) < 0) {
 #if _DEBUG
-	printf("rrfs_readmbr: seek failed (%s)\n", strerror(errno));
+		printf("rrfs_readmbr: seek failed (%s)\n", strerror(errno));
 #endif
-	return (-1);
-    }
-    if (read(devno, mbrbuf, SECTOR_SIZE) < 0) {
+		return (-1);
+	}
+	if (read(devno, mbrbuf, SECTOR_SIZE) < 0) {
 #if _DEBUG
-	printf("rrfs_readmbr: read failed (%s)\n", strerror(errno));
+		printf("rrfs_readmbr: read failed (%s)\n", strerror(errno));
 #endif
-	return (-1);
-    }
-    mbr = (mbr_t) mbrbuf;
-    if (mbr->params.bytespersector != SECTOR_SIZE) {
+		return (-1);
+	}
+	mbr = (mbr_t) mbrbuf;
+	if (mbr->params.bytespersector != SECTOR_SIZE) {
 #if _DEBUG
-	printf("rrfs_readmbr: not an rrfs file system\n");
+		printf("rrfs_readmbr: not an rrfs file system\n");
 #endif
-	return (-1);
-    }
+		return (-1);
+	}
 #if _DEBUG
-    printmbr(mbr);
+	printmbr(mbr);
 #endif
-    return 0;
+	return 0;
 }
 
-int
-rrfs_writembr(int devno, char *mbrbuf)
+int rrfs_writembr(int devno, char *mbrbuf)
 {
-    mbr_t mbr = (mbr_t) mbrbuf;
+	mbr_t mbr = (mbr_t) mbrbuf;
 
-    if (mbr->params.bytespersector != 9) {
+	if (mbr->params.bytespersector != 9) {
 #if _DEBUG
-	printf("rrfs_writembr: not an rrfs file system\n");
+		printf("rrfs_writembr: not an rrfs file system\n");
 #endif
-	return (-1);
-    }
-    if (lseek(devno, 0, SEEK_SET) < 0) {
+		return (-1);
+	}
+	if (lseek(devno, 0, SEEK_SET) < 0) {
 #if _DEBUG
-	printf("rrfs_writembr: seek failed (%s)\n", strerror(errno));
+		printf("rrfs_writembr: seek failed (%s)\n", strerror(errno));
 #endif
-	return (-1);
-    }
-    if (write(devno, mbrbuf, SECTOR_SIZE) < 0) {
+		return (-1);
+	}
+	if (write(devno, mbrbuf, SECTOR_SIZE) < 0) {
 #if _DEBUG
-	printf("rrfs_writembr: write failed (%s)\n", strerror(errno));
+		printf("rrfs_writembr: write failed (%s)\n", strerror(errno));
 #endif
-	return (-1);
-    }
-    return 0;
+		return (-1);
+	}
+	return 0;
 }
 
-int
-rrfs_readfat(int devno, char *fat, int fatsectors)
+int rrfs_readfat(int devno, char *fat, int fatsectors)
 {
-    int i;
+	int i;
 
-    if (lseek(devno, 0, SEEK_SET) < 0) {
+	if (lseek(devno, 0, SEEK_SET) < 0) {
 #if _DEBUG
-	printf("rrfs_readfat: initial seek failed (%s)\n", strerror(errno));
+		printf("rrfs_readfat: initial seek failed (%s)\n",
+		       strerror(errno));
 #endif
-	return (-1);
-    }
-    for (i = 0; i < fatsectors; i++) {
-	if (lseek(devno, (BOOT_SECTORS + i) * SECTOR_SIZE, SEEK_SET)
-	    < 0) {
-#if _DEBUG
-	    printf("rrfs_readfat: seek failed (%s)\n", strerror(errno));
-#endif
-	    return (-1);
+		return (-1);
 	}
-	if (read(devno, fat + (i * SECTOR_SIZE), SECTOR_SIZE) < 0) {
+	for (i = 0; i < fatsectors; i++) {
+		if (lseek(devno, (BOOT_SECTORS + i) * SECTOR_SIZE, SEEK_SET)
+		    < 0) {
 #if _DEBUG
-	    printf("rrfs_readfat: read failed (%s)\n", strerror(errno));
+			printf("rrfs_readfat: seek failed (%s)\n",
+			       strerror(errno));
 #endif
-	    return (-1);
+			return (-1);
+		}
+		if (read(devno, fat + (i * SECTOR_SIZE), SECTOR_SIZE) < 0) {
+#if _DEBUG
+			printf("rrfs_readfat: read failed (%s)\n",
+			       strerror(errno));
+#endif
+			return (-1);
+		}
 	}
-    }
-    return 0;
+	return 0;
 }
 
-int
-rrfs_writefat(int devno, char *fat, int fatsectors)
+int rrfs_writefat(int devno, char *fat, int fatsectors)
 {
-    int i;
+	int i;
 
-    if (lseek(devno, 0, SEEK_SET) < 0) {
+	if (lseek(devno, 0, SEEK_SET) < 0) {
 #if _DEBUG
-	printf("rrfs_writefat: initial seek failed (%s)\n",
-	       strerror(errno));
+		printf("rrfs_writefat: initial seek failed (%s)\n",
+		       strerror(errno));
 #endif
-	return (-1);
-    }
-    for (i = 0; i < fatsectors; i++) {
-	if (lseek(devno, (BOOT_SECTORS + i) * SECTOR_SIZE, SEEK_SET)
-	    < 0) {
-#if _DEBUG
-	    printf("rrfs_writefat: seek failed (%s)\n", strerror(errno));
-#endif
-	    return (-1);
+		return (-1);
 	}
-	if (write(devno, fat + (i * SECTOR_SIZE), SECTOR_SIZE) < 0) {
+	for (i = 0; i < fatsectors; i++) {
+		if (lseek(devno, (BOOT_SECTORS + i) * SECTOR_SIZE, SEEK_SET)
+		    < 0) {
 #if _DEBUG
-	    printf("rrfs_writefat: write failed (%s)\n", strerror(errno));
+			printf("rrfs_writefat: seek failed (%s)\n",
+			       strerror(errno));
 #endif
-	    return (-1);
+			return (-1);
+		}
+		if (write(devno, fat + (i * SECTOR_SIZE), SECTOR_SIZE) < 0) {
+#if _DEBUG
+			printf("rrfs_writefat: write failed (%s)\n",
+			       strerror(errno));
+#endif
+			return (-1);
+		}
 	}
-    }
-    return 0;
+	return 0;
 }

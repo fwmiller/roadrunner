@@ -25,19 +25,18 @@
 
 #include <string.h>
 
-int
-memcmp(const void *s1, const void *s2, size_t n)
+int memcmp(const void *s1, const void *s2, size_t n)
 {
-    char *ptr1 = (char *) s1;
-    char *ptr2 = (char *) s2;
-    int i = 0;
+	char *ptr1 = (char *)s1;
+	char *ptr2 = (char *)s2;
+	int i = 0;
 
-    while (i < (int) n)
-	if (ptr1[i] == ptr2[i])
-	    i++;
-	else if (ptr1[i] < ptr2[i])
-	    return (-1);
-	else
-	    return 1;
-    return 0;
+	while (i < (int)n)
+		if (ptr1[i] == ptr2[i])
+			i++;
+		else if (ptr1[i] < ptr2[i])
+			return (-1);
+		else
+			return 1;
+	return 0;
 }

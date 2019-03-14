@@ -28,8 +28,7 @@
 #include <stdlib.h>
 #include <sys/ioctl.h>
 
-void
-clrtoeol()
+void clrtoeol()
 {
-    ioctl(STDOUT, CLEAR_TO_EOL, NULL);
+	ioctl(STDOUT, CLEAR_TO_EOL, NULL);
 }

@@ -26,8 +26,7 @@
 #include <errno.h>
 #include <fs/sysfs.h>
 
-int
-sysfs_shut()
+int sysfs_shut()
 {
-    return ENOSYS;
+	return ENOSYS;
 }

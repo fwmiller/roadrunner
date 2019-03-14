@@ -27,80 +27,80 @@
 
 void put(int c);
 
-void
-printf(const char *format, ...)
+void printf(const char *format, ...)
 {
-    int *dataptr = (int *) &format;
-    char c;
+	int *dataptr = (int *)&format;
+	char c;
 
-    dataptr++;
-    while ((c = *format++))
-	if (c != '%')
-	    put(c);
-	else
-	    switch (c = *format++) {
-	    case 'd':
-		{
-		    int num = *dataptr++;
-		    char buf[10], *ptr = buf;
-
-		    if (num < 0) {
-			num = -num;
-			put('-');
-		    }
-		    do
-			*ptr++ = '0' + num % 10;
-		    while (num /= 10);
-		    do
-			put(*--ptr);
-		    while (ptr != buf);
-		    break;
-		}
-
-	    case 'u':
-		{
-		    u_int num = *dataptr++;
-		    char buf[10], *ptr = buf;
-
-		    if (num < 0) {
-			num = -num;
-			put('-');
-		    }
-		    do
-			*ptr++ = '0' + num % 10;
-		    while (num /= 10);
-		    do
-			put(*--ptr);
-		    while (ptr != buf);
-		    break;
-		}
-
-	    case 'x':
-		{
-		    unsigned int num = *dataptr++, dig;
-		    char buf[8], *ptr = buf;
-
-		    do
-			*ptr++ = (dig =
-				  (num & 0xf)) >
-			    9 ? 'a' + dig - 10 : '0' + dig;
-		    while (num >>= 4);
-		    do
-			put(*--ptr);
-		    while (ptr != buf);
-		    break;
-		}
-
-	    case 's':
-		{
-		    char *ptr = (char *) *dataptr++;
-
-		    while ((c = *ptr++))
+	dataptr++;
+	while ((c = *format++))
+		if (c != '%')
 			put(c);
-		    break;
-		}
-	    case 'c':
-	    default:
-		put((*dataptr++) & 0xff);
-	    }
+		else
+			switch (c = *format++) {
+			case 'd':
+				{
+					int num = *dataptr++;
+					char buf[10], *ptr = buf;
+
+					if (num < 0) {
+						num = -num;
+						put('-');
+					}
+					do
+						*ptr++ = '0' + num % 10;
+					while (num /= 10);
+					do
+						put(*--ptr);
+					while (ptr != buf);
+					break;
+				}
+
+			case 'u':
+				{
+					u_int num = *dataptr++;
+					char buf[10], *ptr = buf;
+
+					if (num < 0) {
+						num = -num;
+						put('-');
+					}
+					do
+						*ptr++ = '0' + num % 10;
+					while (num /= 10);
+					do
+						put(*--ptr);
+					while (ptr != buf);
+					break;
+				}
+
+			case 'x':
+				{
+					unsigned int num = *dataptr++, dig;
+					char buf[8], *ptr = buf;
+
+					do
+						*ptr++ = (dig =
+							  (num & 0xf)) >
+						    9 ? 'a' + dig - 10 : '0' +
+						    dig;
+					while (num >>= 4);
+					do
+						put(*--ptr);
+					while (ptr != buf);
+					break;
+				}
+
+			case 's':
+				{
+					char *ptr = (char *)*dataptr++;
+
+					while ((c = *ptr++))
+						put(c);
+					break;
+				}
+			case 'c':
+			default:
+				put((*dataptr++) & 0xff);
+			}
 }

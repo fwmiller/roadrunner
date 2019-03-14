@@ -26,8 +26,7 @@
 #include <errno.h>
 #include <stdio.h>
 
-int
-puts(const char *s)
+int puts(const char *s)
 {
-    return ENOSYS;
+	return ENOSYS;
 }

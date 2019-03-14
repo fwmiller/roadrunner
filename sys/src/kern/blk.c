@@ -32,60 +32,56 @@
 
 struct blkpool blkpool;
 
-void
-blkpool_init(int size, int nblks)
+void blkpool_init(int size, int nblks)
 {
-    blk_t blk;
-    int datasize, i;
+	blk_t blk;
+	int datasize, i;
 
-    bzero(&blkpool, sizeof(struct blkpool));
+	bzero(&blkpool, sizeof(struct blkpool));
 
-    blkpool.blkbase = (char *) kmalloc(nblks * sizeof(struct blk));
-    bzero(blkpool.blkbase, nblks * sizeof(struct blk));
+	blkpool.blkbase = (char *)kmalloc(nblks * sizeof(struct blk));
+	bzero(blkpool.blkbase, nblks * sizeof(struct blk));
 
-    datasize = ALIGN(size, PAGE_SIZE);
-    blkpool.database = (char *) kmalloc(nblks * datasize);
-    bzero(blkpool.database, nblks * datasize);
-    blkpool.size = datasize;
+	datasize = ALIGN(size, PAGE_SIZE);
+	blkpool.database = (char *)kmalloc(nblks * datasize);
+	bzero(blkpool.database, nblks * datasize);
+	blkpool.size = datasize;
 
-    for (i = 0; i < nblks; i++) {
-	blk = (blk_t) (blkpool.blkbase + (i * sizeof(struct blk)));
+	for (i = 0; i < nblks; i++) {
+		blk = (blk_t) (blkpool.blkbase + (i * sizeof(struct blk)));
 
-	blk->index = i + 1;
-	blk->blkpool = &blkpool;
-	blk->data = blkpool.database + (i * datasize);
-	blk_push(blk);
-    }
+		blk->index = i + 1;
+		blk->blkpool = &blkpool;
+		blk->data = blkpool.database + (i * datasize);
+		blk_push(blk);
+	}
 }
 
-void
-blk_clear(blk_t blk)
+void blk_clear(blk_t blk)
 {
-    blk->next = NULL;
-    blk->refcnt = 0;
-    bzero(blk->data, blkpool.size);
+	blk->next = NULL;
+	blk->refcnt = 0;
+	bzero(blk->data, blkpool.size);
 }
 
-void
-blk_push(blk_t blk)
+void blk_push(blk_t blk)
 {
-    blk_clear(blk);
-    blk->next = blkpool.blks;
-    blkpool.blks = blk;
-    blkpool.nblks++;
+	blk_clear(blk);
+	blk->next = blkpool.blks;
+	blkpool.blks = blk;
+	blkpool.nblks++;
 }
 
-blk_t
-blk_pop()
+blk_t blk_pop()
 {
-    blk_t blk;
+	blk_t blk;
 
-    if (blkpool.blks == NULL)
-	return NULL;
+	if (blkpool.blks == NULL)
+		return NULL;
 
-    blk = blkpool.blks;
-    blkpool.blks = blk->next;
-    blk->next = NULL;
-    blkpool.nblks--;
-    return blk;
+	blk = blkpool.blks;
+	blkpool.blks = blk->next;
+	blk->next = NULL;
+	blkpool.nblks--;
+	return blk;
 }

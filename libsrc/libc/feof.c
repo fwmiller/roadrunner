@@ -27,18 +27,17 @@
 #include <stdio.h>
 #include <sys/ioctl.h>
 
-int
-feof(FILE * stream)
+int feof(FILE * stream)
 {
-    u_long pos = 0, size = 0;
+	u_long pos = 0, size = 0;
 
-    /*
-     * Get and test the attributes associated with the stream necessary
-     * to determine whether the end-of-file has been reached
-     */
-    ioctl((int) stream, GET_FILE_POS, &pos);
-    ioctl((int) stream, GET_FILE_SIZE, &size);
-    if (size - pos > 0)
-	return 0;
-    return 1;
+	/*
+	 * Get and test the attributes associated with the stream necessary
+	 * to determine whether the end-of-file has been reached
+	 */
+	ioctl((int)stream, GET_FILE_POS, &pos);
+	ioctl((int)stream, GET_FILE_SIZE, &size);
+	if (size - pos > 0)
+		return 0;
+	return 1;
 }

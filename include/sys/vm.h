@@ -39,36 +39,38 @@
 typedef u_long pte_t;
 typedef pte_t *pt_t;
 
-typedef struct pt_rec {
-    struct pt_rec *next;
-    int refcnt;
-    pt_t pd;
+typedef struct pt_rec
+{
+  struct pt_rec *next;
+  int refcnt;
+  pt_t pd;
 } *pt_rec_t;
 
-typedef struct vm_kmap_entry {
-    void *start;
-    u_long len;
-    u_long attr;
+typedef struct vm_kmap_entry
+{
+  void *start;
+  u_long len;
+  u_long attr;
 } *vm_kmap_entry_t;
 
 extern int npagetables;
 
-void pt_push(pt_rec_t ptrec);
-pt_rec_t pt_pop();
-void vm_enable(u_long cr3);
-u_long vm_pgfault_addr();
-void dumpvm(pt_t pd);
-void vm_init();
-void vm_kmap(pt_t pd);
-void vm_kmap_init();
-int vm_kmap_insert(vm_kmap_entry_t entry);
-int vm_kmap_remove(vm_kmap_entry_t entry);
-int vm_map(pt_t pd, void *page, u_long attr);
-void vm_map_init(pt_t pd);
-int vm_map_range(pt_t pd, void *start, size_t len, u_long attr);
-int vm_unmap(pt_t pd, void *page);
-int vm_unmap_range(pt_t pd, void *start, size_t len);
+void pt_push (pt_rec_t ptrec);
+pt_rec_t pt_pop ();
+void vm_enable (u_long cr3);
+u_long vm_pgfault_addr ();
+void dumpvm (pt_t pd);
+void vm_init ();
+void vm_kmap (pt_t pd);
+void vm_kmap_init ();
+int vm_kmap_insert (vm_kmap_entry_t entry);
+int vm_kmap_remove (vm_kmap_entry_t entry);
+int vm_map (pt_t pd, void *page, u_long attr);
+void vm_map_init (pt_t pd);
+int vm_map_range (pt_t pd, void *start, size_t len, u_long attr);
+int vm_unmap (pt_t pd, void *page);
+int vm_unmap_range (pt_t pd, void *start, size_t len);
 
-#endif				/* _KERNEL */
+#endif /* _KERNEL */
 
 #endif

@@ -42,60 +42,62 @@
 
 #define COMMONS		256
 
-struct com {
-    Elf32_Sym *sym;
-    u_long offset;
+struct com
+{
+  Elf32_Sym *sym;
+  u_long offset;
 };
 
-struct sections {
-    Elf32_Ehdr *ehdr;		       /* ELF file header */
-    Elf32_Shdr *shdrtab;	       /* Section header table */
-    char *shstrtab;		       /* Section header string table */
-    Elf32_Sym *symtab;		       /* Symbol table */
-    int symtabentries;		       /* Number of symbol table entries */
-    char *strtab;		       /* String table */
+struct sections
+{
+  Elf32_Ehdr *ehdr;		/* ELF file header */
+  Elf32_Shdr *shdrtab;		/* Section header table */
+  char *shstrtab;		/* Section header string table */
+  Elf32_Sym *symtab;		/* Symbol table */
+  int symtabentries;		/* Number of symbol table entries */
+  char *strtab;			/* String table */
 
-    int textndx;		       /* TEXT section hdr table index */
-    u_long textoff;		       /* Address of loaded TEXT section */
-    int rodatandx;		       /* RODATA section hdr table index */
-    u_long rodataoff;		       /* Address of loaded RODATA section */
-    int datandx;		       /* DATA section hdr table index */
-    u_long dataoff;		       /* Address of loaded DATA section */
-    int bssndx;			       /* BSS section hdr table index */
-    u_long bssoff;		       /* Address of BSS section */
+  int textndx;			/* TEXT section hdr table index */
+  u_long textoff;		/* Address of loaded TEXT section */
+  int rodatandx;		/* RODATA section hdr table index */
+  u_long rodataoff;		/* Address of loaded RODATA section */
+  int datandx;			/* DATA section hdr table index */
+  u_long dataoff;		/* Address of loaded DATA section */
+  int bssndx;			/* BSS section hdr table index */
+  u_long bssoff;		/* Address of BSS section */
 
-    Elf32_Rel *reltext;		       /* RELTEXT section */
-    int reltextentries;		       /* Number of TEXT reloc entries */
-    Elf32_Rel *relrodata;	       /* RELRODATA section */
-    int relrodataentries;	       /* Number of RODATA reloc entries */
-    Elf32_Rel *reldata;		       /* RELDATA section */
-    int reldataentries;		       /* Number of DATA reloc entries */
+  Elf32_Rel *reltext;		/* RELTEXT section */
+  int reltextentries;		/* Number of TEXT reloc entries */
+  Elf32_Rel *relrodata;		/* RELRODATA section */
+  int relrodataentries;		/* Number of RODATA reloc entries */
+  Elf32_Rel *reldata;		/* RELDATA section */
+  int reldataentries;		/* Number of DATA reloc entries */
 
-    /* Number of common symbols */
-    int comcnt;
+  /* Number of common symbols */
+  int comcnt;
 
-    /* Size of area needed to hold common symbols */
-    int comsize;
+  /* Size of area needed to hold common symbols */
+  int comsize;
 
-    /* Address in BSS section for common symbols */
-    u_long comoff;
+  /* Address in BSS section for common symbols */
+  u_long comoff;
 
-    /* Index of next free entry in common symbols table */
-    int comtabndx;
+  /* Index of next free entry in common symbols table */
+  int comtabndx;
 
-    /* Table of common symbols that are relocated to the BSS section */
-    struct com comtab[COMMONS];
+  /* Table of common symbols that are relocated to the BSS section */
+  struct com comtab[COMMONS];
 };
 
 typedef struct sections *sections_t;
 
-void dump_ehdr(sections_t s);
-void dump_shdrtab(sections_t s);
-void dump_sym(sections_t s, Elf32_Sym * sym);
-void dump_symtab(sections_t s);
-void dump_reltab(sections_t s, Elf32_Rel * reltab, int entries);
-int init_sections(char *filebuf, sections_t s);
-int load_sections(sections_t s, char *filebuf, char *prog);
-void relocate(sections_t s, u_long offset, Elf32_Rel * rel);
+void dump_ehdr (sections_t s);
+void dump_shdrtab (sections_t s);
+void dump_sym (sections_t s, Elf32_Sym * sym);
+void dump_symtab (sections_t s);
+void dump_reltab (sections_t s, Elf32_Rel * reltab, int entries);
+int init_sections (char *filebuf, sections_t s);
+int load_sections (sections_t s, char *filebuf, char *prog);
+void relocate (sections_t s, u_long offset, Elf32_Rel * rel);
 
 #endif

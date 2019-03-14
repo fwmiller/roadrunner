@@ -25,8 +25,7 @@
 
 #include <stdio.h>
 
-int
-getchar()
+int getchar()
 {
-    return getc(stdin);
+	return getc(stdin);
 }

@@ -48,97 +48,97 @@ int rrfs_find(int devno,
 	      int *filesize,
 	      int *declust, int *deoff, int *firstclust, int *directory);
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
-    char *dir = NULL;
-    char *dev = DEVICE;
-    int devno;
-    char mbrbuf[SECTOR_SIZE];
-    mbr_t mbr;
-    char *fat;
-    char buf[SECTOR_SIZE];
-    direntry_t de;
-    uint32_t clust;
-    int filesize, declust, deoff, firstclust, directory;
-    int clustoff, i;
+	char *dir = NULL;
+	char *dev = DEVICE;
+	int devno;
+	char mbrbuf[SECTOR_SIZE];
+	mbr_t mbr;
+	char *fat;
+	char buf[SECTOR_SIZE];
+	direntry_t de;
+	uint32_t clust;
+	int filesize, declust, deoff, firstclust, directory;
+	int clustoff, i;
 
-    for (i = 1; i < argc; i++)
-	if (strcmp(argv[i], "-d") == 0) {
-	    if (++i == argc) {
-		printf("missing device name\n");
+	for (i = 1; i < argc; i++)
+		if (strcmp(argv[i], "-d") == 0) {
+			if (++i == argc) {
+				printf("missing device name\n");
+				exit(-1);
+			}
+			dev = argv[i];
+		} else {
+			if (argv[i][0] != '/') {
+				printf("absolute path required\n");
+				exit(-1);
+			}
+			dir = argv[i];
+		}
+	if (dir == NULL) {
+		printf("missing directory name\n");
 		exit(-1);
-	    }
-	    dev = argv[i];
-	} else {
-	    if (argv[i][0] != '/') {
-		printf("absolute path required\n");
+	}
+	if ((devno = open(dev, O_RDWR, 0)) < 0) {
+		printf("could not open %s (%s)\n", dev, strerror(errno));
 		exit(-1);
-	    }
-	    dir = argv[i];
 	}
-    if (dir == NULL) {
-	printf("missing directory name\n");
-	exit(-1);
-    }
-    if ((devno = open(dev, O_RDWR, 0)) < 0) {
-	printf("could not open %s (%s)\n", dev, strerror(errno));
-	exit(-1);
-    }
-    /* Read rrfs mbr */
-    if (rrfs_readmbr(devno, mbrbuf) < 0) {
-	printf("could not read mbr\n");
-	exit(-1);
-    }
-    mbr = (mbr_t) mbrbuf;
+	/* Read rrfs mbr */
+	if (rrfs_readmbr(devno, mbrbuf) < 0) {
+		printf("could not read mbr\n");
+		exit(-1);
+	}
+	mbr = (mbr_t) mbrbuf;
 
-    /* Read rrfs fat */
-    fat = (char *) malloc((int) mbr->params.fatsectors * SECTOR_SIZE);
-    bzero(fat, (int) mbr->params.fatsectors * SECTOR_SIZE);
-    if (rrfs_readfat(devno, fat, mbr->params.fatsectors) < 0) {
-	printf("could not read fat\n");
-	exit(-1);
-    }
-    /* Find the directory */
-    if (rrfs_find(devno,
-		  mbr->params.clusters,
-		  mbr->params.fatsectors,
-		  fat,
-		  dir,
-		  &filesize, &declust, &deoff, &firstclust,
-		  &directory) < 0) {
-	printf("%s not found\n", dir);
-	exit(-1);
-    }
-    if (!directory) {
-	printf("%s is not a directory\n", dir);
-	exit(-1);
-    }
-    for (clust = (uint32_t) firstclust;;) {
-	clustoff = BOOT_SECTORS + 2 * mbr->params.fatsectors + (int) clust;
-	if (lseek(devno, clustoff * SECTOR_SIZE, SEEK_SET) < 0) {
-	    printf("seek failed (%s)\n", strerror(errno));
-	    exit(-1);
+	/* Read rrfs fat */
+	fat = (char *)malloc((int)mbr->params.fatsectors * SECTOR_SIZE);
+	bzero(fat, (int)mbr->params.fatsectors * SECTOR_SIZE);
+	if (rrfs_readfat(devno, fat, mbr->params.fatsectors) < 0) {
+		printf("could not read fat\n");
+		exit(-1);
 	}
-	if (read(devno, buf, SECTOR_SIZE) < 0) {
-	    printf("read failed (%s)\n", strerror(errno));
-	    exit(-1);
+	/* Find the directory */
+	if (rrfs_find(devno,
+		      mbr->params.clusters,
+		      mbr->params.fatsectors,
+		      fat,
+		      dir,
+		      &filesize, &declust, &deoff, &firstclust,
+		      &directory) < 0) {
+		printf("%s not found\n", dir);
+		exit(-1);
 	}
-	/* Display directory entries */
-	for (de = (direntry_t) buf;; de++) {
-	    if (((u_char *) de->name)[0] == DE_UNUSED ||
-		((char *) de - buf) >= SECTOR_SIZE)
-		break;
-	    if (((u_char *) de->name)[0] != DE_DELETED) {
-		bufdump((char *) de, DE_SIZE);
-		printdirentry(de);
-	    }
+	if (!directory) {
+		printf("%s is not a directory\n", dir);
+		exit(-1);
 	}
+	for (clust = (uint32_t) firstclust;;) {
+		clustoff =
+		    BOOT_SECTORS + 2 * mbr->params.fatsectors + (int)clust;
+		if (lseek(devno, clustoff * SECTOR_SIZE, SEEK_SET) < 0) {
+			printf("seek failed (%s)\n", strerror(errno));
+			exit(-1);
+		}
+		if (read(devno, buf, SECTOR_SIZE) < 0) {
+			printf("read failed (%s)\n", strerror(errno));
+			exit(-1);
+		}
+		/* Display directory entries */
+		for (de = (direntry_t) buf;; de++) {
+			if (((u_char *) de->name)[0] == DE_UNUSED ||
+			    ((char *)de - buf) >= SECTOR_SIZE)
+				break;
+			if (((u_char *) de->name)[0] != DE_DELETED) {
+				bufdump((char *)de, DE_SIZE);
+				printdirentry(de);
+			}
+		}
 
-	clust = rrfs_nextclust(clust, fat, mbr->params.clusters);
-	if (clust >= mbr->params.clusters)
-	    break;
-    }
-    close(devno);
-    exit(0);
+		clust = rrfs_nextclust(clust, fat, mbr->params.clusters);
+		if (clust >= mbr->params.clusters)
+			break;
+	}
+	close(devno);
+	exit(0);
 }

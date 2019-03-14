@@ -26,8 +26,7 @@
 #include <errno.h>
 #include <fs/sysfs.h>
 
-int
-sysfile_write(file_t file)
+int sysfile_write(file_t file)
 {
-    return ENOSYS;
+	return ENOSYS;
 }

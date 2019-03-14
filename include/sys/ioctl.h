@@ -59,30 +59,33 @@
 #define CLEAR_TO_EOL		0xffe4
 
 /* GET_GEOMETRY */
-typedef struct geometry {
+typedef struct geometry
+{
 #define GF_REMOVABLE		0x01
 #define GF_PARTITIONED		0x02
-    int flags;
-    u_long tracks;
-    u_long heads;
-    u_long sectorspertrack;
-    u_short bytespersector;
+  int flags;
+  u_long tracks;
+  u_long heads;
+  u_long sectorspertrack;
+  u_short bytespersector;
 } *geometry_t;
 
 /* SEEK_BYTE and SEEK_BLOCK */
-typedef struct seek {
-    u_long offset;
+typedef struct seek
+{
+  u_long offset;
 #define SEEK_SET		0
 #define SEEK_CUR		1
 #define SEEK_END		2
-    int whence;
+  int whence;
 } *seek_t;
 
 /* GET_CURSOR_POS SET_CURSOR_POS */
-typedef struct cursor {
-    int x, y;
+typedef struct cursor
+{
+  int x, y;
 } *cursor_t;
 
-int ioctl(int fd, int cmd, void *args);
+int ioctl (int fd, int cmd, void *args);
 
 #endif

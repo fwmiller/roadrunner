@@ -31,79 +31,74 @@
 
 struct queue eventtab[EVENTS];
 
-void
-eventtab_init()
+void eventtab_init()
 {
-    int i;
+	int i;
 
-    for (i = 0; i < EVENTS; i++)
-	initq(&(eventtab[i]));
+	for (i = 0; i < EVENTS; i++)
+		initq(&(eventtab[i]));
 }
 
-int
-event_inst(int event, proc_t proc)
+int event_inst(int event, proc_t proc)
 {
-    if (event < 0 || event >= EVENTS)
-	return EINVAL;
+	if (event < 0 || event >= EVENTS)
+		return EINVAL;
 
-    disable;
+	disable;
 
-    if (proc == NULL)
-	proc = current;
-
-    proc->state = PS_EVENT;
-    insq(proc, &(eventtab[event]));
-
-    if (proc == current)
-	proc_transfer();	       /* enables interrupts */
-    else
-	enable;
-
-    return 0;
-}
-
-int
-event_raise(int event)
-{
-    proc_t proc;
-
-    if (event < 0 || event >= EVENTS)
-	return EINVAL;
-
-    disable;
-
-    for (;;) {
-	proc = remfirstq(&(eventtab[event]));
 	if (proc == NULL)
-	    break;
-	proc->state = PS_READY;
-	insq(proc, &ready);
-    }
-    enable;
-    return 0;
+		proc = current;
+
+	proc->state = PS_EVENT;
+	insq(proc, &(eventtab[event]));
+
+	if (proc == current)
+		proc_transfer();	/* enables interrupts */
+	else
+		enable;
+
+	return 0;
 }
 
-int
-event_uninst(int event, proc_t proc)
+int event_raise(int event)
 {
-    if (event < 0 || event >= EVENTS || proc == NULL)
-	return EINVAL;
+	proc_t proc;
 
-    disable;
+	if (event < 0 || event >= EVENTS)
+		return EINVAL;
 
-    if (proc->q != &(eventtab[event])) {
+	disable;
+
+	for (;;) {
+		proc = remfirstq(&(eventtab[event]));
+		if (proc == NULL)
+			break;
+		proc->state = PS_READY;
+		insq(proc, &ready);
+	}
 	enable;
-	return EINVAL;
-    }
-    remq(proc, &(eventtab[event]));
-    proc->state = PS_READY;
-
-    enable;
-    return 0;
+	return 0;
 }
 
-int
-event_wait(int event)
+int event_uninst(int event, proc_t proc)
 {
-    return event_inst(event, NULL);
+	if (event < 0 || event >= EVENTS || proc == NULL)
+		return EINVAL;
+
+	disable;
+
+	if (proc->q != &(eventtab[event])) {
+		enable;
+		return EINVAL;
+	}
+	remq(proc, &(eventtab[event]));
+	proc->state = PS_READY;
+
+	enable;
+	return 0;
+}
+
+int event_wait(int event)
+{
+	return event_inst(event, NULL);
 }

@@ -13,3 +13,8 @@ all: $(OBJS)
 
 clean:
 	$(RM) *~ $(OBJS) $(TGT)
+
+indent:
+	indent $(INDENT_RULES) *.c
+	$(RM) *~
+

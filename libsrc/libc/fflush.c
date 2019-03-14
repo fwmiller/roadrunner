@@ -26,8 +26,7 @@
 #include <errno.h>
 #include <stdio.h>
 
-int
-fflush(FILE * stream)
+int fflush(FILE * stream)
 {
-    return ENOSYS;
+	return ENOSYS;
 }

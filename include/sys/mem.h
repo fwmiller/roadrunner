@@ -40,11 +40,12 @@
 #define REGION_VIDEO_START	0x000a0000
 #define REGION_VIDEO_END	0x00100000
 
-struct region {
-    struct region *prev, *next;
-    u_long start;		       /* Starting address of region */
-    size_t len;			       /* Length of region */
-    int proc;			       /* Thread that owns the region */
+struct region
+{
+  struct region *prev, *next;
+  u_long start;			/* Starting address of region */
+  size_t len;			/* Length of region */
+  int proc;			/* Thread that owns the region */
 };
 
 typedef struct region *region_t;
@@ -52,24 +53,24 @@ typedef struct region *region_t;
 extern size_t kernsize, memsize;
 extern region_t regiontab, freelist, alloclist;
 
-void dumpregiontab();
-region_t valid_region(void *start);
-void region_clear(region_t r);
-void region_insert(region_t r, region_t * l);
-void region_remove(region_t r, region_t * l);
-void *region_split(region_t r, size_t size);
+void dumpregiontab ();
+region_t valid_region (void *start);
+void region_clear (region_t r);
+void region_insert (region_t r, region_t * l);
+void region_remove (region_t r, region_t * l);
+void *region_split (region_t r, size_t size);
 
-void *kmalloc(size_t size);
-void kfree(void *ptr);
-void *malloc(size_t size);
-void free(void *ptr);
+void *kmalloc (size_t size);
+void kfree (void *ptr);
+void *malloc (size_t size);
+void free (void *ptr);
 
-void *mem_alloc(size_t size);
-int mem_free(void *start);
-void mem_init();
-void mem_reclaim(proc_t proc);
-int mem_transfer(void *start, proc_t proc);
+void *mem_alloc (size_t size);
+int mem_free (void *start);
+void mem_init ();
+void mem_reclaim (proc_t proc);
+int mem_transfer (void *start, proc_t proc);
 
-#endif				/* _KERNEL */
+#endif /* _KERNEL */
 
 #endif

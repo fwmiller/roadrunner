@@ -26,13 +26,12 @@
 #include <stdio.h>
 #include <unistd.h>
 
-size_t
-fwrite(void *ptr, size_t size, size_t nobj, FILE * stream)
+size_t fwrite(void *ptr, size_t size, size_t nobj, FILE * stream)
 {
-    int len;
+	int len;
 
-    len = write((int) stream, ptr, nobj * size);
-    if (len < 0)
-	return 0;
-    return len / size;
+	len = write((int)stream, ptr, nobj * size);
+	if (len < 0)
+		return 0;
+	return len / size;
 }

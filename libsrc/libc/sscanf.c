@@ -26,8 +26,7 @@
 #include <errno.h>
 #include <stdio.h>
 
-int
-sscanf(char *s, const char *fmt, ...)
+int sscanf(char *s, const char *fmt, ...)
 {
-    return ENOSYS;
+	return ENOSYS;
 }

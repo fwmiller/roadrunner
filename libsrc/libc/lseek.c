@@ -26,16 +26,15 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
-off_t
-lseek(int fileno, off_t offset, int whence)
+off_t lseek(int fileno, off_t offset, int whence)
 {
-    struct seek seekargs;
-    int result;
+	struct seek seekargs;
+	int result;
 
-    seekargs.offset = offset;
-    seekargs.whence = SEEK_SET;
-    result = ioctl(fileno, SEEK_BYTE, &seekargs);
-    if (result == 0)
-	return offset;
-    return (-1);
+	seekargs.offset = offset;
+	seekargs.whence = SEEK_SET;
+	result = ioctl(fileno, SEEK_BYTE, &seekargs);
+	if (result == 0)
+		return offset;
+	return (-1);
 }

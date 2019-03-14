@@ -31,48 +31,46 @@
 #include <sys/ioctl.h>
 #include <sys/lex.h>
 
-static int
-parse(char *path, lex_t devname)
+static int parse(char *path, lex_t devname)
 {
-    struct lex l;
-    int pos = 0;
+	struct lex l;
+	int pos = 0;
 
-    nextlex(path, &pos, &l);
-    if (l.type != LEX_SLASH)
-	return EINVAL;
-    nextlex(path, &pos, devname);
-    if (devname->type != LEX_ID)
-	return EINVAL;
-    nextlex(path, &pos, &l);
-    if (l.type != LEX_EOL)
-	return EINVAL;
-    return 0;
+	nextlex(path, &pos, &l);
+	if (l.type != LEX_SLASH)
+		return EINVAL;
+	nextlex(path, &pos, devname);
+	if (devname->type != LEX_ID)
+		return EINVAL;
+	nextlex(path, &pos, &l);
+	if (l.type != LEX_EOL)
+		return EINVAL;
+	return 0;
 }
 
-int
-devfile_open(file_t file)
+int devfile_open(file_t file)
 {
-    struct lex devname;
-    int devno, result;
+	struct lex devname;
+	int devno, result;
 
-    /* Special case for root directory */
-    if (strcmp(file->path, "/") == 0 || strcmp(file->path, "") == 0) {
-	file->data = (void *) 0;
-	file->flags |= F_EOF | F_DIR;
+	/* Special case for root directory */
+	if (strcmp(file->path, "/") == 0 || strcmp(file->path, "") == 0) {
+		file->data = (void *)0;
+		file->flags |= F_EOF | F_DIR;
+		return 0;
+	}
+	result = parse(file->path, &devname);
+	if (result < 0) {
+		file->flags |= F_ERR;
+		return result;
+	}
+	devno = dev_open(devname.s);
+	if (devno < 0) {
+		file->flags |= F_ERR;
+		return devno;
+	}
+	file->filesize = MAX_FILE_SIZE;
+	file->data = (void *)devno;
+	dev_ioctl(devno, GET_BUFFER_SIZE, &(file->bufsize));
 	return 0;
-    }
-    result = parse(file->path, &devname);
-    if (result < 0) {
-	file->flags |= F_ERR;
-	return result;
-    }
-    devno = dev_open(devname.s);
-    if (devno < 0) {
-	file->flags |= F_ERR;
-	return devno;
-    }
-    file->filesize = MAX_FILE_SIZE;
-    file->data = (void *) devno;
-    dev_ioctl(devno, GET_BUFFER_SIZE, &(file->bufsize));
-    return 0;
 }

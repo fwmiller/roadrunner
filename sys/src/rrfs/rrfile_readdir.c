@@ -29,25 +29,24 @@
 #include <stdlib.h>
 #include <string.h>
 
-static int
-next_buffer(file_t file)
+static int next_buffer(file_t file)
 {
-    rrfs_t rrfs = (rrfs_t) file->fs->data;
-    rrfile_t rrfile = (rrfile_t) file->data;
-    int result;
+	rrfs_t rrfs = (rrfs_t) file->fs->data;
+	rrfile_t rrfile = (rrfile_t) file->data;
+	int result;
 
-    rrfile->currclust = rrfs_nextclust(file->fs, rrfile->currclust);
-    if (rrfile->currclust >= rrfs->mbr->params.clusters)
-	return EFILEEOF;
-    file->buf = bget(file->bufsize);
-    blen(file->buf) = file->bufsize;
-    result = rrfs_readclust(file, rrfile->currclust, &(file->buf));
+	rrfile->currclust = rrfs_nextclust(file->fs, rrfile->currclust);
+	if (rrfile->currclust >= rrfs->mbr->params.clusters)
+		return EFILEEOF;
+	file->buf = bget(file->bufsize);
+	blen(file->buf) = file->bufsize;
+	result = rrfs_readclust(file, rrfile->currclust, &(file->buf));
 #if _DEBUG
-    if (result < 0)
-	kprintf("next_buffer: read cluster failed (%s)\n",
-		strerror(result));
+	if (result < 0)
+		kprintf("next_buffer: read cluster failed (%s)\n",
+			strerror(result));
 #endif
-    return result;
+	return result;
 }
 
 /* 
@@ -59,91 +58,89 @@ next_buffer(file_t file)
  * string[48]   Name
  */
 struct gmentry {
-    char attr[4];
-    u_int size;
-    char time[22];
-    char name[48];
+	char attr[4];
+	u_int size;
+	char time[22];
+	char name[48];
 } __attribute__ ((packed));
 
 typedef struct gmentry *gmentry_t;
 
-int
-rrfile_readdir(file_t file, char *entry)
+int rrfile_readdir(file_t file, char *entry)
 {
-    direntry_t de;
-    gmentry_t gm;
-    int hour, result;
+	direntry_t de;
+	gmentry_t gm;
+	int hour, result;
 
-    if (file->buf == NULL)
-	if ((result = next_buffer(file)) < 0) {
+	if (file->buf == NULL)
+		if ((result = next_buffer(file)) < 0) {
 #if _DEBUG
-	    kprintf
-		("rrfile_readdir: could not get next cluster (%s)\n",
-		 strerror(result));
+			kprintf
+			    ("rrfile_readdir: could not get next cluster (%s)\n",
+			     strerror(result));
 #endif
-	    return result;
+			return result;
+		}
+
+	for (de = (direntry_t) (bstart(file->buf) + bpos(file->buf));
+	     ((u_char) de->name[0]) == DE_UNUSED ||
+	     ((u_char) de->name[0]) == DE_DELETED;) {
+		bpos(file->buf) += DE_SIZE;
+		if (bpos(file->buf) >= file->bufsize) {
+			brel(file->buf);
+			file->buf = NULL;
+			if ((result = next_buffer(file)) < 0) {
+#if _DEBUG
+				kprintf
+				    ("rrfile_readdir: could not get next cluster (%s)\n",
+				     strerror(result));
+#endif
+				return result;
+			}
+		}
+		de = (direntry_t) (bstart(file->buf) + bpos(file->buf));
 	}
 
-    for (de = (direntry_t) (bstart(file->buf) + bpos(file->buf));
-	 ((u_char) de->name[0]) == DE_UNUSED ||
-	 ((u_char) de->name[0]) == DE_DELETED;) {
-	bpos(file->buf) += DE_SIZE;
-	if (bpos(file->buf) >= file->bufsize) {
-	    brel(file->buf);
-	    file->buf = NULL;
-	    if ((result = next_buffer(file)) < 0) {
 #if _DEBUG
-		kprintf
-		    ("rrfile_readdir: could not get next cluster (%s)\n",
-		     strerror(result));
+	rrfs_direntrydump(de);
 #endif
-		return result;
-	    }
+	/* Setup attributes string */
+	bzero(entry, sizeof(struct gmentry));
+
+	gm = (gmentry_t) entry;
+	gm->attr[0] = (de->attr & DE_ATTR_DIR ? 'd' : '-');
+	gm->attr[1] = (de->attr & DE_ATTR_READ ? 'r' : '-');
+	gm->attr[2] = (de->attr & DE_ATTR_WRITE ? 'w' : '-');
+	gm->attr[3] = (de->attr & DE_ATTR_EXEC ? 'x' : '-');
+
+	/* File size */
+	gm->size = (u_int) de->size;
+
+	/* Setup date and time string */
+	bzero(gm->time, 22);
+	hour = (int)de->time[DE_TIME_HOUR];
+	if (hour == 0)
+		hour = 24;
+	sprintf(gm->time, " %2d", (hour > 12 ? hour - 12 : hour));
+
+	sprintf(gm->time + 3, ":%02d:%02d",
+		(int)de->time[DE_TIME_MIN], (int)de->time[DE_TIME_SEC]);
+
+	if (hour < 12)
+		sprintf(gm->time + 9, "a");
+	else
+		sprintf(gm->time + 9, "p");
+
+	sprintf(gm->time + 10, " %2d-%02d-%04d",
+		(int)de->date[DE_DATE_MON] + 1,
+		(int)de->date[DE_DATE_DAY], (int)de->date[DE_DATE_YEAR] + 1900);
+
+	/* File name */
+	strcpy(gm->name, de->name);
+
+	if ((bpos(file->buf) += DE_SIZE) >= file->bufsize) {
+		brel(file->buf);
+		file->buf = NULL;
 	}
-	de = (direntry_t) (bstart(file->buf) + bpos(file->buf));
-    }
-
-#if _DEBUG
-    rrfs_direntrydump(de);
-#endif
-    /* Setup attributes string */
-    bzero(entry, sizeof(struct gmentry));
-
-    gm = (gmentry_t) entry;
-    gm->attr[0] = (de->attr & DE_ATTR_DIR ? 'd' : '-');
-    gm->attr[1] = (de->attr & DE_ATTR_READ ? 'r' : '-');
-    gm->attr[2] = (de->attr & DE_ATTR_WRITE ? 'w' : '-');
-    gm->attr[3] = (de->attr & DE_ATTR_EXEC ? 'x' : '-');
-
-    /* File size */
-    gm->size = (u_int) de->size;
-
-    /* Setup date and time string */
-    bzero(gm->time, 22);
-    hour = (int) de->time[DE_TIME_HOUR];
-    if (hour == 0)
-	hour = 24;
-    sprintf(gm->time, " %2d", (hour > 12 ? hour - 12 : hour));
-
-    sprintf(gm->time + 3, ":%02d:%02d",
-	    (int) de->time[DE_TIME_MIN], (int) de->time[DE_TIME_SEC]);
-
-    if (hour < 12)
-	sprintf(gm->time + 9, "a");
-    else
-	sprintf(gm->time + 9, "p");
-
-    sprintf(gm->time + 10, " %2d-%02d-%04d",
-	    (int) de->date[DE_DATE_MON] + 1,
-	    (int) de->date[DE_DATE_DAY],
-	    (int) de->date[DE_DATE_YEAR] + 1900);
-
-    /* File name */
-    strcpy(gm->name, de->name);
-
-    if ((bpos(file->buf) += DE_SIZE) >= file->bufsize) {
-	brel(file->buf);
-	file->buf = NULL;
-    }
-    return 0;
+	return 0;
 }

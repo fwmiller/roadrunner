@@ -28,14 +28,14 @@
 
 #include <sys/types.h>
 
-#define S_IRUSR		0x01	       /* R for owner */
-#define S_IWUSR		0x02	       /* W for owner */
-#define S_IXUSR		0x04	       /* X for owner */
+#define S_IRUSR		0x01	/* R for owner */
+#define S_IWUSR		0x02	/* W for owner */
+#define S_IXUSR		0x04	/* X for owner */
 
 /* RWX mask for owner */
 #define S_IRWXU		(S_IRUSR | S_IWUSR | S_IXUSR)
 
-#define S_IFDIR		0x08	       /* Directory */
+#define S_IFDIR		0x08	/* Directory */
 
 /* POSIX */
 #define S_IREAD		S_IRUSR

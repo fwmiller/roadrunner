@@ -26,8 +26,7 @@
 #include <curses.h>
 #include <stdio.h>
 
-char
-getch()
+char getch()
 {
-    return getchar();
+	return getchar();
 }

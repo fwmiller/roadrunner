@@ -32,18 +32,18 @@
 extern int argc;
 extern char **argv;
 
-void _exit(int status);
-int chdir(const char *path);
-int close(int fd);
-pid_t exec(const char *path, int argc, char **argv);
-char *getcwd(char *buf, size_t size);
-pid_t getpid();
-int gettimeofday(struct timeval *tv, struct timezone *tz);
-off_t lseek(int fd, off_t offset, int whence);
-int mkdir(const char *path, mode_t mode);
-ssize_t read(int fd, void *buf, size_t count);
-int unlink(const char *path);
-int wait(pid_t pid);
-ssize_t write(int fd, void *buf, size_t count);
+void _exit (int status);
+int chdir (const char *path);
+int close (int fd);
+pid_t exec (const char *path, int argc, char **argv);
+char *getcwd (char *buf, size_t size);
+pid_t getpid ();
+int gettimeofday (struct timeval *tv, struct timezone *tz);
+off_t lseek (int fd, off_t offset, int whence);
+int mkdir (const char *path, mode_t mode);
+ssize_t read (int fd, void *buf, size_t count);
+int unlink (const char *path);
+int wait (pid_t pid);
+ssize_t write (int fd, void *buf, size_t count);
 
 #endif

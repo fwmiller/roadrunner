@@ -29,65 +29,61 @@
 #include <sys/mutex.h>
 #include <sys/queue.h>
 
-void
-mutex_clear(mutex_t mutex)
+void mutex_clear(mutex_t mutex)
 {
-    mutex->holder = NULL;
-    initq(&(mutex->waitq));
+	mutex->holder = NULL;
+	initq(&(mutex->waitq));
 }
 
-int
-mutex_lock(mutex_t mutex)
+int mutex_lock(mutex_t mutex)
 {
-    disable;
+	disable;
 
-    if (mutex->holder == current) {
-	enable;
+	if (mutex->holder == current) {
+		enable;
+		return 0;
+	} else if (mutex->holder == NULL) {
+		mutex->holder = current;
+		enable;
+		return 0;
+	}
+	current->state = PS_MUTEX;
+	insq(current, &(mutex->waitq));
+	proc_transfer();	/* enables interrupts */
 	return 0;
-    } else if (mutex->holder == NULL) {
-	mutex->holder = current;
-	enable;
-	return 0;
-    }
-    current->state = PS_MUTEX;
-    insq(current, &(mutex->waitq));
-    proc_transfer();		       /* enables interrupts */
-    return 0;
 }
 
-int
-mutex_trylock(mutex_t mutex)
+int mutex_trylock(mutex_t mutex)
 {
-    disable;
+	disable;
 
-    if (mutex->holder == current) {
+	if (mutex->holder == current) {
+		enable;
+		return 0;
+	} else if (mutex->holder == NULL) {
+		mutex->holder = current;
+		enable;
+		return 0;
+	}
 	enable;
-	return 0;
-    } else if (mutex->holder == NULL) {
-	mutex->holder = current;
-	enable;
-	return 0;
-    }
-    enable;
-    return EBUSY;
+	return EBUSY;
 }
 
-int
-mutex_unlock(mutex_t mutex)
+int mutex_unlock(mutex_t mutex)
 {
-    disable;
+	disable;
 
-    if (mutex->holder != current) {
-	enable;
-	return EPERM;
-    }
-    mutex->holder = remfirstq(&(mutex->waitq));
-    if (mutex->holder == NULL) {
+	if (mutex->holder != current) {
+		enable;
+		return EPERM;
+	}
+	mutex->holder = remfirstq(&(mutex->waitq));
+	if (mutex->holder == NULL) {
+		enable;
+		return 0;
+	}
+	mutex->holder->state = PS_READY;
+	insq(mutex->holder, &ready);
 	enable;
 	return 0;
-    }
-    mutex->holder->state = PS_READY;
-    insq(mutex->holder, &ready);
-    enable;
-    return 0;
 }

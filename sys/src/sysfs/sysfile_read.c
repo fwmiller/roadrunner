@@ -28,23 +28,22 @@
 #include <stdio.h>
 #include <string.h>
 
-int
-sysfile_read(file_t file)
+int sysfile_read(file_t file)
 {
-    int len;
+	int len;
 
-    if (file->flags & F_EOF)
-	return EINVAL;
+	if (file->flags & F_EOF)
+		return EINVAL;
 
-    /* Assume fs layer has provided a buffer */
+	/* Assume fs layer has provided a buffer */
 
-    if (file->filesize - file->pos > blen(file->buf) - bpos(file->buf))
-	len = blen(file->buf) - bpos(file->buf);
-    else
-	len = file->filesize - file->pos;
+	if (file->filesize - file->pos > blen(file->buf) - bpos(file->buf))
+		len = blen(file->buf) - bpos(file->buf);
+	else
+		len = file->filesize - file->pos;
 
-    bcopy((char *) file->data + file->pos,
-	  bstart(file->buf) + bpos(file->buf), len);
+	bcopy((char *)file->data + file->pos,
+	      bstart(file->buf) + bpos(file->buf), len);
 
-    return 0;
+	return 0;
 }

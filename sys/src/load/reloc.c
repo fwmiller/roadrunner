@@ -28,67 +28,65 @@
 #include <sys/elf.h>
 #include <sys/load.h>
 
-static u_long
-relocate_com(sections_t s, Elf32_Sym * sym)
+static u_long relocate_com(sections_t s, Elf32_Sym * sym)
 {
-    int i;
+	int i;
 
-    /* Search common table for an existing entry */
-    for (i = 0; i < COMMONS; i++)
-	if (sym == s->comtab[i].sym)
-	    break;
-    if (i < COMMONS)
-	return s->comtab[i].offset;
+	/* Search common table for an existing entry */
+	for (i = 0; i < COMMONS; i++)
+		if (sym == s->comtab[i].sym)
+			break;
+	if (i < COMMONS)
+		return s->comtab[i].offset;
 
-    /* Allocate an new entry for a common symbol */
-    s->comtab[s->comtabndx].sym = sym;
-    s->comtab[s->comtabndx].offset = s->comoff;
-    s->comoff += ALIGN(sym->st_size, sizeof(u_long));
+	/* Allocate an new entry for a common symbol */
+	s->comtab[s->comtabndx].sym = sym;
+	s->comtab[s->comtabndx].offset = s->comoff;
+	s->comoff += ALIGN(sym->st_size, sizeof(u_long));
 
-    return s->comtab[s->comtabndx++].offset;
+	return s->comtab[s->comtabndx++].offset;
 }
 
-void
-relocate(sections_t s, u_long offset, Elf32_Rel * rel)
+void relocate(sections_t s, u_long offset, Elf32_Rel * rel)
 {
-    Elf32_Sym *sym;
-    u_long *ptr;
+	Elf32_Sym *sym;
+	u_long *ptr;
 
-    ptr = (u_long *) (offset + rel->r_offset);
-    sym = &(s->symtab[ELF32_R_SYM(rel->r_info)]);
+	ptr = (u_long *) (offset + rel->r_offset);
+	sym = &(s->symtab[ELF32_R_SYM(rel->r_info)]);
 
-    if (ELF32_R_TYPE(rel->r_info) == R_386_32) {
-	if (sym->st_shndx == SHN_COMMON)
-	    *ptr = relocate_com(s, sym);
+	if (ELF32_R_TYPE(rel->r_info) == R_386_32) {
+		if (sym->st_shndx == SHN_COMMON)
+			*ptr = relocate_com(s, sym);
+
+		else {
+			u_long section;
+
+			if (sym->st_shndx == s->textndx)
+				section = s->textoff;
+			else if (sym->st_shndx == s->rodatandx)
+				section = s->rodataoff;
+			else if (sym->st_shndx == s->datandx)
+				section = s->dataoff;
+			else if (sym->st_shndx == s->bssndx)
+				section = s->bssoff;
+			else {
+#if _DEBUG
+				kprintf
+				    ("relocate: illegal symbol shndx %04x\n",
+				     sym->st_shndx);
+#endif
+			}
+			*ptr = section + sym->st_value + *ptr;
+		}
+
+	} else if (ELF32_R_TYPE(rel->r_info) == R_386_PC32)
+		*ptr = sym->st_value + *ptr - rel->r_offset;
 
 	else {
-	    u_long section;
-
-	    if (sym->st_shndx == s->textndx)
-		section = s->textoff;
-	    else if (sym->st_shndx == s->rodatandx)
-		section = s->rodataoff;
-	    else if (sym->st_shndx == s->datandx)
-		section = s->dataoff;
-	    else if (sym->st_shndx == s->bssndx)
-		section = s->bssoff;
-	    else {
 #if _DEBUG
-		kprintf
-		    ("relocate: illegal symbol shndx %04x\n",
-		     sym->st_shndx);
+		kprintf("relocate: unrecognized relocation type (%02x)\n",
+			ELF32_R_TYPE(rel->r_info));
 #endif
-	    }
-	    *ptr = section + sym->st_value + *ptr;
 	}
-
-    } else if (ELF32_R_TYPE(rel->r_info) == R_386_PC32)
-	*ptr = sym->st_value + *ptr - rel->r_offset;
-
-    else {
-#if _DEBUG
-	kprintf("relocate: unrecognized relocation type (%02x)\n",
-		ELF32_R_TYPE(rel->r_info));
-#endif
-    }
 }

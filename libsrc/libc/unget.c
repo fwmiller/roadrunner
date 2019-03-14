@@ -26,8 +26,7 @@
 #include <errno.h>
 #include <stdio.h>
 
-int
-unget(int c, FILE * stream)
+int unget(int c, FILE * stream)
 {
-    return ENOSYS;
+	return ENOSYS;
 }

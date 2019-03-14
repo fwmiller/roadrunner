@@ -26,9 +26,8 @@
 #include <errno.h>
 #include <stdio.h>
 
-long
-ftell(FILE * stream)
+long ftell(FILE * stream)
 {
-    errno = ENOSYS;
-    return (-1);
+	errno = ENOSYS;
+	return (-1);
 }

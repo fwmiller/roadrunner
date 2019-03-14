@@ -28,33 +28,33 @@
 #include <stdlib.h>
 #include <string.h>
 
-void
-dump_fstab(char *s)
+void dump_fstab(char *s)
 {
-    fs_t fs;
-    int fscnt = 0;
-    int fsno;
-    char s0[80];
+	fs_t fs;
+	int fscnt = 0;
+	int fsno;
+	char s0[80];
 
-    for (fsno = 0; fsno < FILE_SYSTEMS; fsno++)
-	if (fstab[fsno].fsops != NULL) {
-	    if (fscnt++ == 0) {
-		sprintf(s, "fsno  devno  blkno  path\n");
-		s += strlen(s);
-	    }
-	    fs = &(fstab[fsno]);
-	    sprintf(s, "%4d    ", fsno);
-	    s += 8;
+	for (fsno = 0; fsno < FILE_SYSTEMS; fsno++)
+		if (fstab[fsno].fsops != NULL) {
+			if (fscnt++ == 0) {
+				sprintf(s, "fsno  devno  blkno  path\n");
+				s += strlen(s);
+			}
+			fs = &(fstab[fsno]);
+			sprintf(s, "%4d    ", fsno);
+			s += 8;
 
-	    if (fs->devno < 0)
-		sprintf(s0, "  -      -  ");
-	    else
-		sprintf(s0, "%3d  %5d  ", fs->devno, (u_int) fs->blkno);
-	    strcat(s, s0);
-	    s += strlen(s0);
+			if (fs->devno < 0)
+				sprintf(s0, "  -      -  ");
+			else
+				sprintf(s0, "%3d  %5d  ", fs->devno,
+					(u_int) fs->blkno);
+			strcat(s, s0);
+			s += strlen(s0);
 
-	    sprintf(s0, "%s\n", fs->path);
-	    strcat(s, s0);
-	    s += strlen(s0);
-	}
+			sprintf(s0, "%s\n", fs->path);
+			strcat(s, s0);
+			s += strlen(s0);
+		}
 }

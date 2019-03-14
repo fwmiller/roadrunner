@@ -246,7 +246,7 @@ struct multiboot_tag_mmap
   multiboot_uint32_t size;
   multiboot_uint32_t entry_size;
   multiboot_uint32_t entry_version;
-  struct multiboot_mmap_entry entries[0];  
+  struct multiboot_mmap_entry entries[0];
 };
 
 struct multiboot_vbe_info_block
@@ -390,7 +390,7 @@ struct multiboot_tag_efi_mmap
   multiboot_uint32_t descr_size;
   multiboot_uint32_t descr_vers;
   multiboot_uint8_t efi_mmap[0];
-}; 
+};
 
 struct multiboot_tag_efi32_ih
 {

@@ -26,84 +26,79 @@
 #include <stdlib.h>
 #include <sys/buf.h>
 
-void
-binitq(bufq_t q)
+void binitq(bufq_t q)
 {
-    if (q == NULL)
-	return;
+	if (q == NULL)
+		return;
 
-    q->len = 0;
-    q->h = q->t = NULL;
+	q->len = 0;
+	q->h = q->t = NULL;
 }
 
-int
-blenq(bufq_t q)
+int blenq(bufq_t q)
 {
-    if (q == NULL)
-	return 0;
+	if (q == NULL)
+		return 0;
 
-    return q->len;
+	return q->len;
 }
 
-void
-benq(buf_t b, bufq_t q)
+void benq(buf_t b, bufq_t q)
 {
-    if (q == NULL)
-	return;
+	if (q == NULL)
+		return;
 
-    if (q->t == NULL)
-	q->h = q->t = b;
-    else {
-	q->t->next = b;
-	b->prev = q->t;
-	q->t = b;
-    }
-    q->len++;
-}
-
-buf_t
-bdeq(bufq_t q)
-{
-    buf_t b;
-
-    if (q == NULL || q->h == NULL)
-	return NULL;
-
-    b = q->h;
-    q->h = b->next;
-    if (q->h == NULL)
-	q->t = NULL;
-    else
-	q->h->prev = NULL;
-    b->prev = NULL;
-    b->next = NULL;
-    q->len--;
-    return b;
-}
-
-void
-bremq(buf_t b, bufq_t q)
-{
-    buf_t p;
-
-    if (q == NULL)
-	return;
-
-    /* Special case for b at the head of q */
-    if (q->h == b) {
-	bdeq(q);
-	return;
-    }
-    /* b is not at the head of q */
-    for (p = q->h; p->next != NULL; p = p->next)
-	if (p->next == b) {
-	    p->next = b->next;
-	    if (p->next == NULL)
-		q->t = p;
-	    else
-		p->next->prev = p;
-	    b->prev = b->next = NULL;
-	    q->len--;
-	    break;
+	if (q->t == NULL)
+		q->h = q->t = b;
+	else {
+		q->t->next = b;
+		b->prev = q->t;
+		q->t = b;
 	}
+	q->len++;
+}
+
+buf_t bdeq(bufq_t q)
+{
+	buf_t b;
+
+	if (q == NULL || q->h == NULL)
+		return NULL;
+
+	b = q->h;
+	q->h = b->next;
+	if (q->h == NULL)
+		q->t = NULL;
+	else
+		q->h->prev = NULL;
+	b->prev = NULL;
+	b->next = NULL;
+	q->len--;
+	return b;
+}
+
+void bremq(buf_t b, bufq_t q)
+{
+	buf_t p;
+
+	if (q == NULL)
+		return;
+
+	/* Special case for b at the head of q */
+	if (q->h == b) {
+		bdeq(q);
+		return;
+	}
+	/* b is not at the head of q */
+	for (p = q->h; p->next != NULL; p = p->next)
+		if (p->next == b) {
+			p->next = b->next;
+			if (p->next == NULL)
+				q->t = p;
+			else
+				p->next->prev = p;
+			b->prev = b->next = NULL;
+			q->len--;
+			break;
+		}
 }

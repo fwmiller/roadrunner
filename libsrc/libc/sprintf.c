@@ -27,13 +27,12 @@
 
 void print(char *string, int *pos, const char *fmt, va_list args);
 
-int
-sprintf(char *s, const char *fmt, ...)
+int sprintf(char *s, const char *fmt, ...)
 {
-    va_list args;
-    int pos = 0;
+	va_list args;
+	int pos = 0;
 
-    va_start(args, fmt);
-    print(s, &pos, fmt, args);
-    return 0;
+	va_start(args, fmt);
+	print(s, &pos, fmt, args);
+	return 0;
 }

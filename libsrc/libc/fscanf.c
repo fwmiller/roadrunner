@@ -26,8 +26,7 @@
 #include <errno.h>
 #include <stdio.h>
 
-int
-fscanf(FILE * stream, const char *fmt, ...)
+int fscanf(FILE * stream, const char *fmt, ...)
 {
-    return ENOSYS;
+	return ENOSYS;
 }

@@ -29,22 +29,21 @@
 #include <stdlib.h>
 #include <string.h>
 
-FILE *
-fopen(const char *path, const char *mode)
+FILE *fopen(const char *path, const char *mode)
 {
-    int fd, flags = 0;
+	int fd, flags = 0;
 
-    if (strcmp(mode, "r") == 0)
-	flags = O_RDONLY;
-    else if (strcmp(mode, "a") == 0)
-	flags = O_WRONLY | O_CREAT;
-    else if (strcmp(mode, "a+") == 0)
-	flags = O_RDWR | O_CREAT;
+	if (strcmp(mode, "r") == 0)
+		flags = O_RDONLY;
+	else if (strcmp(mode, "a") == 0)
+		flags = O_WRONLY | O_CREAT;
+	else if (strcmp(mode, "a+") == 0)
+		flags = O_RDWR | O_CREAT;
 
-    fd = open(path, flags);
-    if (fd < 0) {
-	errno = fd;
-	return NULL;
-    }
-    return (FILE *) fd;
+	fd = open(path, flags);
+	if (fd < 0) {
+		errno = fd;
+		return NULL;
+	}
+	return (FILE *) fd;
 }

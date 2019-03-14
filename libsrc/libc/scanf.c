@@ -26,8 +26,7 @@
 #include <errno.h>
 #include <stdio.h>
 
-int
-scanf(const char *fmt, ...)
+int scanf(const char *fmt, ...)
 {
-    return ENOSYS;
+	return ENOSYS;
 }

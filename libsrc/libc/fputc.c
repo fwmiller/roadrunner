@@ -26,14 +26,13 @@
 #include <stdio.h>
 #include <unistd.h>
 
-int
-fputc(int c, FILE * stream)
+int fputc(int c, FILE * stream)
 {
-    u_char ch = (u_char) c;
-    int result;
+	u_char ch = (u_char) c;
+	int result;
 
-    result = write((int) stream, &ch, 1);
-    if (result < 0)
-	return EOF;
-    return c;
+	result = write((int)stream, &ch, 1);
+	if (result < 0)
+		return EOF;
+	return c;
 }

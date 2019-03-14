@@ -29,17 +29,16 @@
 #include <sys/config.h>
 #include <sys/utsname.h>
 
-int
-uname(struct utsname *name)
+int uname(struct utsname *name)
 {
-    if (name == NULL)
-	return EINVAL;
+	if (name == NULL)
+		return EINVAL;
 
-    bzero(name, 5 * SYS_NMLN);
-    strcpy(name->sysname, SYSNAME);
-    strcpy(name->nodename, NODENAME);
-    strcpy(name->release, RELEASE);
-    strcpy(name->version, VERSION);
-    strcpy(name->machine, MACHINE);
-    return 0;
+	bzero(name, 5 * SYS_NMLN);
+	strcpy(name->sysname, SYSNAME);
+	strcpy(name->nodename, NODENAME);
+	strcpy(name->release, RELEASE);
+	strcpy(name->version, VERSION);
+	strcpy(name->machine, MACHINE);
+	return 0;
 }

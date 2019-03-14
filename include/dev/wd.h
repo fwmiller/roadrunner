@@ -30,37 +30,37 @@
 
 #include <sys/buf.h>
 
-void wd_bootparams();
-int wd_init();
-int wd_shut();
-int wd_ioctl(int cmd, void *args);
-int wd_read(buf_t * b);
-int wd_write(buf_t * b);
+void wd_bootparams ();
+int wd_init ();
+int wd_shut ();
+int wd_ioctl (int cmd, void *args);
+int wd_read (buf_t * b);
+int wd_write (buf_t * b);
 
-int wd0a_init();
-int wd0a_shut();
-int wd0a_ioctl(int cmd, void *args);
-int wd0a_read(buf_t * b);
-int wd0a_write(buf_t * b);
+int wd0a_init ();
+int wd0a_shut ();
+int wd0a_ioctl (int cmd, void *args);
+int wd0a_read (buf_t * b);
+int wd0a_write (buf_t * b);
 
-int wd0b_init();
-int wd0b_shut();
-int wd0b_ioctl(int cmd, void *args);
-int wd0b_read(buf_t * b);
-int wd0b_write(buf_t * b);
+int wd0b_init ();
+int wd0b_shut ();
+int wd0b_ioctl (int cmd, void *args);
+int wd0b_read (buf_t * b);
+int wd0b_write (buf_t * b);
 
-int wd0c_init();
-int wd0c_shut();
-int wd0c_ioctl(int cmd, void *args);
-int wd0c_read(buf_t * b);
-int wd0c_write(buf_t * b);
+int wd0c_init ();
+int wd0c_shut ();
+int wd0c_ioctl (int cmd, void *args);
+int wd0c_read (buf_t * b);
+int wd0c_write (buf_t * b);
 
-int wd0d_init();
-int wd0d_shut();
-int wd0d_ioctl(int cmd, void *args);
-int wd0d_read(buf_t * b);
-int wd0d_write(buf_t * b);
+int wd0d_init ();
+int wd0d_shut ();
+int wd0d_ioctl (int cmd, void *args);
+int wd0d_read (buf_t * b);
+int wd0d_write (buf_t * b);
 
-#endif				/* _KERNEL */
+#endif /* _KERNEL */
 
 #endif

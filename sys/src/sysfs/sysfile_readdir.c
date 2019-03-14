@@ -34,28 +34,27 @@
  * string[SYSFILE_NAME_LEN]	Name
  */
 struct gmentry {
-    char name[SYSFILE_NAME_LEN];
+	char name[SYSFILE_NAME_LEN];
 } __attribute__ ((packed));
 
 typedef struct gmentry *gmentry_t;
 
-int
-sysfile_readdir(file_t file, char *entry)
+int sysfile_readdir(file_t file, char *entry)
 {
-    gmentry_t gm;
-    int i;
+	gmentry_t gm;
+	int i;
 
-    disable;
+	disable;
 
-    i = (int) file->data;
-    if (i == SYSFILE_NAMES) {
+	i = (int)file->data;
+	if (i == SYSFILE_NAMES) {
+		enable;
+		return EFILEEOF;
+	}
+	gm = (gmentry_t) entry;
+	strcpy(gm->name, sysfs_filenames[i++]);
+	file->data = (void *)i;
+
 	enable;
-	return EFILEEOF;
-    }
-    gm = (gmentry_t) entry;
-    strcpy(gm->name, sysfs_filenames[i++]);
-    file->data = (void *) i;
-
-    enable;
-    return 0;
+	return 0;
 }

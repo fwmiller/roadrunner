@@ -33,75 +33,72 @@
 /* LINE_LENGTH must be greater than width */
 static char cmdline[LINE_LENGTH];
 
-static void
-get_command()
+static void get_command()
 {
-    int tempx = x, tempy = y;
-    int pos;
-    char ch;
+	int tempx = x, tempy = y;
+	int pos;
+	char ch;
 
-    move(height, 0);
-    clrtoeol();
-    addch(':');
+	move(height, 0);
+	clrtoeol();
+	addch(':');
 
-    bzero(cmdline, LINE_LENGTH);
-    for (pos = 0;;) {
-	ch = getchar();
-	if (ch == '\n')
-	    break;
-	if (ch == '\b')
-	    continue;
-	if (pos >= width - 2)
-	    continue;
-	cmdline[pos++] = ch;
-	move(height, pos);
-	addch(ch);
-    }
-    y = tempy;
-    x = tempx;
-    move(y, x);
+	bzero(cmdline, LINE_LENGTH);
+	for (pos = 0;;) {
+		ch = getchar();
+		if (ch == '\n')
+			break;
+		if (ch == '\b')
+			continue;
+		if (pos >= width - 2)
+			continue;
+		cmdline[pos++] = ch;
+		move(height, pos);
+		addch(ch);
+	}
+	y = tempy;
+	x = tempx;
+	move(y, x);
 }
 
-static void
-do_command()
+static void do_command()
 {
-    char arg[LINE_LENGTH];
-    int pos = 0;
-
-    bzero(arg, LINE_LENGTH);
-    nextarg(cmdline, &pos, arg);
-
-    if (arg[0] == 'w') {
-	char s[LINE_LENGTH];
-	int result;
+	char arg[LINE_LENGTH];
+	int pos = 0;
 
 	bzero(arg, LINE_LENGTH);
 	nextarg(cmdline, &pos, arg);
 
-	if (file_exists(arg)) {
-	    bzero(s, LINE_LENGTH);
-	    sprintf(s, "file exists");
-	    message(s);
-	    return;
-	}
-	bzero(s, LINE_LENGTH);
-	sprintf(s, "write %s", arg);
-	message(s);
+	if (arg[0] == 'w') {
+		char s[LINE_LENGTH];
+		int result;
 
-	result = file_save(arg);
-	if (result < 0) {
-	    bzero(s, LINE_LENGTH);
-	    sprintf(s, "write failed (%s)", strerror(result));
-	    message(s);
+		bzero(arg, LINE_LENGTH);
+		nextarg(cmdline, &pos, arg);
+
+		if (file_exists(arg)) {
+			bzero(s, LINE_LENGTH);
+			sprintf(s, "file exists");
+			message(s);
+			return;
+		}
+		bzero(s, LINE_LENGTH);
+		sprintf(s, "write %s", arg);
+		message(s);
+
+		result = file_save(arg);
+		if (result < 0) {
+			bzero(s, LINE_LENGTH);
+			sprintf(s, "write failed (%s)", strerror(result));
+			message(s);
+		}
+		return;
 	}
-	return;
-    }
-    message("illegal command");
+	message("illegal command");
 }
 
-void
-command()
+void command()
 {
-    get_command();
-    do_command();
+	get_command();
+	do_command();
 }

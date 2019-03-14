@@ -25,8 +25,7 @@
 
 #include <fs/sysfs.h>
 
-int
-sysfs_mount(fs_t fs)
+int sysfs_mount(fs_t fs)
 {
-    return 0;
+	return 0;
 }

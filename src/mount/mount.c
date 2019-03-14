@@ -30,25 +30,24 @@
 #include <string.h>
 #include <unistd.h>
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
-    int result;
+	int result;
 
-    if (argc < 3) {
-	printf("missing arguments\n");
-	return EINVAL;
-    }
-    if (argc > 3) {
-	printf("too many arguments\n");
-	return EINVAL;
-    }
+	if (argc < 3) {
+		printf("missing arguments\n");
+		return EINVAL;
+	}
+	if (argc > 3) {
+		printf("too many arguments\n");
+		return EINVAL;
+	}
 #if _DEBUG
-    printf("mount %s on device %s\n", argv[2], argv[1]);
+	printf("mount %s on device %s\n", argv[2], argv[1]);
 #endif
-    result = mount(NULL, argv[2], argv[1]);
-    if (result < 0)
-	printf("could not mount device %s as %s (%s)\n",
-	       argv[1], argv[2], strerror(result));
-    return result;
+	result = mount(NULL, argv[2], argv[1]);
+	if (result < 0)
+		printf("could not mount device %s as %s (%s)\n",
+		       argv[1], argv[2], strerror(result));
+	return result;
 }

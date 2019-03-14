@@ -25,9 +25,8 @@
 
 #include <string.h>
 
-char *
-strcat(char *s, const char *append)
+char *strcat(char *s, const char *append)
 {
-    strcpy(s + strlen(s), append);
-    return s;
+	strcpy(s + strlen(s), append);
+	return s;
 }

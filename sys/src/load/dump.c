@@ -29,159 +29,156 @@
 
 #define SHDR "sect offset   size     addr     align    entsize  name"
 
-void
-dump_ehdr(sections_t s)
+void dump_ehdr(sections_t s)
 {
-    Elf32_Ehdr *ehdr = s->ehdr;
+	Elf32_Ehdr *ehdr = s->ehdr;
 
-    kprintf("dump_ehdr: shoff %08x shentsize %d shnum %d shstrndx %d\n",
-	    ehdr->e_shoff, ehdr->e_shentsize,
-	    ehdr->e_shnum, ehdr->e_shstrndx);
+	kprintf("dump_ehdr: shoff %08x shentsize %d shnum %d shstrndx %d\n",
+		ehdr->e_shoff, ehdr->e_shentsize,
+		ehdr->e_shnum, ehdr->e_shstrndx);
 }
 
-void
-dump_shdrtab(sections_t s)
+void dump_shdrtab(sections_t s)
 {
-    Elf32_Ehdr *ehdr = s->ehdr;
-    Elf32_Shdr *shdrtab = s->shdrtab;
-    char *shstrtab = s->shstrtab;
-    Elf32_Shdr *shdr;
-    int i;
+	Elf32_Ehdr *ehdr = s->ehdr;
+	Elf32_Shdr *shdrtab = s->shdrtab;
+	char *shstrtab = s->shstrtab;
+	Elf32_Shdr *shdr;
+	int i;
 
-    kprintf("%s\n", SHDR);
-    for (i = 0; i < ehdr->e_shnum; i++) {
-	shdr = &(shdrtab[i]);
-	kprintf("%4d %08x %08x %08x %08x %08x %s\n",
-		i, (u_int) shdr->sh_offset, (u_int) shdr->sh_size,
-		(u_int) shdr->sh_addr, (u_int) shdr->sh_addralign,
-		(u_int) shdr->sh_entsize, shstrtab + shdr->sh_name);
-    }
+	kprintf("%s\n", SHDR);
+	for (i = 0; i < ehdr->e_shnum; i++) {
+		shdr = &(shdrtab[i]);
+		kprintf("%4d %08x %08x %08x %08x %08x %s\n",
+			i, (u_int) shdr->sh_offset, (u_int) shdr->sh_size,
+			(u_int) shdr->sh_addr, (u_int) shdr->sh_addralign,
+			(u_int) shdr->sh_entsize, shstrtab + shdr->sh_name);
+	}
 }
 
-void
-dump_sym(sections_t s, Elf32_Sym * sym)
+void dump_sym(sections_t s, Elf32_Sym * sym)
 {
-    Elf32_Shdr *shdrtab = s->shdrtab;
-    char *shstrtab = s->shstrtab;
-    char *strtab = s->strtab;
+	Elf32_Shdr *shdrtab = s->shdrtab;
+	char *shstrtab = s->shstrtab;
+	char *strtab = s->strtab;
 
-    if (sym->st_name > 0) {
+	if (sym->st_name > 0) {
 
-	kprintf("%08x ", (u_int) sym->st_value);
+		kprintf("%08x ", (u_int) sym->st_value);
 
-	switch (ELF32_ST_BIND(sym->st_info)) {
-	case STB_LOCAL:
-	    kprintf("l");
-	    break;
-	case STB_GLOBAL:
-	    kprintf("g");
-	    break;
-	case STB_WEAK:
-	    kprintf("w");
-	    break;
-	default:
-	    kprintf(" ");
+		switch (ELF32_ST_BIND(sym->st_info)) {
+		case STB_LOCAL:
+			kprintf("l");
+			break;
+		case STB_GLOBAL:
+			kprintf("g");
+			break;
+		case STB_WEAK:
+			kprintf("w");
+			break;
+		default:
+			kprintf(" ");
+		}
+
+		kprintf("  ");
+
+		switch (ELF32_ST_TYPE(sym->st_info)) {
+		case STT_OBJECT:
+			kprintf("d");
+			break;
+		case STT_FUNC:
+			kprintf("f");
+			break;
+		case STT_SECTION:
+			kprintf("s");
+			break;
+		case STT_FILE:
+			kprintf("F");
+			break;
+		default:
+			kprintf(" ");
+		}
+
+		kprintf(" ");
+
+		switch (sym->st_shndx) {
+		case SHN_UNDEF:
+			kprintf("UNDEF");
+			break;
+		case SHN_ABS:
+			kprintf("*ABS*");
+			break;
+		case SHN_COMMON:
+			kprintf("*COM*");
+			break;
+		default:
+			kprintf("%s",
+				shstrtab + shdrtab[sym->st_shndx].sh_name);
+		}
+
+		kprintf("  %s\n", strtab + sym->st_name);
 	}
-
-	kprintf("  ");
-
-	switch (ELF32_ST_TYPE(sym->st_info)) {
-	case STT_OBJECT:
-	    kprintf("d");
-	    break;
-	case STT_FUNC:
-	    kprintf("f");
-	    break;
-	case STT_SECTION:
-	    kprintf("s");
-	    break;
-	case STT_FILE:
-	    kprintf("F");
-	    break;
-	default:
-	    kprintf(" ");
-	}
-
-	kprintf(" ");
-
-	switch (sym->st_shndx) {
-	case SHN_UNDEF:
-	    kprintf("UNDEF");
-	    break;
-	case SHN_ABS:
-	    kprintf("*ABS*");
-	    break;
-	case SHN_COMMON:
-	    kprintf("*COM*");
-	    break;
-	default:
-	    kprintf("%s", shstrtab + shdrtab[sym->st_shndx].sh_name);
-	}
-
-	kprintf("  %s\n", strtab + sym->st_name);
-    }
 }
 
-void
-dump_symtab(sections_t s)
+void dump_symtab(sections_t s)
 {
-    Elf32_Sym *symtab = s->symtab;
-    int symtabentries = s->symtabentries;
-    int i;
+	Elf32_Sym *symtab = s->symtab;
+	int symtabentries = s->symtabentries;
+	int i;
 
-    for (i = 0; i < symtabentries; i++)
-	dump_sym(s, &(symtab[i]));
+	for (i = 0; i < symtabentries; i++)
+		dump_sym(s, &(symtab[i]));
 }
 
-void
-dump_reltab(sections_t s, Elf32_Rel * reltab, int entries)
+void dump_reltab(sections_t s, Elf32_Rel * reltab, int entries)
 {
-    Elf32_Sym *symtab = s->symtab;
-    char *strtab = s->strtab;
-    Elf32_Rel *rel;
-    int i;
+	Elf32_Sym *symtab = s->symtab;
+	char *strtab = s->strtab;
+	Elf32_Rel *rel;
+	int i;
 
-    for (i = 0; i < entries; i++) {
-	rel = &(reltab[i]);
+	for (i = 0; i < entries; i++) {
+		rel = &(reltab[i]);
 
-	kprintf("%08x  ", rel->r_offset);
+		kprintf("%08x  ", rel->r_offset);
 
-	switch (ELF32_R_TYPE(rel->r_info)) {
-	case R_386_32:
-	    kprintf("R_386_32      ");
-	    break;
-	case R_386_PC32:
-	    kprintf("R_386_PC32    ");
-	    break;
-	case R_386_GOT32:
-	    kprintf("R_386_GOT32   ");
-	    break;
-	case R_386_PLT32:
-	    kprintf("R_386_PLT32   ");
-	    break;
-	case R_386_COPY:
-	    kprintf("R_386_COPY    ");
-	    break;
-	case R_386_GLOB_DAT:
-	    kprintf("R_386_GLOB_DAT");
-	    break;
-	case R_386_JMP_SLOT:
-	    kprintf("R_386_JMP_SLOT");
-	    break;
-	case R_386_RELATIVE:
-	    kprintf("R_386_RELATIVE");
-	    break;
-	case R_386_GOTOFF:
-	    kprintf("R_386_GOTOFF  ");
-	    break;
-	case R_386_GOTPC:
-	    kprintf("R_386_GOTPC   ");
-	    break;
-	default:
-	    kprintf("%02x            ", (u_int) ELF32_R_TYPE(rel->r_info));
+		switch (ELF32_R_TYPE(rel->r_info)) {
+		case R_386_32:
+			kprintf("R_386_32      ");
+			break;
+		case R_386_PC32:
+			kprintf("R_386_PC32    ");
+			break;
+		case R_386_GOT32:
+			kprintf("R_386_GOT32   ");
+			break;
+		case R_386_PLT32:
+			kprintf("R_386_PLT32   ");
+			break;
+		case R_386_COPY:
+			kprintf("R_386_COPY    ");
+			break;
+		case R_386_GLOB_DAT:
+			kprintf("R_386_GLOB_DAT");
+			break;
+		case R_386_JMP_SLOT:
+			kprintf("R_386_JMP_SLOT");
+			break;
+		case R_386_RELATIVE:
+			kprintf("R_386_RELATIVE");
+			break;
+		case R_386_GOTOFF:
+			kprintf("R_386_GOTOFF  ");
+			break;
+		case R_386_GOTPC:
+			kprintf("R_386_GOTPC   ");
+			break;
+		default:
+			kprintf("%02x            ",
+				(u_int) ELF32_R_TYPE(rel->r_info));
+		}
+
+		kprintf("  %s\n",
+			strtab + symtab[ELF32_R_SYM(rel->r_info)].st_name);
 	}
-
-	kprintf("  %s\n",
-		strtab + symtab[ELF32_R_SYM(rel->r_info)].st_name);
-    }
 }

@@ -26,7 +26,8 @@
 #ifndef __LEX_H
 #define __LEX_H
 
-typedef struct lex {
+typedef struct lex
+{
 #define LEX_NULL	0
 #define LEX_CR		1
 #define LEX_LF		2
@@ -38,12 +39,12 @@ typedef struct lex {
 #define LEX_QUESTION	8
 #define LEX_SLASH	9
 #define LEX_PERIOD	10
-    int type;
-    int val;
-    char s[80];
+  int type;
+  int val;
+  char s[80];
 } *lex_t;
 
-void nextarg(char *ln, int *pos, char *arg);
-void nextlex(char *ln, int *pos, lex_t l);
+void nextarg (char *ln, int *pos, char *arg);
+void nextlex (char *ln, int *pos, lex_t l);
 
 #endif

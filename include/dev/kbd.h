@@ -28,12 +28,12 @@
 
 #if _KERNEL
 
-void kbd_flush();
-int kbd_init(void *dev);
-int kbd_shut(void *dev);
-int kbd_ioctl(void *dev, int cmd, void *args);
-int kbd_get(void *dev, int *c);
+void kbd_flush ();
+int kbd_init (void *dev);
+int kbd_shut (void *dev);
+int kbd_ioctl (void *dev, int cmd, void *args);
+int kbd_get (void *dev, int *c);
 
-#endif				/* _KERNEL */
+#endif /* _KERNEL */
 
 #endif

@@ -22,23 +22,24 @@
 #include <sys/time.h>
 
 static const char day_name[7][4] = {
-    "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
+  "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
 };
+
 static const char mon_name[12][4] = {
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
 };
 
 void
-tm2str(const struct tm *tm, char *s)
+tm2str (const struct tm *tm, char *s)
 {
-    if (tm == NULL || s == NULL)
-	return;
+  if (tm == NULL || s == NULL)
+    return;
 
-    sprintf(s,
-	    "%s %s %2d %2d:%02d:%02d %d\n",
-	    day_name[tm->tm_wday],
-	    mon_name[tm->tm_mon],
-	    tm->tm_mday,
-	    tm->tm_hour, tm->tm_min, tm->tm_sec, tm->tm_year + 1900);
+  sprintf (s,
+	   "%s %s %2d %2d:%02d:%02d %d\n",
+	   day_name[tm->tm_wday],
+	   mon_name[tm->tm_mon],
+	   tm->tm_mday,
+	   tm->tm_hour, tm->tm_min, tm->tm_sec, tm->tm_year + 1900);
 }

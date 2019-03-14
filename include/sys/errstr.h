@@ -24,60 +24,60 @@
  */
 
 char *errstr[] = {
-    "success",
-    "failure",			       /* EFAIL */
-    "argument list too long",	       /* E2BIG */
-    "permission denied",	       /* EACCES */
-    "resource temporarily unavailable",	/* EAGAIN */
-    "bad file descriptor",	       /* EBADF */
-    "device busy",		       /* EBUSY */
-    "no child process",		       /* ECHILD */
-    "resource deadlock avoided",       /* EDEADLK */
-    "numerical arg out of domain",     /* EDOM */
-    "file exists",		       /* EEXIST */
-    "bad address",		       /* EFAULT */
-    "file too large",		       /* EFBIG */
-    "interrupted system call",	       /* EINTR */
-    "invalid argument",		       /* EINVAL */
-    "input/output error",	       /* EIO */
-    "is a directory",		       /* EISDIR */
-    "too many open files",	       /* EMFILE */
-    "too many links",		       /* EMLINK */
-    "file name too long",	       /* ENAMETOOLONG */
-    "too many open files in system",   /* ENFILE */
-    "operation not supported by device",	/* ENODEV */
-    "no such file or directory",       /* ENOENT */
-    "exec format error",	       /* ENOEXEC */
-    "no locks available",	       /* ENOLCK */
-    "cannot allocate memory",	       /* ENOMEM */
-    "no space left on device",	       /* ENOSPC */
-    "function not implemented",	       /* ENOSYS */
-    "not a directory",		       /* ENOTDIR */
-    "directory not empty",	       /* ENOTEMPTY */
-    "inappropriate ioctl for device",  /* ENOTTY */
-    "device not configured",	       /* ENXIO */
-    "operation not permitted",	       /* EPERM */
-    "broken pipe",		       /* EPIPE */
-    "result too large",		       /* ERANGE */
-    "read-only file system",	       /* EROFS */
-    "illegal seek",		       /* ESPIPE */
-    "no such process",		       /* ESRCH */
-    "cross-device link",	       /* EXDEV */
-    "protocol not supported",	       /* EPROTONOSUPPORT */
-    "connection refused",	       /* ECONNREFUSED */
-    "not connected",		       /* ENOTCONN */
-    "not a socket",		       /* ENOTSOCK */
-    "operation timed out",	       /* ETIMEDOUT */
-    "buffer in use",		       /* EBUFINUSE */
-    "missing file system type",	       /* ENOFSTYPE */
-    "file system already mounted",     /* EFSMOUNTED */
-    "duplicate kmap entry",	       /* EKMAPDUP */
-    "duplicate page table entry",      /* EPTDUP */
-    "corrupt page table entry",	       /* EPTCORRUPT */
-    "attempt to read past eof",	       /* EFILEEOF */
-    "bad cluster address",	       /* EBADCLUST */
-    "not a valid file system",	       /* EBADFS */
-    "device read error",	       /* EDEVREAD */
-    "device write error",	       /* EDEVWRITE */
-    "missing protocol control block",  /* ENOPCB */
+  "success",
+  "failure",			/* EFAIL */
+  "argument list too long",	/* E2BIG */
+  "permission denied",		/* EACCES */
+  "resource temporarily unavailable",	/* EAGAIN */
+  "bad file descriptor",	/* EBADF */
+  "device busy",		/* EBUSY */
+  "no child process",		/* ECHILD */
+  "resource deadlock avoided",	/* EDEADLK */
+  "numerical arg out of domain",	/* EDOM */
+  "file exists",		/* EEXIST */
+  "bad address",		/* EFAULT */
+  "file too large",		/* EFBIG */
+  "interrupted system call",	/* EINTR */
+  "invalid argument",		/* EINVAL */
+  "input/output error",		/* EIO */
+  "is a directory",		/* EISDIR */
+  "too many open files",	/* EMFILE */
+  "too many links",		/* EMLINK */
+  "file name too long",		/* ENAMETOOLONG */
+  "too many open files in system",	/* ENFILE */
+  "operation not supported by device",	/* ENODEV */
+  "no such file or directory",	/* ENOENT */
+  "exec format error",		/* ENOEXEC */
+  "no locks available",		/* ENOLCK */
+  "cannot allocate memory",	/* ENOMEM */
+  "no space left on device",	/* ENOSPC */
+  "function not implemented",	/* ENOSYS */
+  "not a directory",		/* ENOTDIR */
+  "directory not empty",	/* ENOTEMPTY */
+  "inappropriate ioctl for device",	/* ENOTTY */
+  "device not configured",	/* ENXIO */
+  "operation not permitted",	/* EPERM */
+  "broken pipe",		/* EPIPE */
+  "result too large",		/* ERANGE */
+  "read-only file system",	/* EROFS */
+  "illegal seek",		/* ESPIPE */
+  "no such process",		/* ESRCH */
+  "cross-device link",		/* EXDEV */
+  "protocol not supported",	/* EPROTONOSUPPORT */
+  "connection refused",		/* ECONNREFUSED */
+  "not connected",		/* ENOTCONN */
+  "not a socket",		/* ENOTSOCK */
+  "operation timed out",	/* ETIMEDOUT */
+  "buffer in use",		/* EBUFINUSE */
+  "missing file system type",	/* ENOFSTYPE */
+  "file system already mounted",	/* EFSMOUNTED */
+  "duplicate kmap entry",	/* EKMAPDUP */
+  "duplicate page table entry",	/* EPTDUP */
+  "corrupt page table entry",	/* EPTCORRUPT */
+  "attempt to read past eof",	/* EFILEEOF */
+  "bad cluster address",	/* EBADCLUST */
+  "not a valid file system",	/* EBADFS */
+  "device read error",		/* EDEVREAD */
+  "device write error",		/* EDEVWRITE */
+  "missing protocol control block",	/* ENOPCB */
 };

@@ -30,28 +30,27 @@
 #include <string.h>
 #include <unistd.h>
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
-    int fd, result;
+	int fd, result;
 
-    if (argc != 2)
-	return EINVAL;
+	if (argc != 2)
+		return EINVAL;
 
-    fd = open(argv[1], O_RDONLY);
-    if (fd >= 0) {
-	printf("%s exists\n", argv[1]);
+	fd = open(argv[1], O_RDONLY);
+	if (fd >= 0) {
+		printf("%s exists\n", argv[1]);
+		close(fd);
+		return EINVAL;
+	}
+
+	result = open(argv[1], O_WRONLY | O_CREAT | O_MKDIR);
+	if (result < 0) {
+		printf("could not create directory %s (%s)\n",
+		       argv[1], strerror(result));
+		return result;
+	}
+	fd = result;
 	close(fd);
-	return EINVAL;
-    }
-
-    result = open(argv[1], O_WRONLY | O_CREAT | O_MKDIR);
-    if (result < 0) {
-	printf("could not create directory %s (%s)\n",
-	       argv[1], strerror(result));
-	return result;
-    }
-    fd = result;
-    close(fd);
-    return 0;
+	return 0;
 }

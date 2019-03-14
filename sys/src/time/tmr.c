@@ -31,36 +31,32 @@
 
 #define DIV16(val) ((val >> 16) > 0 ? 0xffff : val)
 
-u_int
-tmrcount(u_int freq)
+u_int tmrcount(u_int freq)
 {
-    if (freq == 0)
-	return (u_int) (I8254_CLK / CLOCK);
-    return (u_int) DIV16(I8254_CLK / freq);
+	if (freq == 0)
+		return (u_int) (I8254_CLK / CLOCK);
+	return (u_int) DIV16(I8254_CLK / freq);
 }
 
-u_int
-tmrtick()
+u_int tmrtick()
 {
-    return tick;
+	return tick;
 }
 
-void
-tmrstart(u_int count)
+void tmrstart(u_int count)
 {
-    outb(I8254_CTRL, I8254_CNTR_0_START);
-    outb(I8254_CNTR_0, count);
-    outb(I8254_CNTR_0, count >> 8);
+	outb(I8254_CTRL, I8254_CNTR_0_START);
+	outb(I8254_CNTR_0, count);
+	outb(I8254_CNTR_0, count >> 8);
 }
 
-u_int
-tmrread()
+u_int tmrread()
 {
-    u_int count = 0;
+	u_int count = 0;
 
-    outb(I8254_CTRL, I8254_CNTR_0_LATCH);
-    count = inb(I8254_CNTR_0);
-    count <<= 8;
-    count = inb(I8254_CNTR_0);
-    return count;
+	outb(I8254_CTRL, I8254_CNTR_0_LATCH);
+	count = inb(I8254_CNTR_0);
+	count <<= 8;
+	count = inb(I8254_CNTR_0);
+	return count;
 }

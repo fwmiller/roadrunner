@@ -28,12 +28,11 @@
 #include <stdlib.h>
 #include <sys/ioctl.h>
 
-char
-inch()
+char inch()
 {
-    char ch;
+	char ch;
 
-    ioctl(STDOUT, GET_CURSOR_CHAR, &ch);
-    return ch;
-    return 0;
+	ioctl(STDOUT, GET_CURSOR_CHAR, &ch);
+	return ch;
+	return 0;
 }

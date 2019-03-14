@@ -28,42 +28,41 @@
 #include <stdio.h>
 #include <string.h>
 
-int
-rrfile_read(file_t file)
+int rrfile_read(file_t file)
 {
-    rrfs_t rrfs = (rrfs_t) file->fs->data;
-    rrfile_t rrfile = (rrfile_t) file->data;
+	rrfs_t rrfs = (rrfs_t) file->fs->data;
+	rrfile_t rrfile = (rrfile_t) file->data;
 
 #if _DEBUG
-    u_long prevclust;
+	u_long prevclust;
 #endif
-    int result;
+	int result;
 
-    if (file->flags & F_EOF)
-	return EINVAL;
+	if (file->flags & F_EOF)
+		return EINVAL;
 
 #if _DEBUG
-    prevclust = rrfile->currclust;
+	prevclust = rrfile->currclust;
 #endif
-    rrfile->currclust = rrfs_nextclust(file->fs, rrfile->currclust);
-    if (rrfile->currclust >= rrfs->mbr->params.clusters) {
+	rrfile->currclust = rrfs_nextclust(file->fs, rrfile->currclust);
+	if (rrfile->currclust >= rrfs->mbr->params.clusters) {
 #if _DEBUG
-	kprintf("rrfile_read: bad cluster %u prev %u\n",
-		rrfile->currclust, prevclust);
+		kprintf("rrfile_read: bad cluster %u prev %u\n",
+			rrfile->currclust, prevclust);
 #endif
-	file->flags |= F_ERR;
-	return EBADCLUST;
-    }
+		file->flags |= F_ERR;
+		return EBADCLUST;
+	}
 
-    /* Assume fs layer has provided a buffer */
+	/* Assume fs layer has provided a buffer */
 
-    result = rrfs_readclust(file, rrfile->currclust, &(file->buf));
-    if (result < 0) {
+	result = rrfs_readclust(file, rrfile->currclust, &(file->buf));
+	if (result < 0) {
 #if _DEBUG
-	kprintf("rrfile_read: read cluster failed (%s)\n",
-		strerror(result));
+		kprintf("rrfile_read: read cluster failed (%s)\n",
+			strerror(result));
 #endif
-	file->flags |= F_ERR;
-    }
-    return result;
+		file->flags |= F_ERR;
+	}
+	return result;
 }

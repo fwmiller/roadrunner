@@ -26,8 +26,7 @@
 #include <errno.h>
 #include <fs/rrfs.h>
 
-int
-rrfs_shut()
+int rrfs_shut()
 {
-    return ENOSYS;
+	return ENOSYS;
 }

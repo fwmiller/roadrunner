@@ -29,55 +29,54 @@
 #include <string.h>
 #include <sys/mem.h>
 
-int
-rrfile_attr(file_t file, attrlist_t l)
+int rrfile_attr(file_t file, attrlist_t l)
 {
-    int i, size;
+	int i, size;
 
-    l->n = RRFS_FILE_ATTRIBUTES;
-    l->key = RRFS_FILE_KEY_ATTR;
+	l->n = RRFS_FILE_ATTRIBUTES;
+	l->key = RRFS_FILE_KEY_ATTR;
 
-    size = l->n * (sizeof(attr_t) + sizeof(struct attr));
+	size = l->n * (sizeof(attr_t) + sizeof(struct attr));
 
-    if ((l->attr = (attr_t *) malloc(size)) == NULL)
-	return ENOMEM;
-    bzero(l->attr, size);
+	if ((l->attr = (attr_t *) malloc(size)) == NULL)
+		return ENOMEM;
+	bzero(l->attr, size);
 
-    for (i = 0; i < RRFS_FILE_ATTRIBUTES; i++) {
-	l->attr[i] = (attr_t) ((u_long) l->attr +
-			       (l->n * sizeof(attr_t)) +
-			       (i * sizeof(struct attr)));
+	for (i = 0; i < RRFS_FILE_ATTRIBUTES; i++) {
+		l->attr[i] = (attr_t) ((u_long) l->attr +
+				       (l->n * sizeof(attr_t)) +
+				       (i * sizeof(struct attr)));
 
-	switch (i) {
-	case 0:
-	    l->attr[i]->type = ATTR_STRING;
-	    l->attr[i]->len = 4;
-	    strcpy(l->attr[i]->name, "attributes");
-	    break;
-	case 1:
-	    l->attr[i]->type = ATTR_UINT;
-	    l->attr[i]->len = sizeof(u_int);
-	    strcpy(l->attr[i]->name, "size");
-	    break;
-	case 2:
-	    l->attr[i]->type = ATTR_STRING;
-	    l->attr[i]->len = 22;
-	    strcpy(l->attr[i]->name, "time");
-	    break;
-	case 3:
-	    l->attr[i]->type = ATTR_STRING;
-	    l->attr[i]->len = 48;
-	    strcpy(l->attr[i]->name, "name");
-	    break;
+		switch (i) {
+		case 0:
+			l->attr[i]->type = ATTR_STRING;
+			l->attr[i]->len = 4;
+			strcpy(l->attr[i]->name, "attributes");
+			break;
+		case 1:
+			l->attr[i]->type = ATTR_UINT;
+			l->attr[i]->len = sizeof(u_int);
+			strcpy(l->attr[i]->name, "size");
+			break;
+		case 2:
+			l->attr[i]->type = ATTR_STRING;
+			l->attr[i]->len = 22;
+			strcpy(l->attr[i]->name, "time");
+			break;
+		case 3:
+			l->attr[i]->type = ATTR_STRING;
+			l->attr[i]->len = 48;
+			strcpy(l->attr[i]->name, "name");
+			break;
 
-	//default:
+			//default:
+		}
 	}
-    }
 #if _DEBUG
-    for (size = 0, i = 0; i < RRFS_FILE_ATTRIBUTES; i++)
-	size += l->attr[i]->len;
-    kprintf("rrfile_attr: n %d size %d\n", l->n, size);
+	for (size = 0, i = 0; i < RRFS_FILE_ATTRIBUTES; i++)
+		size += l->attr[i]->len;
+	kprintf("rrfile_attr: n %d size %d\n", l->n, size);
 #endif
 
-    return 0;
+	return 0;
 }

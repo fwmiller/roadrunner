@@ -30,56 +30,54 @@
 #include <unistd.h>
 #include "vi.h"
 
-int
-file_exists(char *path)
+int file_exists(char *path)
 {
-    int fd;
+	int fd;
 
-    fd = open(path, O_RDONLY);
-    if (fd < 0)
+	fd = open(path, O_RDONLY);
+	if (fd < 0)
+		return 0;
+	close(fd);
+	return 1;
+}
+
+int file_open(char *path)
+{
+	char fbuf[SECTOR_SIZE];
+	int fd, i, len;
+
+	fd = open(path, O_RDONLY);
+	if (fd < 0)
+		return fd;
+
+	for (;;) {
+		len = read(fd, fbuf, SECTOR_SIZE);
+		if (len <= 0)
+			break;
+		for (i = 0; i < len; i++)
+			if (isprint(fbuf[i]) || fbuf[i] == ' '
+			    || fbuf[i] == '\n') {
+				incr_buflen();
+				buf[bufpos++] = fbuf[i];
+			}
+	}
+	close(fd);
+	bufpos = 0;
+
+	if (len < 0)
+		return len;
 	return 0;
-    close(fd);
-    return 1;
 }
 
-int
-file_open(char *path)
+int file_save(char *path)
 {
-    char fbuf[SECTOR_SIZE];
-    int fd, i, len;
+	int fd, result;
 
-    fd = open(path, O_RDONLY);
-    if (fd < 0)
-	return fd;
+	fd = open(path, O_WRONLY | O_CREAT);
+	if (fd < 0)
+		return fd;
 
-    for (;;) {
-	len = read(fd, fbuf, SECTOR_SIZE);
-	if (len <= 0)
-	    break;
-	for (i = 0; i < len; i++)
-	    if (isprint(fbuf[i]) || fbuf[i] == ' ' || fbuf[i] == '\n') {
-		incr_buflen();
-		buf[bufpos++] = fbuf[i];
-	    }
-    }
-    close(fd);
-    bufpos = 0;
-
-    if (len < 0)
-	return len;
-    return 0;
-}
-
-int
-file_save(char *path)
-{
-    int fd, result;
-
-    fd = open(path, O_WRONLY | O_CREAT);
-    if (fd < 0)
-	return fd;
-
-    result = write(fd, buf, buflen);
-    close(fd);
-    return result;
+	result = write(fd, buf, buflen);
+	close(fd);
+	return result;
 }

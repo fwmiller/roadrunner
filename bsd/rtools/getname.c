@@ -25,23 +25,22 @@
 
 #include <string.h>
 
-void
-getname(char *path, char *name)
+void getname(char *path, char *name)
 {
-    int i, len;
+	int i, len;
 
-    if (strlen(path) == 0 || strcmp(path, "/") == 0) {
-	strcpy(name, "");
-	return;
-    }
-    len = strlen(path);
-    if (path[len - 1] == '/')
-	len--;
-    i = len - 1;
+	if (strlen(path) == 0 || strcmp(path, "/") == 0) {
+		strcpy(name, "");
+		return;
+	}
+	len = strlen(path);
+	if (path[len - 1] == '/')
+		len--;
+	i = len - 1;
 
-    for (i = len - 1; i >= 0; i--)
-	if (path[i] == '/')
-	    break;
-    strncpy(name, path + i + 1, len - i - 1);
-    name[len - i - 1] = '\0';
+	for (i = len - 1; i >= 0; i--)
+		if (path[i] == '/')
+			break;
+	strncpy(name, path + i + 1, len - i - 1);
+	name[len - i - 1] = '\0';
 }

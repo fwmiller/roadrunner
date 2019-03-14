@@ -30,12 +30,12 @@
 
 #include <sys/proc.h>
 
-void initq(queue_t q);
-proc_t firstq(queue_t q);
-proc_t remfirstq(queue_t q);
-void remq(proc_t p, queue_t q);
-void insq(proc_t p, queue_t q);
+void initq (queue_t q);
+proc_t firstq (queue_t q);
+proc_t remfirstq (queue_t q);
+void remq (proc_t p, queue_t q);
+void insq (proc_t p, queue_t q);
 
-#endif				/* _KERNEL */
+#endif /* _KERNEL */
 
 #endif

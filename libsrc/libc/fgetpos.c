@@ -27,11 +27,10 @@
 #include <stdio.h>
 #include <sys/ioctl.h>
 
-int
-fgetpos(FILE * stream, fpos_t * ptr)
+int fgetpos(FILE * stream, fpos_t * ptr)
 {
-    errno = ioctl((int) stream, GET_FILE_POS, &ptr);
-    if (errno < 0)
-	return (-1);
-    return 0;
+	errno = ioctl((int)stream, GET_FILE_POS, &ptr);
+	if (errno < 0)
+		return (-1);
+	return 0;
 }

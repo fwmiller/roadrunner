@@ -47,11 +47,11 @@
 extern struct queue eventtab[];
 
 #if _KERNEL
-void eventtab_init();
+void eventtab_init ();
 #endif
-int event_inst(int event, proc_t proc);
-int event_raise(int event);
-int event_uninst(int event, proc_t proc);
-int event_wait(int event);
+int event_inst (int event, proc_t proc);
+int event_raise (int event);
+int event_uninst (int event, proc_t proc);
+int event_wait (int event);
 
 #endif

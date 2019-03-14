@@ -28,31 +28,30 @@
 #include <fs/devfs.h>
 #include <sys/intr.h>
 
-int
-devfile_read(file_t file)
+int devfile_read(file_t file)
 {
-    int devno = (int) file->data;
-    dev_t dev;
-    int result;
+	int devno = (int)file->data;
+	dev_t dev;
+	int result;
 
-    /* Assume fs layer has provided a buffer */
+	/* Assume fs layer has provided a buffer */
 
-    disable;
+	disable;
 
-    dev = &(devtab[devno]);
+	dev = &(devtab[devno]);
 
-    if (dev->type == DEV_TYPE_CHAR) {
-	int ch;
+	if (dev->type == DEV_TYPE_CHAR) {
+		int ch;
 
-	enable;
-	ch = 0;
-	result = dev_get(devno, &ch);
-	*(bstart(file->buf)) = (char) ch;
-    } else if (dev->type == DEV_TYPE_BLK) {
-	enable;
-	result = dev_read(devno, &(file->buf));
-    } else
-	enable;
+		enable;
+		ch = 0;
+		result = dev_get(devno, &ch);
+		*(bstart(file->buf)) = (char)ch;
+	} else if (dev->type == DEV_TYPE_BLK) {
+		enable;
+		result = dev_read(devno, &(file->buf));
+	} else
+		enable;
 
-    return result;
+	return result;
 }

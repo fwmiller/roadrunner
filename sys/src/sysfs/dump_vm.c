@@ -52,39 +52,38 @@
     s += strlen(s0);							\
 }
 
-void
-dump_vm(char *s, pt_t pd)
+void dump_vm(char *s, pt_t pd)
 {
-    u_long page, start = 0, attr;
-    pt_t pt;
-    pte_t pte;
-    int pti, regioncnt = 0;
-    char s0[80];
+	u_long page, start = 0, attr;
+	pt_t pt;
+	pte_t pte;
+	int pti, regioncnt = 0;
+	char s0[80];
 
-    for (page = 0; page < memsize; page += PAGE_SIZE) {
-	pti = (int) ((u_long) page >> 22) & 0x03ff;
-	pt = (pt_t) (((pte_t) pd[pti]) & 0xfffff000);
-	if (pt == NULL)
-	    continue;
-	pti = (int) ((u_long) page >> 12) & 0x03ff;
-	pte = (pte_t) pt[pti];
-	if (start == 0 && (pte & PTE_PRESENT)) {
-	    start = page;
-	    attr = pte & (PTE_WRITE | PTE_USER);
+	for (page = 0; page < memsize; page += PAGE_SIZE) {
+		pti = (int)((u_long) page >> 22) & 0x03ff;
+		pt = (pt_t) (((pte_t) pd[pti]) & 0xfffff000);
+		if (pt == NULL)
+			continue;
+		pti = (int)((u_long) page >> 12) & 0x03ff;
+		pte = (pte_t) pt[pti];
+		if (start == 0 && (pte & PTE_PRESENT)) {
+			start = page;
+			attr = pte & (PTE_WRITE | PTE_USER);
 
-	} else if (start > 0 &&
-		   (!(pte & PTE_PRESENT) ||
-		    ((pte & (PTE_WRITE | PTE_USER)) != attr))) {
-	    DUMP_REGION;
+		} else if (start > 0 &&
+			   (!(pte & PTE_PRESENT) ||
+			    ((pte & (PTE_WRITE | PTE_USER)) != attr))) {
+			DUMP_REGION;
 
-	    if (!(pte & PTE_PRESENT))
-		start = 0;
-	    else {
-		start = page;
-		attr = pte & (PTE_WRITE | PTE_USER);
-	    }
+			if (!(pte & PTE_PRESENT))
+				start = 0;
+			else {
+				start = page;
+				attr = pte & (PTE_WRITE | PTE_USER);
+			}
+		}
 	}
-    }
-    if (start > 0)
-	DUMP_REGION;
+	if (start > 0)
+		DUMP_REGION;
 }

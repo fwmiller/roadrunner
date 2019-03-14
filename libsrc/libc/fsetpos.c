@@ -26,8 +26,7 @@
 #include <errno.h>
 #include <stdio.h>
 
-int
-fsetpos(FILE * stream, const fpos_t * ptr)
+int fsetpos(FILE * stream, const fpos_t * ptr)
 {
-    return ENOSYS;
+	return ENOSYS;
 }

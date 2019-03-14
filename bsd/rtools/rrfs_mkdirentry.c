@@ -34,23 +34,23 @@ void
 rrfs_mkdirentry(direntry_t de,
 		char *name, uint16_t attr, uint32_t size, uint32_t start)
 {
-    time_t t;
-    struct tm *tm;
+	time_t t;
+	struct tm *tm;
 
-    bzero((char *) de, DE_SIZE);
-    strncpy(de->name, name, DE_NAME_LENGTH);
-    de->attr = attr;
-    time(&t);
-    tm = localtime(&t);
-    de->time[DE_TIME_HOUR] = (u_char) tm->tm_hour;
-    de->time[DE_TIME_MIN] = (u_char) tm->tm_min;
-    de->time[DE_TIME_SEC] = (u_char) tm->tm_sec;
-    de->date[DE_DATE_MON] = (u_char) tm->tm_mon;
-    de->date[DE_DATE_DAY] = (u_char) tm->tm_mday;
-    de->date[DE_DATE_YEAR] = (u_char) tm->tm_year;
-    de->size = size;
-    de->start = start;
+	bzero((char *)de, DE_SIZE);
+	strncpy(de->name, name, DE_NAME_LENGTH);
+	de->attr = attr;
+	time(&t);
+	tm = localtime(&t);
+	de->time[DE_TIME_HOUR] = (u_char) tm->tm_hour;
+	de->time[DE_TIME_MIN] = (u_char) tm->tm_min;
+	de->time[DE_TIME_SEC] = (u_char) tm->tm_sec;
+	de->date[DE_DATE_MON] = (u_char) tm->tm_mon;
+	de->date[DE_DATE_DAY] = (u_char) tm->tm_mday;
+	de->date[DE_DATE_YEAR] = (u_char) tm->tm_year;
+	de->size = size;
+	de->start = start;
 #if _DEBUG
-    printdirentry(de);
+	printdirentry(de);
 #endif
 }

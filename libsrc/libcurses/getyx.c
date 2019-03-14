@@ -28,12 +28,11 @@
 #include <stdlib.h>
 #include <sys/ioctl.h>
 
-void
-getyx(int *y, int *x)
+void getyx(int *y, int *x)
 {
-    struct cursor c;
+	struct cursor c;
 
-    ioctl(STDOUT, GET_CURSOR_POS, &c);
-    *y = c.y;
-    *x = c.x;
+	ioctl(STDOUT, GET_CURSOR_POS, &c);
+	*y = c.y;
+	*x = c.x;
 }

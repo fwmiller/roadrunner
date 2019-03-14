@@ -33,17 +33,17 @@
 /* Routines for managing the i8254 counter 0 periodic timer */
 
 /* Compute a count value for a specified frequency */
-u_int tmrcount(u_int freq);
+u_int tmrcount (u_int freq);
 
 /* Get the number of microseconds per counter 0 expiration */
-u_int tmrtick();
+u_int tmrtick ();
 
 /* Start the i8254 counter 0 periodic timer */
-void tmrstart(u_int count);
+void tmrstart (u_int count);
 
 /* Read the current value of counter 0 */
-u_int tmrread();
+u_int tmrread ();
 
-#endif				/* _KERNEL */
+#endif /* _KERNEL */
 
 #endif

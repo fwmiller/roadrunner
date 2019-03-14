@@ -37,16 +37,14 @@ clean:
 #	cd sys/boot; make clean
 	cd sys/src/kern; make clean
 
-#indent:
+indent:
 #	rm -f *~ $(IMAGE)
-#	cd bsd; make indent
-#	cd doc; make clean
-#	cd libsrc; make indent
-#	cd src; make indent
-#	cd sys/boot; make indent
-#	cd include; Indent
-#	cd include/bus; Indent
-#	cd include/dev; Indent
-#	cd include/fs; Indent
-#	cd include/sys; Indent
-#	cd sys/src/kern; make indent
+	cd bsd; make indent
+	cd libsrc; make indent
+	cd src; make indent
+	cd include; indent $(INDENT_RULES) *.h; $(RM) *~
+	cd include/bus; indent $(INDENT_RULES) *.h; $(RM) *~
+	cd include/dev; indent $(INDENT_RULES) *.h; $(RM) *~
+	cd include/fs; indent $(INDENT_RULES) *.h; $(RM) *~
+	cd include/sys; indent $(INDENT_RULES) *.h; $(RM) *~
+	cd sys/src/kern; make indent

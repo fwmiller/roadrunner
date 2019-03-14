@@ -26,8 +26,7 @@
 #include <stdio.h>
 #include <sys/proc.h>
 
-int
-putchar(int c)
+int putchar(int c)
 {
-    return fputc(c, (FILE *) STDOUT);
+	return fputc(c, (FILE *) STDOUT);
 }

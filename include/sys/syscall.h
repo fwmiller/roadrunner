@@ -64,6 +64,6 @@
 #define SYSCALL_WAIT			34
 #define SYSCALL_WRITE			35
 
-int syscall(int syscallno, void *params);
+int syscall (int syscallno, void *params);
 
 #endif

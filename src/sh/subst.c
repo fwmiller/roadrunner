@@ -38,116 +38,126 @@ int pattern_break(char *path, int pos, char **prefix,
 
 int glob(char *pattern, char *path, char **pathv);
 
-void
-subst(char *cmdline, int *argc, char ***argv)
+void subst(char *cmdline, int *argc, char ***argv)
 {
-    int i, j, pos, result;
+	int i, j, pos, result;
 
-    if (argv == NULL || *argv == NULL)
-	return;
-
-#if _DEBUG
-    printf("subst: argc %d\n", *argc);
-#endif
-    /* Perform filename substitutions */
-    for (i = 1; i < *argc; i++)
-	if ((pos = has_pattern((*argv)[i])) >= 0) {
-	    char *prefix = NULL, *pattern = NULL, *suffix = NULL;
-
-	    result = pattern_break((*argv)[i], pos,
-				   &prefix, &pattern, &suffix);
-	    if (result == 0) {
-		char *filenames;
+	if (argv == NULL || *argv == NULL)
+		return;
 
 #if _DEBUG
-		printf("subst:");
-		if (prefix != NULL)
-		    printf(" prefix %s", prefix);
-		if (pattern != NULL)
-		    printf(" pattern %s", pattern);
-		if (suffix != NULL)
-		    printf(" suffix %s", suffix);
-		printf("\n");
+	printf("subst: argc %d\n", *argc);
 #endif
-		/*
-		 * Glob on the path represented by the prefix and the
-		 * element containing the pattern
-		 */
-		if (strcmp(prefix, "") == 0)
-		    getcwd(prefix, PATH_LENGTH);
-		if (prefix[0] != '/') {
-		    char cwd[PATH_LENGTH], tmp[PATH_LENGTH];
+	/* Perform filename substitutions */
+	for (i = 1; i < *argc; i++)
+		if ((pos = has_pattern((*argv)[i])) >= 0) {
+			char *prefix = NULL, *pattern = NULL, *suffix = NULL;
 
-		    getcwd(cwd, PATH_LENGTH);
-		    strcpy(tmp, prefix);
-		    mkpath(cwd, tmp, prefix);
+			result = pattern_break((*argv)[i], pos,
+					       &prefix, &pattern, &suffix);
+			if (result == 0) {
+				char *filenames;
+
 #if _DEBUG
-		    printf("subst: prefix %s\n", prefix);
+				printf("subst:");
+				if (prefix != NULL)
+					printf(" prefix %s", prefix);
+				if (pattern != NULL)
+					printf(" pattern %s", pattern);
+				if (suffix != NULL)
+					printf(" suffix %s", suffix);
+				printf("\n");
 #endif
-		}
+				/*
+				 * Glob on the path represented by the prefix and the
+				 * element containing the pattern
+				 */
+				if (strcmp(prefix, "") == 0)
+					getcwd(prefix, PATH_LENGTH);
+				if (prefix[0] != '/') {
+					char cwd[PATH_LENGTH], tmp[PATH_LENGTH];
 
-		filenames = NULL;
-		result = glob(pattern, prefix, &filenames);
+					getcwd(cwd, PATH_LENGTH);
+					strcpy(tmp, prefix);
+					mkpath(cwd, tmp, prefix);
 #if _DEBUG
-		if (result < 0)
-		    printf("subst: glob failed (%s)\n", strerror(result));
+					printf("subst: prefix %s\n", prefix);
 #endif
-		if (result == 0 && filenames != NULL &&
-		    strcmp(filenames, "") != 0) {
-		    char **argv1;
-		    int argc1;
+				}
 
-		    /* Reassemble each filename yielded by the glob */
-		    argv_alloc(filenames, &argc1, &argv1);
-		    for (j = 0; j < argc1; j++) {
-			strcpy(pattern, argv1[j]);
-			mkpath(prefix, pattern, argv1[j]);
-			strcpy(pattern, argv1[j]);
-			mkpath(pattern, suffix, argv1[j]);
-		    }
+				filenames = NULL;
+				result = glob(pattern, prefix, &filenames);
+#if _DEBUG
+				if (result < 0)
+					printf("subst: glob failed (%s)\n",
+					       strerror(result));
+#endif
+				if (result == 0 && filenames != NULL &&
+				    strcmp(filenames, "") != 0) {
+					char **argv1;
+					int argc1;
+
+					/* Reassemble each filename yielded by the glob */
+					argv_alloc(filenames, &argc1, &argv1);
+					for (j = 0; j < argc1; j++) {
+						strcpy(pattern, argv1[j]);
+						mkpath(prefix, pattern,
+						       argv1[j]);
+						strcpy(pattern, argv1[j]);
+						mkpath(pattern, suffix,
+						       argv1[j]);
+					}
 #if 0
-		    for (j = 0; j < argc1; j++)
-			printf("subst: %s\n", argv1[j]);
+					for (j = 0; j < argc1; j++)
+						printf("subst: %s\n", argv1[j]);
 #endif
-		    /* Rebuild cmdline and then *argc and *argv */
-		    bzero(cmdline, LINE_LENGTH);
-		    for (j = 0; j < *argc; j++)
-			if (j == 0)
-			    strcpy(cmdline, (*argv)[0]);
-			else if (j == i) {
-			    int k;
+					/* Rebuild cmdline and then *argc and *argv */
+					bzero(cmdline, LINE_LENGTH);
+					for (j = 0; j < *argc; j++)
+						if (j == 0)
+							strcpy(cmdline,
+							       (*argv)[0]);
+						else if (j == i) {
+							int k;
 
-			    for (k = 0; k < argc1; k++) {
-				strcat(cmdline, " ");
-				strcat(cmdline, argv1[k]);
-			    }
-			} else {
-			    strcat(cmdline, " ");
-			    strcat(cmdline, (*argv)[j]);
-			}
-		    argv_free(argc1, argv1);
-		    i = 1;
+							for (k = 0; k < argc1;
+							     k++) {
+								strcat(cmdline,
+								       " ");
+								strcat(cmdline,
+								       argv1
+								       [k]);
+							}
+						} else {
+							strcat(cmdline, " ");
+							strcat(cmdline,
+							       (*argv)[j]);
+						}
+					argv_free(argc1, argv1);
+					i = 1;
 
-		} else {
-		    /* Remove pattern from command line */
-		    for (j = 0; j < *argc; j++)
-			if (j == 0)
-			    strcpy(cmdline, (*argv)[0]);
-			else if (j != i) {
-			    strcat(cmdline, " ");
-			    strcat(cmdline, (*argv)[j]);
+				} else {
+					/* Remove pattern from command line */
+					for (j = 0; j < *argc; j++)
+						if (j == 0)
+							strcpy(cmdline,
+							       (*argv)[0]);
+						else if (j != i) {
+							strcat(cmdline, " ");
+							strcat(cmdline,
+							       (*argv)[j]);
+						}
+				}
+				if (filenames != NULL)
+					free(filenames);
+				argv_free(*argc, *argv);
+				argv_alloc(cmdline, argc, argv);
 			}
+			if (suffix != NULL)
+				free(suffix);
+			if (pattern != NULL)
+				free(pattern);
+			if (prefix != NULL)
+				free(prefix);
 		}
-		if (filenames != NULL)
-		    free(filenames);
-		argv_free(*argc, *argv);
-		argv_alloc(cmdline, argc, argv);
-	    }
-	    if (suffix != NULL)
-		free(suffix);
-	    if (pattern != NULL)
-		free(pattern);
-	    if (prefix != NULL)
-		free(prefix);
-	}
 }

@@ -30,18 +30,19 @@
 
 #include <sys/proc.h>
 
-struct mutex {
-    proc_t holder;
-    struct queue waitq;
+struct mutex
+{
+  proc_t holder;
+  struct queue waitq;
 };
 
 typedef struct mutex *mutex_t;
 
-void mutex_clear(mutex_t mutex);
-int mutex_lock(mutex_t mutex);
-int mutex_trylock(mutex_t mutex);
-int mutex_unlock(mutex_t mutex);
+void mutex_clear (mutex_t mutex);
+int mutex_lock (mutex_t mutex);
+int mutex_trylock (mutex_t mutex);
+int mutex_unlock (mutex_t mutex);
 
-#endif				/* _KERNEL */
+#endif /* _KERNEL */
 
 #endif

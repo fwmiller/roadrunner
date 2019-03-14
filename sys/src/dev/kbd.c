@@ -57,211 +57,201 @@ static int q[KBDQ_LENGTH];
 static int h = 0, t = 0;
 
 static int asciishift[SCAN_CODES] = {
-    '\0', ESC, '!', '@', '#', '$', '%', '^',
-    '&', '*', '(', ')', '_', '+', '\b', '\t',
-    'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I',
-    'O', 'P', '{', '}', '\n', '\0', 'A', 'S',
-    'D', 'F', 'G', 'H', 'J', 'K', 'L', ':',
-    '"', '~', '\0', '|', 'Z', 'X', 'C', 'V',
-    'B', 'N', 'M', '<', '>', '?', '\0', '*',
-    '\0', ' ', '\0', '\0', '\0', '\0', '\0', '\0',
-    '\0', '\0', '\0', '\0', '\0', '\0', '\0', '7',
-    '8', '9', '-', '4', '5', '6', '+', '1',
-    '2', '3', '0', '.', '\0', '\0', '\0', '\0',
-    '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'
+	'\0', ESC, '!', '@', '#', '$', '%', '^',
+	'&', '*', '(', ')', '_', '+', '\b', '\t',
+	'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I',
+	'O', 'P', '{', '}', '\n', '\0', 'A', 'S',
+	'D', 'F', 'G', 'H', 'J', 'K', 'L', ':',
+	'"', '~', '\0', '|', 'Z', 'X', 'C', 'V',
+	'B', 'N', 'M', '<', '>', '?', '\0', '*',
+	'\0', ' ', '\0', '\0', '\0', '\0', '\0', '\0',
+	'\0', '\0', '\0', '\0', '\0', '\0', '\0', '7',
+	'8', '9', '-', '4', '5', '6', '+', '1',
+	'2', '3', '0', '.', '\0', '\0', '\0', '\0',
+	'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'
 };
 
 static int asciinormal[SCAN_CODES] = {
-    '\0', ESC, '1', '2', '3', '4', '5', '6',
-    '7', '8', '9', '0', '-', '=', '\b', '\t',
-    'q', 'w', 'e', 'r', 't', 'y', 'u', 'i',
-    'o', 'p', '[', ']', '\n', '\0', 'a', 's',
-    'd', 'f', 'g', 'h', 'j', 'k', 'l', ';',
-    '\'', '`', '\0', '\\', 'z', 'x', 'c', 'v',
-    'b', 'n', 'm', ',', '.', '/', '\0', '*',
-    '\0', ' ', '\0', '\0', '\0', '\0', '\0', '\0',
-    '\0', '\0', '\0', '\0', '\0', '\0', '\0', '7',
-    '8', '9', '-', '4', '5', '6', '+', '1',
-    '2', '3', '0', '.', '\0', '\0', '\0', '\0',
-    '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'
+	'\0', ESC, '1', '2', '3', '4', '5', '6',
+	'7', '8', '9', '0', '-', '=', '\b', '\t',
+	'q', 'w', 'e', 'r', 't', 'y', 'u', 'i',
+	'o', 'p', '[', ']', '\n', '\0', 'a', 's',
+	'd', 'f', 'g', 'h', 'j', 'k', 'l', ';',
+	'\'', '`', '\0', '\\', 'z', 'x', 'c', 'v',
+	'b', 'n', 'm', ',', '.', '/', '\0', '*',
+	'\0', ' ', '\0', '\0', '\0', '\0', '\0', '\0',
+	'\0', '\0', '\0', '\0', '\0', '\0', '\0', '7',
+	'8', '9', '-', '4', '5', '6', '+', '1',
+	'2', '3', '0', '.', '\0', '\0', '\0', '\0',
+	'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'
 };
 
 static int mfii[SCAN_CODES] = {
-    '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
-    '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
-    '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
-    '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
+	'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
+	'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
+	'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
+	'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
 
-    '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
-    '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
-    '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
-    '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
+	'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
+	'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
+	'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
+	'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
 
-    '\0', '\0', '\0', '\0', '\0', NUM_LCK, SCR_LCK, HOME,
-    UP, PG_UP, '-', LEFT, '\0', RIGHT, '+', END,
-    DOWN, PG_DOWN, INS, DEL, '\0', '\0', '\0', '\0',
-    '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'
+	'\0', '\0', '\0', '\0', '\0', NUM_LCK, SCR_LCK, HOME,
+	UP, PG_UP, '-', LEFT, '\0', RIGHT, '+', END,
+	DOWN, PG_DOWN, INS, DEL, '\0', '\0', '\0', '\0',
+	'\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0'
 };
 
-static __inline u_char
-kbd_read_status()
+static __inline u_char kbd_read_status()
 {
-    return inb(I8255_STATUS);
+	return inb(I8255_STATUS);
 }
 
-static __inline u_char
-kbd_read_data()
+static __inline u_char kbd_read_data()
 {
-    return inb(I8255_PORT_A);
+	return inb(I8255_PORT_A);
 }
 
-static __inline void
-kbd_wait()
+static __inline void kbd_wait()
 {
-    while (kbd_read_status() & I8255_STATUS_INPB);
+	while (kbd_read_status() & I8255_STATUS_INPB) ;
 }
 
-static __inline void
-kbd_write_cmd(u_char val)
+static __inline void kbd_write_cmd(u_char val)
 {
-    outb(I8255_CTRL, val);
+	outb(I8255_CTRL, val);
 }
 
-static void
-kbd_isr(void *params)
+static void kbd_isr(void *params)
 {
-    u_char status, code;
+	u_char status, code;
 
-    disable;
-
-    status = inb(I8255_STATUS);
-    while (status & I8255_STATUS_OUTB) {
-	code = inb(I8255_PORT_A);
-	if (code == SCAN_CODE_LSHFT || code == SCAN_CODE_RSHFT)
-	    flags |= KBD_SHIFT;
-
-	else if (code == SCAN_CODE_LSREL || code == SCAN_CODE_RSREL)
-	    flags &= ~KBD_SHIFT;
-
-	else if (code == SCAN_CODE_MFII) {
-	    u_char mfii_code;
-
-	    /* Wait for next scan code */
-	    while (!(inb(I8255_STATUS) & I8255_STATUS_OUTB));
-
-	    /* Read MF II scan code */
-	    mfii_code = inb(I8255_PORT_A);
-	    if (mfii_code > 0 &&
-		mfii_code < SCAN_CODES &&
-		((t + 1) % KBDQ_LENGTH) != h && mfii[mfii_code] != '\0') {
-		q[t] = mfii[mfii_code];
-		t = (t + 1) % KBDQ_LENGTH;
-	    }
-
-	} else if (code > 0 && code < SCAN_CODES) {
-	    if ((t + 1) % KBDQ_LENGTH != h) {
-		if (flags & KBD_SHIFT)
-		    q[t] = asciishift[code];
-		else
-		    q[t] = asciinormal[code];
-		t = (t + 1) % KBDQ_LENGTH;
-	    }
-	}
-	status = inb(I8255_STATUS);
-    }
-    /* Issue keyboard eoi */
-    outb(I8259_MSTR_CTRL, I8259_EOI_KBD);
-
-    enable;
-}
-
-int
-kbd_init(void *dev)
-{
-    isr_inst(INTR_KBD, kbd_isr, NULL);
-    intr_unmask(INTR_KBD);
-
-    /* Flush keyboard buffer */
-    inb(I8255_PORT_A);
-    inb(I8255_PORT_A);
-
-    /* Issue keyboard eoi */
-    outb(I8259_MSTR_CTRL, I8259_EOI_KBD);
-
-    return 0;
-}
-
-int
-kbd_shut(void *dev)
-{
-    return 0;
-}
-
-void
-kbd_flush()
-{
-    disable;
-
-    /* Flush keyboard buffer */
-    h = t = 0;
-
-    /* Flush keyboard buffer */
-    inb(I8255_PORT_A);
-    inb(I8255_PORT_A);
-
-    /* Issue keyboard eoi */
-    outb(I8259_MSTR_CTRL, I8259_EOI_KBD);
-
-    enable;
-}
-
-int
-get()
-{
-    int c;
-#if 0
-    disable;
-
-  get_wait:
-    while (h == t) {
-	enable;
-	event_wait(EVENT_KBD);
 	disable;
-    }
-    c = q[h];
-    h = (h + 1) % KBDQ_LENGTH;
-    if (c == 0)
-	goto get_wait;
 
-    enable;
-#endif
-    c = uart_getchar();
+	status = inb(I8255_STATUS);
+	while (status & I8255_STATUS_OUTB) {
+		code = inb(I8255_PORT_A);
+		if (code == SCAN_CODE_LSHFT || code == SCAN_CODE_RSHFT)
+			flags |= KBD_SHIFT;
 
-    return c;
+		else if (code == SCAN_CODE_LSREL || code == SCAN_CODE_RSREL)
+			flags &= ~KBD_SHIFT;
+
+		else if (code == SCAN_CODE_MFII) {
+			u_char mfii_code;
+
+			/* Wait for next scan code */
+			while (!(inb(I8255_STATUS) & I8255_STATUS_OUTB)) ;
+
+			/* Read MF II scan code */
+			mfii_code = inb(I8255_PORT_A);
+			if (mfii_code > 0 &&
+			    mfii_code < SCAN_CODES &&
+			    ((t + 1) % KBDQ_LENGTH) != h
+			    && mfii[mfii_code] != '\0') {
+				q[t] = mfii[mfii_code];
+				t = (t + 1) % KBDQ_LENGTH;
+			}
+
+		} else if (code > 0 && code < SCAN_CODES) {
+			if ((t + 1) % KBDQ_LENGTH != h) {
+				if (flags & KBD_SHIFT)
+					q[t] = asciishift[code];
+				else
+					q[t] = asciinormal[code];
+				t = (t + 1) % KBDQ_LENGTH;
+			}
+		}
+		status = inb(I8255_STATUS);
+	}
+	/* Issue keyboard eoi */
+	outb(I8259_MSTR_CTRL, I8259_EOI_KBD);
+
+	enable;
 }
 
-int
-kbd_ioctl(void *dev, int cmd, void *args)
+int kbd_init(void *dev)
 {
-    if (cmd == GET_BUFFER_SIZE) {
-	if (args == NULL)
-	    return EINVAL;
-	*((u_long *) args) = 1;
+	isr_inst(INTR_KBD, kbd_isr, NULL);
+	intr_unmask(INTR_KBD);
+
+	/* Flush keyboard buffer */
+	inb(I8255_PORT_A);
+	inb(I8255_PORT_A);
+
+	/* Issue keyboard eoi */
+	outb(I8259_MSTR_CTRL, I8259_EOI_KBD);
+
 	return 0;
-    }
-    return ENOTTY;
 }
 
-int
-kbd_get(void *dev, int *c)
+int kbd_shut(void *dev)
 {
-    if (c == NULL)
-	return EINVAL;
+	return 0;
+}
 
-    /* get() handles disabling interrupts */
-    *c = get();
+void kbd_flush()
+{
+	disable;
 
-    if (*c < 0)
-	return *c;
-    return 0;
+	/* Flush keyboard buffer */
+	h = t = 0;
+
+	/* Flush keyboard buffer */
+	inb(I8255_PORT_A);
+	inb(I8255_PORT_A);
+
+	/* Issue keyboard eoi */
+	outb(I8259_MSTR_CTRL, I8259_EOI_KBD);
+
+	enable;
+}
+
+int get()
+{
+	int c;
+#if 0
+	disable;
+
+ get_wait:
+	while (h == t) {
+		enable;
+		event_wait(EVENT_KBD);
+		disable;
+	}
+	c = q[h];
+	h = (h + 1) % KBDQ_LENGTH;
+	if (c == 0)
+		goto get_wait;
+
+	enable;
+#endif
+	c = uart_getchar();
+
+	return c;
+}
+
+int kbd_ioctl(void *dev, int cmd, void *args)
+{
+	if (cmd == GET_BUFFER_SIZE) {
+		if (args == NULL)
+			return EINVAL;
+		*((u_long *) args) = 1;
+		return 0;
+	}
+	return ENOTTY;
+}
+
+int kbd_get(void *dev, int *c)
+{
+	if (c == NULL)
+		return EINVAL;
+
+	/* get() handles disabling interrupts */
+	*c = get();
+
+	if (*c < 0)
+		return *c;
+	return 0;
 }

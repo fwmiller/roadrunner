@@ -26,17 +26,16 @@
 #include <fs/sysfs.h>
 
 char *sysfs_filenames[] = {
-    "blks",
-    "bufs",
-    "files",
-    "fs",
-    "procs",
-    "regions",
-    "vm"
+	"blks",
+	"bufs",
+	"files",
+	"fs",
+	"procs",
+	"regions",
+	"vm"
 };
 
-int
-sysfs_init()
+int sysfs_init()
 {
-    return 0;
+	return 0;
 }

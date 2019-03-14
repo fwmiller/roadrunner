@@ -37,9 +37,9 @@
 #define RR_FILE_SYSTEMS		4
 #define RR_FILES		FILES
 #define RRFS_FILE_ATTRIBUTES	4
-#define RRFS_FILE_KEY_ATTR	3      /* Name */
+#define RRFS_FILE_KEY_ATTR	3	/* Name */
 
-#endif				/* _KERNEL */
+#endif /* _KERNEL */
 
 #define JUMP_SIZE		4
 #define BOOTSIG_SIZE		2
@@ -80,62 +80,67 @@
      (2 * (RRFS)->mbr->params.fatsectors) +				\
      ((CLUST) * (RRFS)->mbr->params.sectorsperclust))
 
-#endif				/* _KERNEL */
+#endif /* _KERNEL */
 
-struct rrfs_params {
-    u_long tracks;
-    u_long heads;
-    u_long sectorspertrack;
-    u_short bytespersector;
-    u_long sectors;
-    u_short bootsectors;
-    u_long fatsectors;
-    u_short sectorsperclust;
-    u_long clusters;
+struct rrfs_params
+{
+  u_long tracks;
+  u_long heads;
+  u_long sectorspertrack;
+  u_short bytespersector;
+  u_long sectors;
+  u_short bootsectors;
+  u_long fatsectors;
+  u_short sectorsperclust;
+  u_long clusters;
 } __attribute__ ((packed));
 
-struct mbr {
-    char jump[JUMP_SIZE];
-    struct rrfs_params params;
-    char boot[BOOTLDR_SIZE];
-    char bootsig[BOOTSIG_SIZE];
+struct mbr
+{
+  char jump[JUMP_SIZE];
+  struct rrfs_params params;
+  char boot[BOOTLDR_SIZE];
+  char bootsig[BOOTSIG_SIZE];
 } __attribute__ ((packed));
 
 #if _KERNEL
 
-struct rrfs {
+struct rrfs
+{
 #define RFS_FATBLK_DIRTY	0x01
-    int flags;
-    char *mbrbuf;
-    struct mbr *mbr;
-    u_long fatblkno;
-    buf_t fatbuf;
-    u_long *fatblk;
+  int flags;
+  char *mbrbuf;
+  struct mbr *mbr;
+  u_long fatblkno;
+  buf_t fatbuf;
+  u_long *fatblk;
 };
 
-struct rrfile {
+struct rrfile
+{
 
 #define RF_INUSE		0x01
 #define RF_ROOTDIR		0x02
 #define RF_NEEDCLUST		0x04
-    int flags;
+  int flags;
 
-    u_long declust;
-    u_long deoff;
-    u_long firstclust;
-    u_long currclust;
+  u_long declust;
+  u_long deoff;
+  u_long firstclust;
+  u_long currclust;
 };
 
-struct direntry {
-    char name[DE_NAME_LENGTH];
-    u_short attr;
-    u_char time[DE_TIME_LENGTH];
-    u_char date[DE_DATE_LENGTH];
-    u_long size;
-    u_long start;
+struct direntry
+{
+  char name[DE_NAME_LENGTH];
+  u_short attr;
+  u_char time[DE_TIME_LENGTH];
+  u_char date[DE_DATE_LENGTH];
+  u_long size;
+  u_long start;
 } __attribute__ ((packed));
 
-#endif				/* _KERNEL */
+#endif /* _KERNEL */
 
 typedef struct rrfs_params *rrfs_params_t;
 typedef struct mbr *mbr_t;
@@ -151,39 +156,39 @@ extern struct mutex rrfstabmutex;
 extern struct rrfile rrfiletab[];
 extern struct mutex rrfiletabmutex;
 
-void rrfs_clear(rrfs_t rrfs);
-void rrfs_nextpathelem(char *path, int *pos, char *name);
-u_long rrfs_nextclust(fs_t fs, u_long clust);
-u_long rrfs_clustalloc(fs_t fs);
-u_long rrfs_clustappend(fs_t fs, u_long clust);
+void rrfs_clear (rrfs_t rrfs);
+void rrfs_nextpathelem (char *path, int *pos, char *name);
+u_long rrfs_nextclust (fs_t fs, u_long clust);
+u_long rrfs_clustalloc (fs_t fs);
+u_long rrfs_clustappend (fs_t fs, u_long clust);
 
 #if _DEBUG
-void rrfs_direntrydump(direntry_t de);
+void rrfs_direntrydump (direntry_t de);
 #endif
-int rrfs_readclust(file_t file, u_long clust, buf_t * b);
-int rrfs_readmbr(fs_t fs);
-int rrfs_readfatblk(fs_t fs, u_long clust);
-int rrfs_writeclust(file_t file, u_long clust, buf_t * b);
-int rrfs_writembr(fs_t fs);
-int rrfs_writefatblk(fs_t fs);
-int rrfs_lookup(file_t file, char *path);
-int rrfs_updatedir(file_t file, u_long firstclust);
-void rrfile_clear(rrfile_t rrfile);
-int rrfile_create(file_t file, int directory);
+int rrfs_readclust (file_t file, u_long clust, buf_t * b);
+int rrfs_readmbr (fs_t fs);
+int rrfs_readfatblk (fs_t fs, u_long clust);
+int rrfs_writeclust (file_t file, u_long clust, buf_t * b);
+int rrfs_writembr (fs_t fs);
+int rrfs_writefatblk (fs_t fs);
+int rrfs_lookup (file_t file, char *path);
+int rrfs_updatedir (file_t file, u_long firstclust);
+void rrfile_clear (rrfile_t rrfile);
+int rrfile_create (file_t file, int directory);
 
-int rrfs_init();
-int rrfs_shut();
-int rrfs_mount(fs_t fs);
-int rrfs_unmount(fs_t fs);
-int rrfile_open(file_t file);
-int rrfile_close(file_t file);
-int rrfile_ioctl(file_t file, int cmd, void *args);
-int rrfile_read(file_t file);
-int rrfile_write(file_t file);
-int rrfile_attr(file_t file, attrlist_t attr);
-int rrfile_readdir(file_t file, char *entry);
-int rrfile_unlink(char *path);
+int rrfs_init ();
+int rrfs_shut ();
+int rrfs_mount (fs_t fs);
+int rrfs_unmount (fs_t fs);
+int rrfile_open (file_t file);
+int rrfile_close (file_t file);
+int rrfile_ioctl (file_t file, int cmd, void *args);
+int rrfile_read (file_t file);
+int rrfile_write (file_t file);
+int rrfile_attr (file_t file, attrlist_t attr);
+int rrfile_readdir (file_t file, char *entry);
+int rrfile_unlink (char *path);
 
-#endif				/* _KERNEL */
+#endif /* _KERNEL */
 
 #endif

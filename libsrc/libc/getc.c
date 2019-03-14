@@ -25,8 +25,7 @@
 
 #include <stdio.h>
 
-int
-getc(FILE * stream)
+int getc(FILE * stream)
 {
-    return fgetc(stream);
+	return fgetc(stream);
 }

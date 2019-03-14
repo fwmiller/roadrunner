@@ -51,168 +51,164 @@ int x = 0, y = 0;
 /* Mode */
 static int mode = VM_TRANSLATE;
 
-int
-incr_buflen()
+int incr_buflen()
 {
-    if (buflen + 1 == maxbuflen) {
-	char *tmp;
+	if (buflen + 1 == maxbuflen) {
+		char *tmp;
 
-	tmp = (char *) malloc(maxbuflen + BUFLEN_INCR);
-	if (tmp == NULL)
-	    return ENOMEM;
-	bzero(tmp, maxbuflen + BUFLEN_INCR);
-	maxbuflen += BUFLEN_INCR;
-	bcopy(buf, tmp, buflen);
-	free(buf);
-	buf = tmp;
-    }
-    buflen++;
-    return 0;
+		tmp = (char *)malloc(maxbuflen + BUFLEN_INCR);
+		if (tmp == NULL)
+			return ENOMEM;
+		bzero(tmp, maxbuflen + BUFLEN_INCR);
+		maxbuflen += BUFLEN_INCR;
+		bcopy(buf, tmp, buflen);
+		free(buf);
+		buf = tmp;
+	}
+	buflen++;
+	return 0;
 }
 
-void
-status()
+void status()
 {
-    int tempx = x, tempy = y;
-    char s[80];
+	int tempx = x, tempy = y;
+	char s[80];
 
-    move(height, 0);
-    clrtoeol();
-    ioctl(STDOUT, SET_BRIGHT_VIDEO, NULL);
+	move(height, 0);
+	clrtoeol();
+	ioctl(STDOUT, SET_BRIGHT_VIDEO, NULL);
 
-    bzero(s, 80);
-    sprintf(s, "home %d bufpos %d x %d y %d", home, bufpos, x, y);
-    addstr(s);
+	bzero(s, 80);
+	sprintf(s, "home %d bufpos %d x %d y %d", home, bufpos, x, y);
+	addstr(s);
 
-    ioctl(STDOUT, SET_NORMAL_VIDEO, NULL);
-    y = tempy;
-    x = tempx;
-    move(y, x);
+	ioctl(STDOUT, SET_NORMAL_VIDEO, NULL);
+	y = tempy;
+	x = tempx;
+	move(y, x);
 }
 
-void
-message(char *s)
+void message(char *s)
 {
-    int tempx = x, tempy = y;
+	int tempx = x, tempy = y;
 
-    move(height, 0);
-    clrtoeol();
-    ioctl(STDOUT, SET_BRIGHT_VIDEO, NULL);
-    addstr(s);
-    ioctl(STDOUT, SET_NORMAL_VIDEO, NULL);
-    y = tempy;
-    x = tempx;
-    move(y, x);
+	move(height, 0);
+	clrtoeol();
+	ioctl(STDOUT, SET_BRIGHT_VIDEO, NULL);
+	addstr(s);
+	ioctl(STDOUT, SET_NORMAL_VIDEO, NULL);
+	y = tempy;
+	x = tempx;
+	move(y, x);
 }
 
-static void
-vi()
+static void vi()
 {
-    int getnextchar = 1;
-    char ch;
+	int getnextchar = 1;
+	char ch;
 
-    for (;;) {
-	if (getnextchar)
-	    ch = getchar();
-	else
-	    getnextchar = 1;
-
-	switch (mode) {
-	case VM_TRANSLATE:
-	    if (ch == 'Z') {
-		ch = getchar();
-		if (ch == 'Z')
-		    return;
+	for (;;) {
+		if (getnextchar)
+			ch = getchar();
 		else
-		    getnextchar = 0;
-	    } else if (ch == 'h')
-		cursor_left();
-	    else if (ch == 'i') {
-		mode = VM_INSERT;
-		getnextchar = 0;
-	    } else if (ch == 'j')
-		cursor_down();
-	    else if (ch == 'k')
-		cursor_up();
-	    else if (ch == 'l')
-		cursor_right();
-	    else if (ch == 'x')
-		delete();
-	    else if (ch == ':') {
-		mode = VM_COMMAND;
-		getnextchar = 0;
-	    } else if (ch == '?')
-		help();
-	    break;
+			getnextchar = 1;
 
-	case VM_INSERT:
-	    insert();
-	    mode = VM_TRANSLATE;
-	    break;
+		switch (mode) {
+		case VM_TRANSLATE:
+			if (ch == 'Z') {
+				ch = getchar();
+				if (ch == 'Z')
+					return;
+				else
+					getnextchar = 0;
+			} else if (ch == 'h')
+				cursor_left();
+			else if (ch == 'i') {
+				mode = VM_INSERT;
+				getnextchar = 0;
+			} else if (ch == 'j')
+				cursor_down();
+			else if (ch == 'k')
+				cursor_up();
+			else if (ch == 'l')
+				cursor_right();
+			else if (ch == 'x')
+				delete();
+			else if (ch == ':') {
+				mode = VM_COMMAND;
+				getnextchar = 0;
+			} else if (ch == '?')
+				help();
+			break;
 
-	case VM_COMMAND:
-	    command();
-	    mode = VM_TRANSLATE;
-	    break;
+		case VM_INSERT:
+			insert();
+			mode = VM_TRANSLATE;
+			break;
 
-	default:;
+		case VM_COMMAND:
+			command();
+			mode = VM_TRANSLATE;
+			break;
+
+		default:;
+		}
 	}
-    }
 }
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
-    int result;
+	int result;
 
-    buf = (char *) malloc(maxbuflen);
-    if (buf == NULL) {
-	printf("could not allocate text buffer\n");
-	return ENOMEM;
-    }
-
-    if (argc > 2) {
-	printf("too many arguments\n");
-	free(buf);
-	return EINVAL;
-
-    } else if (argc == 2) {
-	result = file_open(argv[1]);
-	if (result < 0) {
-	    printf("could not open %s (%s)\n", argv[1], strerror(result));
-	    free(buf);
-	    return result;
+	buf = (char *)malloc(maxbuflen);
+	if (buf == NULL) {
+		printf("could not allocate text buffer\n");
+		return ENOMEM;
 	}
-    }
-    ioctl(STDOUT, GET_WINDOW_WIDTH, &width);
-    ioctl(STDOUT, GET_WINDOW_HEIGHT, &height);
 
-    /* Leave the last line for status and messages */
-    height--;
+	if (argc > 2) {
+		printf("too many arguments\n");
+		free(buf);
+		return EINVAL;
 
-    /* Turn off operating system cursor */
-    ioctl(STDOUT, SET_CURSOR_OFF, NULL);
+	} else if (argc == 2) {
+		result = file_open(argv[1]);
+		if (result < 0) {
+			printf("could not open %s (%s)\n", argv[1],
+			       strerror(result));
+			free(buf);
+			return result;
+		}
+	}
+	ioctl(STDOUT, GET_WINDOW_WIDTH, &width);
+	ioctl(STDOUT, GET_WINDOW_HEIGHT, &height);
 
-    /* Setup initial display */
-    clear();
-    refresh();
-    cursor_home();
+	/* Leave the last line for status and messages */
+	height--;
 
-    /* Turn on vi cursor */
-    cursor_on();
+	/* Turn off operating system cursor */
+	ioctl(STDOUT, SET_CURSOR_OFF, NULL);
 
-    /* Main processing loop */
-    vi();
+	/* Setup initial display */
+	clear();
+	refresh();
+	cursor_home();
 
-    /* Turn off vi cursor */
-    cursor_off();
+	/* Turn on vi cursor */
+	cursor_on();
 
-    /* Clear screen before exiting */
-    clear();
+	/* Main processing loop */
+	vi();
 
-    /* Turn on operating system cursor */
-    ioctl(STDOUT, SET_CURSOR_ON, NULL);
+	/* Turn off vi cursor */
+	cursor_off();
 
-    free(buf);
-    return 0;
+	/* Clear screen before exiting */
+	clear();
+
+	/* Turn on operating system cursor */
+	ioctl(STDOUT, SET_CURSOR_ON, NULL);
+
+	free(buf);
+	return 0;
 }

@@ -26,34 +26,32 @@
 #include <sys.h>
 #include <sys/i8259.h>
 
-void
-intrinit()
+void intrinit()
 {
-    outb(I8259_MSTR_CTRL, I8259_MSTR_ICW1);
-    outb(I8259_SLV_CTRL, I8259_SLV_ICW1);
-    outb(I8259_MSTR_MASK, I8259_MSTR_ICW2);
-    outb(I8259_SLV_MASK, I8259_SLV_ICW2);
-    outb(I8259_MSTR_MASK, I8259_MSTR_ICW3);
-    outb(I8259_SLV_MASK, I8259_SLV_ICW3);
-    outb(I8259_MSTR_MASK, I8259_MSTR_ICW4);
-    outb(I8259_SLV_MASK, I8259_SLV_ICW4);
-    outb(I8259_MSTR_MASK, I8259_MSTR_DISABLE);
-    outb(I8259_SLV_MASK, I8259_SLV_DISABLE);
+	outb(I8259_MSTR_CTRL, I8259_MSTR_ICW1);
+	outb(I8259_SLV_CTRL, I8259_SLV_ICW1);
+	outb(I8259_MSTR_MASK, I8259_MSTR_ICW2);
+	outb(I8259_SLV_MASK, I8259_SLV_ICW2);
+	outb(I8259_MSTR_MASK, I8259_MSTR_ICW3);
+	outb(I8259_SLV_MASK, I8259_SLV_ICW3);
+	outb(I8259_MSTR_MASK, I8259_MSTR_ICW4);
+	outb(I8259_SLV_MASK, I8259_SLV_ICW4);
+	outb(I8259_MSTR_MASK, I8259_MSTR_DISABLE);
+	outb(I8259_SLV_MASK, I8259_SLV_DISABLE);
 }
 
-void
-intrunmask(int intno)
+void intrunmask(int intno)
 {
-    u_char mask;
+	u_char mask;
 
-    if (intno >= 32 && intno < 40) {
-	mask = inb(I8259_MSTR_MASK);
-	mask &= ~(0x01 << (intno - 32));
-	outb(I8259_MSTR_MASK, mask);
+	if (intno >= 32 && intno < 40) {
+		mask = inb(I8259_MSTR_MASK);
+		mask &= ~(0x01 << (intno - 32));
+		outb(I8259_MSTR_MASK, mask);
 
-    } else if (intno >= 40 && intno < 48) {
-	mask = inb(I8259_SLV_MASK);
-	mask &= ~(0x01 << (intno - 40));
-	outb(I8259_SLV_MASK, mask);
-    }
+	} else if (intno >= 40 && intno < 48) {
+		mask = inb(I8259_SLV_MASK);
+		mask &= ~(0x01 << (intno - 40));
+		outb(I8259_SLV_MASK, mask);
+	}
 }

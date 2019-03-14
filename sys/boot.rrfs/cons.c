@@ -39,61 +39,58 @@
 
 static char *cursor;
 
-void
-clear()
+void clear()
 {
-    for (cursor = BASE; cursor < END; cursor += 2) {
-	*cursor = ' ';
-	*(cursor + 1) = NORMAL;
-    }
-    cursor = BASE;
+	for (cursor = BASE; cursor < END; cursor += 2) {
+		*cursor = ' ';
+		*(cursor + 1) = NORMAL;
+	}
+	cursor = BASE;
 
-    *cursor = CURSOR;
-    *(cursor + 1) = REVERSE;
+	*cursor = CURSOR;
+	*(cursor + 1) = REVERSE;
 }
 
-static void
-scroll()
+static void scroll()
 {
-    char *i, *j;
+	char *i, *j;
 
-    for (i = BASE, j = BASE + 2 * COLS; j < END;
-	 i += 2 * COLS, j += 2 * COLS)
-	bcopy(j, i, 2 * COLS);
+	for (i = BASE, j = BASE + 2 * COLS; j < END;
+	     i += 2 * COLS, j += 2 * COLS)
+		bcopy(j, i, 2 * COLS);
 
-    while (i < END) {
-	*(i + 1) = NORMAL;
-	*i = ' ';
-	i += 2;
-    }
-    cursor = END - 2 * COLS;
+	while (i < END) {
+		*(i + 1) = NORMAL;
+		*i = ' ';
+		i += 2;
+	}
+	cursor = END - 2 * COLS;
 
-    *cursor = CURSOR;
-    *(cursor + 1) = REVERSE;
+	*cursor = CURSOR;
+	*(cursor + 1) = REVERSE;
 }
 
-void
-put(char c)
+void put(char c)
 {
-    if (isprint(c)) {
-	*(cursor + 1) = NORMAL;
-	*cursor = c;
-	cursor += 2;
-	if (cursor >= END)
-	    scroll();
+	if (isprint(c)) {
+		*(cursor + 1) = NORMAL;
+		*cursor = c;
+		cursor += 2;
+		if (cursor >= END)
+			scroll();
 
-    } else if (c == '\n') {
-	*(cursor + 1) = NORMAL;
-	*cursor = ' ';
-	if (cursor < END - 2 * COLS) {
-	    char *i = BASE;
+	} else if (c == '\n') {
+		*(cursor + 1) = NORMAL;
+		*cursor = ' ';
+		if (cursor < END - 2 * COLS) {
+			char *i = BASE;
 
-	    while (i <= cursor)
-		i += 2 * COLS;
-	    cursor = i;
-	} else
-	    scroll();
-    }
-    *cursor = CURSOR;
-    *(cursor + 1) = REVERSE;
+			while (i <= cursor)
+				i += 2 * COLS;
+			cursor = i;
+		} else
+			scroll();
+	}
+	*cursor = CURSOR;
+	*(cursor + 1) = REVERSE;
 }

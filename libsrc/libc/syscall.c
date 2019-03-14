@@ -29,164 +29,137 @@
 #include <sys/time.h>
 #include <sys/utsname.h>
 
-void
-_exit(int status)
+void _exit(int status)
 {
-    syscall(SYSCALL_EXIT, &status);
+	syscall(SYSCALL_EXIT, &status);
 }
 
-int
-attr(int fd, attrlist_t attr)
+int attr(int fd, attrlist_t attr)
 {
-    return syscall(SYSCALL_ATTR, &fd);
+	return syscall(SYSCALL_ATTR, &fd);
 }
 
-int
-chdir(const char *path)
+int chdir(const char *path)
 {
-    return syscall(SYSCALL_CHDIR, &path);
+	return syscall(SYSCALL_CHDIR, &path);
 }
 
-int
-close(int fd)
+int close(int fd)
 {
-    return syscall(SYSCALL_CLOSE, &fd);
+	return syscall(SYSCALL_CLOSE, &fd);
 }
 
-pid_t
-exec(const char *path, int argc, char **argv)
+pid_t exec(const char *path, int argc, char **argv)
 {
-    return syscall(SYSCALL_EXEC, &path);
+	return syscall(SYSCALL_EXEC, &path);
 }
 
-void
-free(void *ptr)
+void free(void *ptr)
 {
-    syscall(SYSCALL_FREE, &ptr);
+	syscall(SYSCALL_FREE, &ptr);
 }
 
-char *
-getcwd(char *buf, size_t size)
+char *getcwd(char *buf, size_t size)
 {
-    return (char *) syscall(SYSCALL_GETCWD, &buf);
+	return (char *)syscall(SYSCALL_GETCWD, &buf);
 }
 
-int
-getfstab(fsrectab_t * fsrectab)
+int getfstab(fsrectab_t * fsrectab)
 {
-    return syscall(SYSCALL_GETFSTAB, &fsrectab);
+	return syscall(SYSCALL_GETFSTAB, &fsrectab);
 }
 
-pid_t
-getpid()
+pid_t getpid()
 {
-    return syscall(SYSCALL_GETPID, NULL);
+	return syscall(SYSCALL_GETPID, NULL);
 }
 
-int
-getstdpath(pid_t pid, int stdpath)
+int getstdpath(pid_t pid, int stdpath)
 {
-    return syscall(SYSCALL_GETSTDPATH, &pid);
+	return syscall(SYSCALL_GETSTDPATH, &pid);
 }
 
-int
-gettimeofday(struct timeval *tv, struct timezone *tz)
+int gettimeofday(struct timeval *tv, struct timezone *tz)
 {
-    return syscall(SYSCALL_GETTIMEOFDAY, &tv);
+	return syscall(SYSCALL_GETTIMEOFDAY, &tv);
 }
 
-void
-halt()
+void halt()
 {
-    syscall(SYSCALL_HALT, NULL);
+	syscall(SYSCALL_HALT, NULL);
 }
 
-int
-ioctl(int fd, int cmd, void *args)
+int ioctl(int fd, int cmd, void *args)
 {
-    return syscall(SYSCALL_IOCTL, &fd);
+	return syscall(SYSCALL_IOCTL, &fd);
 }
 
-int
-load(char *path, char **prog, u_long * ldsize, char **start)
+int load(char *path, char **prog, u_long * ldsize, char **start)
 {
-    return syscall(SYSCALL_LOAD, &path);
+	return syscall(SYSCALL_LOAD, &path);
 }
 
-void *
-malloc(size_t size)
+void *malloc(size_t size)
 {
-    return (void *) syscall(SYSCALL_MALLOC, &size);
+	return (void *)syscall(SYSCALL_MALLOC, &size);
 }
 
-int
-mkdir(const char *path, mode_t mode)
+int mkdir(const char *path, mode_t mode)
 {
-    return syscall(SYSCALL_MKDIR, &path);
+	return syscall(SYSCALL_MKDIR, &path);
 }
 
-int
-mount(const char *type, const char *path, const char *dev)
+int mount(const char *type, const char *path, const char *dev)
 {
-    return syscall(SYSCALL_MOUNT, &type);
+	return syscall(SYSCALL_MOUNT, &type);
 }
 
-int
-open(const char *path, int flags)
+int open(const char *path, int flags)
 {
-    return syscall(SYSCALL_OPEN, &path);
+	return syscall(SYSCALL_OPEN, &path);
 }
 
-ssize_t
-read(int fd, void *buf, size_t nbytes)
+ssize_t read(int fd, void *buf, size_t nbytes)
 {
-    return syscall(SYSCALL_READ, &fd);
+	return syscall(SYSCALL_READ, &fd);
 }
 
-int
-readdir(int fd, char *entry)
+int readdir(int fd, char *entry)
 {
-    return syscall(SYSCALL_READDIR, &fd);
+	return syscall(SYSCALL_READDIR, &fd);
 }
 
-void
-reboot()
+void reboot()
 {
-    syscall(SYSCALL_REBOOT, NULL);
+	syscall(SYSCALL_REBOOT, NULL);
 }
 
-void
-setstdpath(pid_t pid, int stdpath, int fd)
+void setstdpath(pid_t pid, int stdpath, int fd)
 {
-    syscall(SYSCALL_SETSTDPATH, &pid);
+	syscall(SYSCALL_SETSTDPATH, &pid);
 }
 
-int
-uname(struct utsname *name)
+int uname(struct utsname *name)
 {
-    return syscall(SYSCALL_UNAME, &name);
+	return syscall(SYSCALL_UNAME, &name);
 }
 
-int
-unlink(const char *path)
+int unlink(const char *path)
 {
-    return syscall(SYSCALL_UNLINK, &path);
+	return syscall(SYSCALL_UNLINK, &path);
 }
 
-int
-unmount(char *path)
+int unmount(char *path)
 {
-    return syscall(SYSCALL_UNMOUNT, &path);
+	return syscall(SYSCALL_UNMOUNT, &path);
 }
 
-int
-wait(pid_t pid)
+int wait(pid_t pid)
 {
-    return syscall(SYSCALL_WAIT, &pid);
+	return syscall(SYSCALL_WAIT, &pid);
 }
 
-ssize_t
-write(int fd, void *buf, size_t nbytes)
+ssize_t write(int fd, void *buf, size_t nbytes)
 {
-    return syscall(SYSCALL_WRITE, &fd);
+	return syscall(SYSCALL_WRITE, &fd);
 }

@@ -25,19 +25,18 @@
 
 #include <string.h>
 
-size_t
-strcspn(const char *s, const char *reject)
+size_t strcspn(const char *s, const char *reject)
 {
-    int rejectlen, i, j;
+	int rejectlen, i, j;
 
-    rejectlen = strlen(reject);
+	rejectlen = strlen(reject);
 
-    for (i = 0; s[i] != '\0'; i++) {
-	for (j = 0; j < rejectlen; j++)
-	    if (s[i] == reject[j])
-		break;
-	if (j != rejectlen)
-	    break;
-    }
-    return i;
+	for (i = 0; s[i] != '\0'; i++) {
+		for (j = 0; j < rejectlen; j++)
+			if (s[i] == reject[j])
+				break;
+		if (j != rejectlen)
+			break;
+	}
+	return i;
 }

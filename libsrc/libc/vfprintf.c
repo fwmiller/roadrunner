@@ -26,8 +26,7 @@
 #include <errno.h>
 #include <stdio.h>
 
-int
-vfprintf(FILE * stream, const char *fmt, va_list arg)
+int vfprintf(FILE * stream, const char *fmt, va_list arg)
 {
-    return ENOSYS;
+	return ENOSYS;
 }

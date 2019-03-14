@@ -30,12 +30,12 @@
 
 #include <sys/buf.h>
 
-int fd_init(void *dev);
-int fd_shut(void *dev);
-int fd_ioctl(void *dev, int cmd, void *args);
-int fd_read(void *dev, buf_t * b);
-int fd_write(void *dev, buf_t * b);
+int fd_init (void *dev);
+int fd_shut (void *dev);
+int fd_ioctl (void *dev, int cmd, void *args);
+int fd_read (void *dev, buf_t * b);
+int fd_write (void *dev, buf_t * b);
 
-#endif				/* _KERNEL */
+#endif /* _KERNEL */
 
 #endif

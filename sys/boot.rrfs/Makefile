@@ -21,4 +21,6 @@ clean:
 	$(RM) *~ $(OBJS) boot1 boot1.sym boot2 boot2.sym boot *.obj *.lst *.bin
 
 indent: clean
-	Indent
+	indent $(INDENT_RULES) *.c
+	$(RM) *~
+

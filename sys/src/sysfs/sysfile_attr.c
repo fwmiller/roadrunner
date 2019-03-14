@@ -29,35 +29,34 @@
 #include <stdlib.h>
 #include <string.h>
 
-int
-sysfile_attr(file_t file, attrlist_t l)
+int sysfile_attr(file_t file, attrlist_t l)
 {
-    int size;
+	int size;
 
 #if _DEBUG
-    int i;
+	int i;
 #endif
 
-    l->n = SYSFS_FILE_ATTRIBUTES;
-    l->key = SYSFS_FILE_KEY_ATTR;
+	l->n = SYSFS_FILE_ATTRIBUTES;
+	l->key = SYSFS_FILE_KEY_ATTR;
 
-    size = l->n * (sizeof(attr_t) + sizeof(struct attr));
+	size = l->n * (sizeof(attr_t) + sizeof(struct attr));
 
-    if ((l->attr = (attr_t *) malloc(size)) == NULL)
-	return ENOMEM;
-    bzero(l->attr, size);
+	if ((l->attr = (attr_t *) malloc(size)) == NULL)
+		return ENOMEM;
+	bzero(l->attr, size);
 
-    l->attr[0] = (attr_t) ((u_long) l->attr + sizeof(struct attr));
+	l->attr[0] = (attr_t) ((u_long) l->attr + sizeof(struct attr));
 
-    l->attr[0]->type = ATTR_STRING;
-    l->attr[0]->len = SYSFILE_NAME_LEN;
-    strcpy(l->attr[0]->name, "name");
+	l->attr[0]->type = ATTR_STRING;
+	l->attr[0]->len = SYSFILE_NAME_LEN;
+	strcpy(l->attr[0]->name, "name");
 
 #if _DEBUG
-    for (size = 0, i = 0; i < SYSFS_FILE_ATTRIBUTES; i++)
-	size += l->attr[i]->len;
-    kprintf("sysfile_attr: n %d size %d\n", l->n, size);
+	for (size = 0, i = 0; i < SYSFS_FILE_ATTRIBUTES; i++)
+		size += l->attr[i]->len;
+	kprintf("sysfile_attr: n %d size %d\n", l->n, size);
 #endif
 
-    return 0;
+	return 0;
 }

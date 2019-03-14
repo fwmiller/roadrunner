@@ -26,8 +26,7 @@
 #include <curses.h>
 #include <stdio.h>
 
-void
-addch(char ch)
+void addch(char ch)
 {
-    printf("%c", ch);
+	printf("%c", ch);
 }

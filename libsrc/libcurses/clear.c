@@ -28,8 +28,7 @@
 #include <stdlib.h>
 #include <sys/ioctl.h>
 
-void
-clear()
+void clear()
 {
-    ioctl(STDOUT, CLEAR, NULL);
+	ioctl(STDOUT, CLEAR, NULL);
 }

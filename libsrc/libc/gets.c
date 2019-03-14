@@ -26,8 +26,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-char *
-gets(char *s)
+char *gets(char *s)
 {
-    return NULL;
+	return NULL;
 }

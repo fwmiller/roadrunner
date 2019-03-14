@@ -28,15 +28,15 @@
 #include <string.h>
 #include <unistd.h>
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
-    int i, result;
+	int i, result;
 
-    for (i = 1; i < argc; i++) {
-	result = unlink(argv[i]);
-	if (result < 0)
-	    printf("could not delete %s (%s)\n", argv[i], strerror(result));
-    }
-    return 0;
+	for (i = 1; i < argc; i++) {
+		result = unlink(argv[i]);
+		if (result < 0)
+			printf("could not delete %s (%s)\n", argv[i],
+			       strerror(result));
+	}
+	return 0;
 }

@@ -26,14 +26,13 @@
 #include <stdio.h>
 #include <unistd.h>
 
-int
-fgetc(FILE * stream)
+int fgetc(FILE * stream)
 {
-    u_char ch;
-    int len;
+	u_char ch;
+	int len;
 
-    len = read((int) stream, &ch, 1);
-    if (len < 0)
-	return EOF;
-    return (int) ch;
+	len = read((int)stream, &ch, 1);
+	if (len < 0)
+		return EOF;
+	return (int)ch;
 }

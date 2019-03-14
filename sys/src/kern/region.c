@@ -27,111 +27,104 @@
 #include <sys/config.h>
 #include <sys/mem.h>
 
-region_t
-valid_region(void *start)
+region_t valid_region(void *start)
 {
-    region_t r;
+	region_t r;
 
-    for (r = alloclist; r != NULL && r->start != (u_long) start;
-	 r = r->next);
-    return r;
+	for (r = alloclist; r != NULL && r->start != (u_long) start;
+	     r = r->next) ;
+	return r;
 }
 
-void
-region_clear(region_t r)
+void region_clear(region_t r)
 {
-    r->prev = NULL;
-    r->next = NULL;
-    r->start = 0;
-    r->len = 0;
-    r->proc = (-1);
+	r->prev = NULL;
+	r->next = NULL;
+	r->start = 0;
+	r->len = 0;
+	r->proc = (-1);
 }
 
-static inline void
-region_insert_before(region_t r, region_t s, region_t * l)
+static inline void region_insert_before(region_t r, region_t s, region_t * l)
 {
-    r->next = s;
-    if (*l == s)
-	*l = r;
-    else {
-	r->prev = s->prev;
-	s->prev->next = r;
-    }
-    s->prev = r;
-}
-
-static inline void
-region_insert_after(region_t r, region_t s)
-{
-    r->prev = s;
-    s->next = r;
-}
-
-void
-region_insert(region_t r, region_t * l)
-{
-    region_t s;
-
-    if (*l == NULL) {
-	*l = r;
-	return;
-    }
-    for (s = *l;; s = s->next) {
-	if (s->start > r->start) {
-	    region_insert_before(r, s, l);
-	    return;
+	r->next = s;
+	if (*l == s)
+		*l = r;
+	else {
+		r->prev = s->prev;
+		s->prev->next = r;
 	}
-	if (s->next == NULL) {
-	    region_insert_after(r, s);
-	    return;
+	s->prev = r;
+}
+
+static inline void region_insert_after(region_t r, region_t s)
+{
+	r->prev = s;
+	s->next = r;
+}
+
+void region_insert(region_t r, region_t * l)
+{
+	region_t s;
+
+	if (*l == NULL) {
+		*l = r;
+		return;
 	}
-    }
+	for (s = *l;; s = s->next) {
+		if (s->start > r->start) {
+			region_insert_before(r, s, l);
+			return;
+		}
+		if (s->next == NULL) {
+			region_insert_after(r, s);
+			return;
+		}
+	}
 }
 
-void
-region_remove(region_t r, region_t * l)
+void region_remove(region_t r, region_t * l)
 {
-    if (r->next != NULL)
-	r->next->prev = r->prev;
-    if (r->prev == NULL)
-	*l = r->next;
-    else
-	r->prev->next = r->next;
-    r->prev = NULL;
-    r->next = NULL;
+	if (r->next != NULL)
+		r->next->prev = r->prev;
+	if (r->prev == NULL)
+		*l = r->next;
+	else
+		r->prev->next = r->next;
+	r->prev = NULL;
+	r->next = NULL;
 }
 
-void *
-region_split(region_t r, size_t size)
+void *region_split(region_t r, size_t size)
 {
-    region_t s;
-    int i;
+	region_t s;
+	int i;
 
-    /* 
-     * Search for a free region table entry to record the split off portion
-     * of the specified region
-     */
-    for (i = 0; i < REGIONS && (s = &(regiontab[i]))->start != 0; i++);
-    if (i == REGIONS)
-	return NULL;
+	/* 
+	 * Search for a free region table entry to record the split off portion
+	 * of the specified region
+	 */
+	for (i = 0; i < REGIONS && (s = &(regiontab[i]))->start != 0; i++) ;
+	if (i == REGIONS)
+		return NULL;
 
-    /* Record the split off portion */
-    s->start = r->start + size;
-    s->len = r->len - size;
+	/* Record the split off portion */
+	s->start = r->start + size;
+	s->len = r->len - size;
 
-    /* Reduce the size of the specified region */
-    r->len = size;
+	/* Reduce the size of the specified region */
+	r->len = size;
 
-    /* 
-     * Enter the split off region the same region list as that containing the
-     * specified region
-     */
-    s->prev = r;
-    s->next = r->next;
-    if (r->next != NULL)
-	r->next->prev = s;
-    r->next = s;
+	/* 
+	 * Enter the split off region the same region list as that containing the
+	 * specified region
+	 */
+	s->prev = r;
+	s->next = r->next;
+	if (r->next != NULL)
+		r->next->prev = s;
+	r->next = s;
 
-    /* Return a pointer to start of the split off region */
-    return (void *) s->start;
+	/* Return a pointer to start of the split off region */
+	return (void *)s->start;
 }

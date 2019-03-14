@@ -28,8 +28,7 @@
 #include <fs/devfs.h>
 #include <sys/ioctl.h>
 
-int
-devfile_ioctl(file_t file, int cmd, void *args)
+int devfile_ioctl(file_t file, int cmd, void *args)
 {
-    return dev_ioctl((int) file->data, cmd, args);
+	return dev_ioctl((int)file->data, cmd, args);
 }

@@ -31,47 +31,44 @@
 
 #include <sys/print.h>
 
-void
-kprintf(const char *fmt, ...)
+void kprintf(const char *fmt, ...)
 {
-    va_list args;
+	va_list args;
 
-    va_start(args, fmt);
+	va_start(args, fmt);
 
-    print(NULL, NULL, fmt, args);
+	print(NULL, NULL, fmt, args);
 }
 
-int
-sprintf(char *s, const char *fmt, ...)
+int sprintf(char *s, const char *fmt, ...)
 {
-    va_list args;
-    int pos = 0;
+	va_list args;
+	int pos = 0;
 
-    va_start(args, fmt);
-    print(s, &pos, fmt, args);
-    return 0;
+	va_start(args, fmt);
+	print(s, &pos, fmt, args);
+	return 0;
 }
 
 #define LEN	8
 
-void
-bufdump(char *buf, int size)
+void bufdump(char *buf, int size)
 {
-    u_char *line;
-    int i, j, lines;
+	u_char *line;
+	int i, j, lines;
 
-    lines = (size + LEN - 1) / LEN;
-    for (i = 0; i < lines; i++) {
-	line = (u_char *) buf + i * LEN;
-	kprintf("%08x  ", (u_int) buf + i * LEN);
-	for (j = 0; j < LEN; j++)
-	    kprintf("%02x ", line[j]);
-	kprintf(" ");
-	for (j = 0; j < LEN; j++)
-	    if (isprint(line[j]))
-		kprintf("%c", (char) line[j]);
-	    else
-		kprintf(".");
-	kprintf("\n");
-    }
+	lines = (size + LEN - 1) / LEN;
+	for (i = 0; i < lines; i++) {
+		line = (u_char *) buf + i * LEN;
+		kprintf("%08x  ", (u_int) buf + i * LEN);
+		for (j = 0; j < LEN; j++)
+			kprintf("%02x ", line[j]);
+		kprintf(" ");
+		for (j = 0; j < LEN; j++)
+			if (isprint(line[j]))
+				kprintf("%c", (char)line[j]);
+			else
+				kprintf(".");
+		kprintf("\n");
+	}
 }

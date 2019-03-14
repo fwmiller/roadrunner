@@ -26,8 +26,7 @@
 #include <errno.h>
 #include <fs/sysfs.h>
 
-int
-sysfile_ioctl(file_t file, int cmd, void *args)
+int sysfile_ioctl(file_t file, int cmd, void *args)
 {
-    return ENOSYS;
+	return ENOSYS;
 }

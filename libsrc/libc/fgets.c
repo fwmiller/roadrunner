@@ -26,8 +26,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-char *
-fgets(char *s, int n, FILE * stream)
+char *fgets(char *s, int n, FILE * stream)
 {
-    return NULL;
+	return NULL;
 }

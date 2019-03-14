@@ -20,6 +20,8 @@ CFLAGS += -m32
 #
 CFLAGS += -D_PCI
 
+INDENT_RULES = -nbad -bap -nbc -bbo -hnl -br -brs -c33 -cd33 -ncdb -ce -ci4 -cli0 -d0 -di1 -nfc1 -i8 -ip0 -l80 -lp -npcs -nprs -npsl -sai -saf -saw -ncs -nsc -sob -nfca -cp33 -ss -ts8 -il1
+
 .S.o: $<
 #	$(CC) $(CFLAGS) -nostdinc -I. -I- -I$(INCDIR) -o $@ $<
 	$(CC) $(CFLAGS) -nostdinc -iquote . -I$(INCDIR) -o $@ $<

@@ -67,80 +67,80 @@
     asm volatile ("outl %%eax,%%dx" : : "a" (data), "d" (port))
 
 static inline void
-insb(u_short port, u_char * dst, int bytes)
+insb (u_short port, u_char * dst, int bytes)
 {
-    int i;
+  int i;
 
-    for (i = 0; i < bytes; i++)
-	dst[i] = inb(port);
+  for (i = 0; i < bytes; i++)
+    dst[i] = inb (port);
 }
 
 static inline void
-insw(u_short port, u_short * dst, int words)
+insw (u_short port, u_short * dst, int words)
 {
-    int i;
+  int i;
 
-    for (i = 0; i < words; i++)
-	((u_short *) dst)[i] = inw(port);
+  for (i = 0; i < words; i++)
+    ((u_short *) dst)[i] = inw (port);
 }
 
 static inline void
-insl(u_short port, u_long * dst, int dwords)
+insl (u_short port, u_long * dst, int dwords)
 {
-    int i;
+  int i;
 
-    for (i = 0; i < dwords; i++)
-	((u_int *) dst)[i] = inl(port);
+  for (i = 0; i < dwords; i++)
+    ((u_int *) dst)[i] = inl (port);
 }
 
 static inline void
-outsb(u_short port, u_char * src, int bytes)
+outsb (u_short port, u_char * src, int bytes)
 {
-    int i;
+  int i;
 
-    for (i = 0; i < bytes; i++)
-	outb(port, src[i]);
+  for (i = 0; i < bytes; i++)
+    outb (port, src[i]);
 }
 
 static inline void
-outsw(u_short port, u_short * src, int words)
+outsw (u_short port, u_short * src, int words)
 {
-    int i;
+  int i;
 
-    for (i = 0; i < words; i++)
-	outw(port, ((u_short *) src)[i]);
+  for (i = 0; i < words; i++)
+    outw (port, ((u_short *) src)[i]);
 }
 
 static inline void
-outsl(u_short port, u_long * src, int dwords)
+outsl (u_short port, u_long * src, int dwords)
 {
-    int i;
+  int i;
 
-    for (i = 0; i < dwords; i++)
-	outl(port, ((u_int *) src)[i]);
+  for (i = 0; i < dwords; i++)
+    outl (port, ((u_int *) src)[i]);
 }
 
-int bcd2int(u_char v);
+int bcd2int (u_char v);
 
 static inline u_char
-loadcmosbyte(u_char field)
+loadcmosbyte (u_char field)
 {
-    outb(MC146818_ADDR, field);
-    return inb(MC146818_DATA);
+  outb (MC146818_ADDR, field);
+  return inb (MC146818_DATA);
 }
 
-#endif				/* _KERNEL */
+#endif /* _KERNEL */
 
-u_char loadbyte(u_char * ptr);
-u_int loadword(u_char * ptr);
-u_int loaddword(u_char * ptr);
+u_char loadbyte (u_char * ptr);
+u_int loadword (u_char * ptr);
+u_int loaddword (u_char * ptr);
 
-void storebyte(u_char val, u_char * ptr);
-void storeword(u_int val, u_char * ptr);
-void storedword(u_int val, u_char * ptr);
+void storebyte (u_char val, u_char * ptr);
+void storeword (u_int val, u_char * ptr);
+void storedword (u_int val, u_char * ptr);
 
-void halt();
-void reboot();
-int load(char *path, char **prog, u_long * size, char **start);
+void halt ();
+void reboot ();
+int load (char *path, char **prog, u_long * size, char **start);
 
 #endif

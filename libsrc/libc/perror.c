@@ -25,8 +25,7 @@
 
 #include <stdio.h>
 
-void
-perror(const char *s)
+void perror(const char *s)
 {
-    return;
+	return;
 }

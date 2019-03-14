@@ -27,16 +27,15 @@
 #include <stdio.h>
 #include "rrfs.h"
 
-void
-printmbr(mbr_t mbr)
+void printmbr(mbr_t mbr)
 {
-    printf("%u tracks %u heads %u sec/trk %u sectors\n",
-	   (uint32_t) mbr->params.tracks,
-	   (uint32_t) mbr->params.heads,
-	   (uint32_t) mbr->params.sectorspertrack,
-	   (uint32_t) mbr->params.sectors);
-    printf("%u sec/fat %u sec/clust %u clusters\n",
-	   (uint32_t) mbr->params.fatsectors,
-	   (uint32_t) mbr->params.sectorsperclust,
-	   (uint32_t) mbr->params.clusters);
+	printf("%u tracks %u heads %u sec/trk %u sectors\n",
+	       (uint32_t) mbr->params.tracks,
+	       (uint32_t) mbr->params.heads,
+	       (uint32_t) mbr->params.sectorspertrack,
+	       (uint32_t) mbr->params.sectors);
+	printf("%u sec/fat %u sec/clust %u clusters\n",
+	       (uint32_t) mbr->params.fatsectors,
+	       (uint32_t) mbr->params.sectorsperclust,
+	       (uint32_t) mbr->params.clusters);
 }

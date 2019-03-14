@@ -42,14 +42,15 @@
 
 #define SYS_NMLN        64
 
-typedef struct utsname {
-    char sysname[SYS_NMLN];
-    char nodename[SYS_NMLN];
-    char release[SYS_NMLN];
-    char version[SYS_NMLN];
-    char machine[SYS_NMLN];
+typedef struct utsname
+{
+  char sysname[SYS_NMLN];
+  char nodename[SYS_NMLN];
+  char release[SYS_NMLN];
+  char version[SYS_NMLN];
+  char machine[SYS_NMLN];
 } *utsname_t;
 
-int uname(utsname_t name);
+int uname (utsname_t name);
 
 #endif

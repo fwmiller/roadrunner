@@ -27,49 +27,48 @@
 #include "vi.h"
 
 /* Redraw the screen starting at home */
-void
-refresh()
+void refresh()
 {
-    int x, y, i;
+	int x, y, i;
 
-    /*
-     * Draw characters from buffer until the buffer is exhausted or the
-     * end of the screen is reached
-     */
-    for (x = 0, y = 0, i = home; i < buflen; i++) {
+	/*
+	 * Draw characters from buffer until the buffer is exhausted or the
+	 * end of the screen is reached
+	 */
+	for (x = 0, y = 0, i = home; i < buflen; i++) {
+		move(y, x);
+
+		if (buf[i] == '\n')
+			clrtoeol();
+		else
+			addch(buf[i]);
+
+		if (buf[i] == '\n' || x == width - 1) {
+			/* Check for end of screen */
+			if (y == height - 1)
+				break;
+
+			/* Begining of next line */
+			y++;
+			x = 0;
+			clrtoeol();
+
+		} else
+			/* Next position on the same line */
+			x++;
+	}
+
+	/* Clean up last line on which characters were displayed */
 	move(y, x);
-
-	if (buf[i] == '\n')
-	    clrtoeol();
-	else
-	    addch(buf[i]);
-
-	if (buf[i] == '\n' || x == width - 1) {
-	    /* Check for end of screen */
-	    if (y == height - 1)
-		break;
-
-	    /* Begining of next line */
-	    y++;
-	    x = 0;
-	    clrtoeol();
-
-	} else
-	    /* Next position on the same line */
-	    x++;
-    }
-
-    /* Clean up last line on which characters were displayed */
-    move(y, x);
-    clrtoeol();
-
-    /*
-     * Fillers at the beginning of each unused line if the buffer does not
-     * fill the screen
-     */
-    for (y++; y < height; y++) {
-	move(y, 0);
-	addch('~');
 	clrtoeol();
-    }
+
+	/*
+	 * Fillers at the beginning of each unused line if the buffer does not
+	 * fill the screen
+	 */
+	for (y++; y < height; y++) {
+		move(y, 0);
+		addch('~');
+		clrtoeol();
+	}
 }

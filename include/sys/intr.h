@@ -71,7 +71,7 @@
 #define INTR_MATHCOPRERR	IRQ2INTR(IRQ_MATHCOPRERR)
 #define INTR_HD			IRQ2INTR(IRQ_HD)
 
-#endif				/* _KERNEL */
+#endif /* _KERNEL */
 
 /* Kernel interrupts (48 - 63) */
 #define INTR_SYSCALL		48
@@ -83,20 +83,21 @@
 
 typedef void (*isr_func_t) (void *params);
 
-typedef struct isr {
-    isr_func_t f;
-    void *params;
-    struct isr *next;
+typedef struct isr
+{
+  isr_func_t f;
+  void *params;
+  struct isr *next;
 } *isr_t;
 
-void intr_init();
-int intr_mask(int intr);
-int intr_unmask(int intr);
-void intr_eoi(int intr);
-void isrtab_init();
-int isr_inst(int intr, isr_func_t f, void *params);
-int isr_uninst(int intr, isr_func_t f);
+void intr_init ();
+int intr_mask (int intr);
+int intr_unmask (int intr);
+void intr_eoi (int intr);
+void isrtab_init ();
+int isr_inst (int intr, isr_func_t f, void *params);
+int isr_uninst (int intr, isr_func_t f);
 
-#endif				/* _KERNEL */
+#endif /* _KERNEL */
 
 #endif

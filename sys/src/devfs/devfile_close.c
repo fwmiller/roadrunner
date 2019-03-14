@@ -27,8 +27,7 @@
 #include <errno.h>
 #include <fs/devfs.h>
 
-int
-devfile_close(file_t file)
+int devfile_close(file_t file)
 {
-    return dev_close((int) file->data);
+	return dev_close((int)file->data);
 }

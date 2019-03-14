@@ -56,11 +56,13 @@ kernclean:
 	$(RM) *~ $(OBJS) $(TGT).sym $(TGT)
 
 indent: clean
-	Indent
-	cd $(ROOTDIR)/sys/src/dev; Indent
-	cd $(ROOTDIR)/sys/src/devfs; Indent
-	cd $(ROOTDIR)/sys/src/load; Indent
-	cd $(ROOTDIR)/sys/src/ramfs; Indent
-	cd $(ROOTDIR)/sys/src/rrfs; Indent
-	cd $(ROOTDIR)/sys/src/sysfs; Indent
-	cd $(ROOTDIR)/sys/src/time; Indent
+	cd $(ROOTDIR)/sys/src/dev; make indent
+	cd $(ROOTDIR)/sys/src/devfs; make indent
+	cd $(ROOTDIR)/sys/src/load; make indent
+	cd $(ROOTDIR)/sys/src/ramfs; make indent
+	cd $(ROOTDIR)/sys/src/rrfs; make indent
+	cd $(ROOTDIR)/sys/src/sysfs; make indent
+	cd $(ROOTDIR)/sys/src/time; make indent
+	indent $(INDENT_RULES) *.c
+	$(RM) *~
+

@@ -8,5 +8,5 @@ clean:
 	cd libcurses; make clean
 
 indent: clean
-	cd libc; Indent
-	cd libcurses; Indent
+	cd libc; make indent
+	cd libcurses; make indent

@@ -26,8 +26,7 @@
 #include <errno.h>
 #include <stdio.h>
 
-int
-rename(const char *oldname, const char *newname)
+int rename(const char *oldname, const char *newname)
 {
-    return ENOSYS;
+	return ENOSYS;
 }

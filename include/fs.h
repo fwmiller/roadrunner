@@ -64,7 +64,7 @@
 typedef struct fs *fs_t;
 typedef struct file *file_t;
 
-#endif				/* _KERNEL */
+#endif /* _KERNEL */
 
 typedef struct fsrec *fsrec_t;
 typedef struct fsrectab *fsrectab_t;
@@ -73,34 +73,36 @@ typedef struct attrlist *attrlist_t;
 #if _KERNEL
 
 /* File system operations vector */
-typedef struct fsops {
-    int slot;
-    char name[FS_NAME_LEN];
-    int (*init) ();
-    int (*shut) ();
-    int (*mount) (fs_t fs);
-    int (*unmount) (fs_t fs);
-    int (*open) (file_t file);
-    int (*close) (file_t file);
-    int (*ioctl) (file_t file, int cmd, void *args);
-    int (*read) (file_t file);
-    int (*write) (file_t file);
-    int (*attr) (file_t file, attrlist_t attr);
-    int (*readdir) (file_t file, char *entry);
-    int (*unlink) (char *path);
+typedef struct fsops
+{
+  int slot;
+  char name[FS_NAME_LEN];
+  int (*init) ();
+  int (*shut) ();
+  int (*mount) (fs_t fs);
+  int (*unmount) (fs_t fs);
+  int (*open) (file_t file);
+  int (*close) (file_t file);
+  int (*ioctl) (file_t file, int cmd, void *args);
+  int (*read) (file_t file);
+  int (*write) (file_t file);
+  int (*attr) (file_t file, attrlist_t attr);
+  int (*readdir) (file_t file, char *entry);
+  int (*unlink) (char *path);
 } *fsops_t;
 
 /* Mounted file system */
-struct fs {
-    int slot;
-    char *path;			       /* File system mount point */
-    fsops_t fsops;		       /* Operations for file system type */
-    int devno;			       /* Attached device */
-    u_long blkno;		       /* Current blkno on attached device */
-    void *data;			       /* Specific file system data */
+struct fs
+{
+  int slot;
+  char *path;			/* File system mount point */
+  fsops_t fsops;		/* Operations for file system type */
+  int devno;			/* Attached device */
+  u_long blkno;			/* Current blkno on attached device */
+  void *data;			/* Specific file system data */
 };
 
-#endif				/* _KERNEL */
+#endif /* _KERNEL */
 
 /*
  *
@@ -134,51 +136,56 @@ struct fs {
  */
 
 /* File system information record */
-struct fsrec {
-    int slot;
-    char *path;
-    char *fsops_name;
-    int devno;
-    u_long blkno;
+struct fsrec
+{
+  int slot;
+  char *path;
+  char *fsops_name;
+  int devno;
+  u_long blkno;
 };
 
 /* File system information record table */
-struct fsrectab {
-    int entries;
-    char recs[1];
+struct fsrectab
+{
+  int entries;
+  char recs[1];
 };
 
 #if _KERNEL
 
 /* Open file */
-struct file {
-    int slot;
-    int type;			       /* Type (regular or socket) */
-    char *path;			       /* Name (below mount point) */
-    int refcnt;			       /* Descriptor reference count */
-    fs_t fs;			       /* Resident file system */
-    int flags;			       /* Descriptor flags */
-    u_long filesize;		       /* Size in bytes */
-    u_long pos;			       /* Current file position */
-    void *data;			       /* Specific file system data */
-    int bufsize;		       /* Buffer size for transfers */
-    buf_t buf;			       /* Current buffer */
+struct file
+{
+  int slot;
+  int type;			/* Type (regular or socket) */
+  char *path;			/* Name (below mount point) */
+  int refcnt;			/* Descriptor reference count */
+  fs_t fs;			/* Resident file system */
+  int flags;			/* Descriptor flags */
+  u_long filesize;		/* Size in bytes */
+  u_long pos;			/* Current file position */
+  void *data;			/* Specific file system data */
+  int bufsize;			/* Buffer size for transfers */
+  buf_t buf;			/* Current buffer */
 };
 
-#endif				/* _KERNEL */
+#endif /* _KERNEL */
 
 /* File system attribute */
-typedef struct attr {
-    u_char type;		       /* Attribute type */
-    int len;			       /* Length of attribute type */
-    char name[ATTR_NAME_LEN];	       /* Attribute name */
+typedef struct attr
+{
+  u_char type;			/* Attribute type */
+  int len;			/* Length of attribute type */
+  char name[ATTR_NAME_LEN];	/* Attribute name */
 } *attr_t;
 
 /* Attribute list */
-struct attrlist {
-    int n;			       /* Number of attribute in list */
-    int key;			       /* Key attribute in list */
-    attr_t *attr;		       /* List of attribute */
+struct attrlist
+{
+  int n;			/* Number of attribute in list */
+  int key;			/* Key attribute in list */
+  attr_t *attr;			/* List of attribute */
 };
 
 #if _KERNEL
@@ -192,43 +199,43 @@ extern struct mutex filetabmutex;
 
 #endif
 
-void getdir(char *path, char *dir);
-void getname(char *path, char *name);
-void mkpath(char *dir, char *name, char *path);
+void getdir (char *path, char *dir);
+void getname (char *path, char *name);
+void mkpath (char *dir, char *name, char *path);
 
 #if _KERNEL
 
-void dumpfstab();
-void dumpfiletab();
-void fsops_clear(fsops_t fsops);
-void fs_clear(fs_t fs);
-void file_clear(file_t file);
-void fstab_init();
-fs_t fs_lookup(char *path);
-int file_attr(file_t file, attrlist_t attr);
-int file_close(file_t file);
-int file_ioctl(file_t file, int cmd, void *args);
-int file_open(char *path, int flags, file_t * file);
-int file_read(file_t file, char *buf, int *len);
-int file_readdir(file_t file, char *entry);
-int file_write(file_t file, char *buf, int *len);
-int file_unlink(char *path);
-int fs_getfstab(fsrectab_t * fsrectab);
-int fs_mount(fsops_t fsops, char *path, int devno, fs_t * fs);
-int fs_unmount(fs_t fs);
-int fsops_init(fsops_t fsops);
-fsops_t fsops_inst(fsops_t fsops);
-int fsops_shut(fsops_t fsops);
-int fsops_uninst(fsops_t fsops);
+void dumpfstab ();
+void dumpfiletab ();
+void fsops_clear (fsops_t fsops);
+void fs_clear (fs_t fs);
+void file_clear (file_t file);
+void fstab_init ();
+fs_t fs_lookup (char *path);
+int file_attr (file_t file, attrlist_t attr);
+int file_close (file_t file);
+int file_ioctl (file_t file, int cmd, void *args);
+int file_open (char *path, int flags, file_t * file);
+int file_read (file_t file, char *buf, int *len);
+int file_readdir (file_t file, char *entry);
+int file_write (file_t file, char *buf, int *len);
+int file_unlink (char *path);
+int fs_getfstab (fsrectab_t * fsrectab);
+int fs_mount (fsops_t fsops, char *path, int devno, fs_t * fs);
+int fs_unmount (fs_t fs);
+int fsops_init (fsops_t fsops);
+fsops_t fsops_inst (fsops_t fsops);
+int fsops_shut (fsops_t fsops);
+int fsops_uninst (fsops_t fsops);
 
 #else
 
-int getfstab(fsrectab_t * fsrectab);
-int mount(const char *type, const char *path, const char *dev);
-int unmount(char *path);
-int attr(int fd, attrlist_t attr);
-int readdir(int fd, char *entry);
+int getfstab (fsrectab_t * fsrectab);
+int mount (const char *type, const char *path, const char *dev);
+int unmount (char *path);
+int attr (int fd, attrlist_t attr);
+int readdir (int fd, char *entry);
 
-#endif				/* _KERNEL */
+#endif /* _KERNEL */
 
 #endif

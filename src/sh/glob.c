@@ -31,115 +31,112 @@
 #include <string.h>
 #include <unistd.h>
 
-static int
-match(char *name, char *pat, char *patend)
+static int match(char *name, char *pat, char *patend)
 {
-    char ch;
+	char ch;
 
-    while (pat < patend)
-	switch (ch = *pat++) {
-	case '*':
-	    if (pat == patend)
-		return 1;
-	    do
-		if (match(name, pat, patend))
-		    return 1;
-	    while (*name++ != '\0');
-	    return 0;
+	while (pat < patend)
+		switch (ch = *pat++) {
+		case '*':
+			if (pat == patend)
+				return 1;
+			do
+				if (match(name, pat, patend))
+					return 1;
+			while (*name++ != '\0') ;
+			return 0;
 
-	default:
-	    if (ch != *name++)
-		return 0;
+		default:
+			if (ch != *name++)
+				return 0;
+		}
+	return (*name == '\0' ? 1 : 0);
+}
+
+static void glob_extend(char *name, char **pathv)
+{
+	char *newpathv;
+	int newlen;
+
+	if (*pathv == NULL) {
+		*pathv = (char *)malloc(strlen(name) + 1);
+		if (*pathv == NULL)
+			return;
+		strcpy(*pathv, name);
+		return;
 	}
-    return (*name == '\0' ? 1 : 0);
+	newlen = strlen(name) + strlen(*pathv) + 1;
+	if ((newpathv = (char *)malloc(newlen)) == NULL)
+		return;
+
+	strcpy(newpathv, *pathv);
+	strcat(newpathv, " ");
+	strcat(newpathv, name);
+
+	free(*pathv);
+	*pathv = newpathv;
 }
 
-static void
-glob_extend(char *name, char **pathv)
+int glob(char *pattern, char *path, char **pathv)
 {
-    char *newpathv;
-    int newlen;
+	int dir, size, off, i, result;
+	struct attrlist l;
+	char *entry;
 
-    if (*pathv == NULL) {
-	*pathv = (char *) malloc(strlen(name) + 1);
-	if (*pathv == NULL)
-	    return;
-	strcpy(*pathv, name);
-	return;
-    }
-    newlen = strlen(name) + strlen(*pathv) + 1;
-    if ((newpathv = (char *) malloc(newlen)) == NULL)
-	return;
-
-    strcpy(newpathv, *pathv);
-    strcat(newpathv, " ");
-    strcat(newpathv, name);
-
-    free(*pathv);
-    *pathv = newpathv;
-}
-
-int
-glob(char *pattern, char *path, char **pathv)
-{
-    int dir, size, off, i, result;
-    struct attrlist l;
-    char *entry;
-
-    *pathv = NULL;
+	*pathv = NULL;
 
 #if 0
-    if (chdir(path) < 0)
-	return EFAIL;
+	if (chdir(path) < 0)
+		return EFAIL;
 #endif
-    if ((dir = open(path, O_RDONLY)) < 0)
-	return dir;
-    if ((result = attr(dir, &l)) < 0) {
-	close(dir);
-	return result;
-    }
-    /*
-     * For the moment, lets glob on the key attribute only.  It must be of
-     * type ATTR_STRING and it's name must be name.
-     */
-    if (l.attr[l.key]->type != ATTR_STRING) {
-	free(l.attr);
-	close(dir);
-	return EFAIL;
-    }
-    if (strcmp(l.attr[l.key]->name, "name") != 0) {
-	free(l.attr);
-	close(dir);
-	return EFAIL;
-    }
-    /* Determine the size of each directory entry */
-    for (size = 0, i = 0; i < l.n; i++)
-	size += l.attr[i]->len;
+	if ((dir = open(path, O_RDONLY)) < 0)
+		return dir;
+	if ((result = attr(dir, &l)) < 0) {
+		close(dir);
+		return result;
+	}
+	/*
+	 * For the moment, lets glob on the key attribute only.  It must be of
+	 * type ATTR_STRING and it's name must be name.
+	 */
+	if (l.attr[l.key]->type != ATTR_STRING) {
+		free(l.attr);
+		close(dir);
+		return EFAIL;
+	}
+	if (strcmp(l.attr[l.key]->name, "name") != 0) {
+		free(l.attr);
+		close(dir);
+		return EFAIL;
+	}
+	/* Determine the size of each directory entry */
+	for (size = 0, i = 0; i < l.n; i++)
+		size += l.attr[i]->len;
 
-    /* Determine the offset of key attribute */
-    for (off = 0, i = 0; i < l.key; i++)
-	off += l.attr[i]->len;
+	/* Determine the offset of key attribute */
+	for (off = 0, i = 0; i < l.key; i++)
+		off += l.attr[i]->len;
 
-    entry = (char *) malloc(size);
-    if (entry == NULL) {
-	free(l.attr);
-	close(dir);
-	return ENOMEM;
-    }
+	entry = (char *)malloc(size);
+	if (entry == NULL) {
+		free(l.attr);
+		close(dir);
+		return ENOMEM;
+	}
 #define NAME ((char *) (entry + off))
 
-    /* Search for matching names. */
-    for (result = 0;;) {
-	bzero(entry, size);
-	if ((result = readdir(dir, entry)) < 0)
-	    break;
-	else if (match(NAME, pattern, pattern + strlen(pattern)))
-	    glob_extend(NAME, pathv);
-    }
-    free(entry);
-    free(l.attr);
-    close(dir);
-    if (result < 0 && result != EFILEEOF)
-	return result;
-    return 0;
+	/* Search for matching names. */
+	for (result = 0;;) {
+		bzero(entry, size);
+		if ((result = readdir(dir, entry)) < 0)
+			break;
+		else if (match(NAME, pattern, pattern + strlen(pattern)))
+			glob_extend(NAME, pathv);
+	}
+	free(entry);
+	free(l.attr);
+	close(dir);
+	if (result < 0 && result != EFILEEOF)
+		return result;
+	return 0;
 }

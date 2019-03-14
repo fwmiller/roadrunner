@@ -25,23 +25,22 @@
 
 #include "vi.h"
 
-void
-delete()
+void delete()
 {
-    if (buflen == 0 || buf[bufpos] == '\n')
-	return;
+	if (buflen == 0 || buf[bufpos] == '\n')
+		return;
 
-    cursor_off();
+	cursor_off();
 
-    if (bufpos < buflen - 1) {
-	shift_left(buf + bufpos, buf + bufpos + 1, buflen - bufpos - 1);
-	buflen--;
+	if (bufpos < buflen - 1) {
+		shift_left(buf + bufpos, buf + bufpos + 1, buflen - bufpos - 1);
+		buflen--;
 
-	if (buf[bufpos] == '\n' && x > 0) {
-	    x--;
-	    bufpos--;
+		if (buf[bufpos] == '\n' && x > 0) {
+			x--;
+			bufpos--;
+		}
 	}
-    }
-    refresh();
-    cursor_on();
+	refresh();
+	cursor_on();
 }

@@ -25,19 +25,18 @@
 
 #include <string.h>
 
-size_t
-strspn(const char *s, const char *accept)
+size_t strspn(const char *s, const char *accept)
 {
-    int acceptlen, i, j;
+	int acceptlen, i, j;
 
-    acceptlen = strlen(accept);
+	acceptlen = strlen(accept);
 
-    for (i = 0; s[i] != '\0'; i++) {
-	for (j = 0; j < acceptlen; j++)
-	    if (s[i] == accept[j])
-		break;
-	if (j == acceptlen)
-	    break;
-    }
-    return i;
+	for (i = 0; s[i] != '\0'; i++) {
+		for (j = 0; j < acceptlen; j++)
+			if (s[i] == accept[j])
+				break;
+		if (j == acceptlen)
+			break;
+	}
+	return i;
 }

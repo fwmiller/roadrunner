@@ -29,52 +29,51 @@
 #include <string.h>
 #include <sys/time.h>
 
-int
-rrfs_updatedir(file_t file, u_long firstclust)
+int rrfs_updatedir(file_t file, u_long firstclust)
 {
-    rrfile_t rrfile = (rrfile_t) file->data;
-    buf_t b;
-    u_int clust;
-    direntry_t de;
-    time_t t;
-    struct tm tm;
-    int off, result;
+	rrfile_t rrfile = (rrfile_t) file->data;
+	buf_t b;
+	u_int clust;
+	direntry_t de;
+	time_t t;
+	struct tm tm;
+	int off, result;
 
-    /* 
-     * Scan directory clusters looking for the one that contains the
-     * directory entry we're interested in
-     */
-    for (clust = rrfile->declust, off = rrfile->deoff;
-	 off >= file->bufsize;
-	 clust = rrfs_nextclust(file->fs, clust), off -= file->bufsize);
+	/* 
+	 * Scan directory clusters looking for the one that contains the
+	 * directory entry we're interested in
+	 */
+	for (clust = rrfile->declust, off = rrfile->deoff;
+	     off >= file->bufsize;
+	     clust = rrfs_nextclust(file->fs, clust), off -= file->bufsize) ;
 
-    /* Read the cluster */
-    b = bget(file->bufsize);
-    blen(b) = file->bufsize;
-    if ((result = rrfs_readclust(file, clust, &b)) < 0) {
+	/* Read the cluster */
+	b = bget(file->bufsize);
+	blen(b) = file->bufsize;
+	if ((result = rrfs_readclust(file, clust, &b)) < 0) {
 #if _DEBUG
-	kprintf("rrfs_updatedir: read cluster failed (%s)\n",
-		strerror(result));
+		kprintf("rrfs_updatedir: read cluster failed (%s)\n",
+			strerror(result));
 #endif
-	brel(b);
-	return result;
-    }
-    de = (direntry_t) (bstart(b) + off);
+		brel(b);
+		return result;
+	}
+	de = (direntry_t) (bstart(b) + off);
 
-    /* Update time and date */
-    t = time();
-    time2tm(t, &tm);
-    de->time[0] = (u_char) tm.tm_hour;
-    de->time[1] = (u_char) tm.tm_min;
-    de->time[2] = (u_char) tm.tm_sec;
-    de->date[0] = (u_char) tm.tm_mon;
-    de->date[1] = (u_char) tm.tm_mday;
-    de->date[2] = (u_char) tm.tm_year;
+	/* Update time and date */
+	t = time();
+	time2tm(t, &tm);
+	de->time[0] = (u_char) tm.tm_hour;
+	de->time[1] = (u_char) tm.tm_min;
+	de->time[2] = (u_char) tm.tm_sec;
+	de->date[0] = (u_char) tm.tm_mon;
+	de->date[1] = (u_char) tm.tm_mday;
+	de->date[2] = (u_char) tm.tm_year;
 
-    /* Update file size and first cluster */
-    de->size = (u_long) file->pos;
-    de->start = (u_long) firstclust;
+	/* Update file size and first cluster */
+	de->size = (u_long) file->pos;
+	de->start = (u_long) firstclust;
 
-    /* Write the updated cluster */
-    return rrfs_writeclust(file, clust, &b);
+	/* Write the updated cluster */
+	return rrfs_writeclust(file, clust, &b);
 }

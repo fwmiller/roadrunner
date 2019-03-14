@@ -34,16 +34,15 @@ struct mutex rrfstabmutex;
 struct rrfile rrfiletab[RR_FILES];
 struct mutex rrfiletabmutex;
 
-int
-rrfs_init()
+int rrfs_init()
 {
-    int rrfsno, rrfileno;
+	int rrfsno, rrfileno;
 
-    for (rrfsno = 0; rrfsno < RR_FILE_SYSTEMS; rrfsno++)
-	rrfs_clear(&(rrfstab[rrfsno]));
+	for (rrfsno = 0; rrfsno < RR_FILE_SYSTEMS; rrfsno++)
+		rrfs_clear(&(rrfstab[rrfsno]));
 
-    for (rrfileno = 0; rrfileno < RR_FILES; rrfileno++)
-	rrfile_clear(&(rrfiletab[rrfileno]));
+	for (rrfileno = 0; rrfileno < RR_FILES; rrfileno++)
+		rrfile_clear(&(rrfiletab[rrfileno]));
 
-    return 0;
+	return 0;
 }

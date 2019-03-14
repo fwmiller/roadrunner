@@ -35,13 +35,12 @@ FILE *stderr = (FILE *) STDERR;
 
 int main(int argc, char **argv);
 
-void
-__startup(int argc, char **argv)
+void __startup(int argc, char **argv)
 {
-    int result;
+	int result;
 
-    /* Start application program */
-    result = main(argc, argv);
+	/* Start application program */
+	result = main(argc, argv);
 
-    _exit(result);
+	_exit(result);
 }

@@ -30,104 +30,103 @@
 #include <stdlib.h>
 #include <string.h>
 
-int
-rrfile_unlink(char *path)
+int rrfile_unlink(char *path)
 {
-    file_t file = NULL;
-    rrfs_t rrfs;
-    rrfile_t rrfile;
-    u_long clust, nextclust;
-    u_long clustsize, off;
-    int result;
+	file_t file = NULL;
+	rrfs_t rrfs;
+	rrfile_t rrfile;
+	u_long clust, nextclust;
+	u_long clustsize, off;
+	int result;
 
-    result = file_open(path, O_RDONLY, &file);
-    if (result < 0)
-	return result;
+	result = file_open(path, O_RDONLY, &file);
+	if (result < 0)
+		return result;
 
-    if (file->flags & F_DIR) {
-	file_close(file);
-	return EISDIR;
-    }
-    rrfs = (rrfs_t) file->fs->data;
-    rrfile = (rrfile_t) file->data;
-
-    /* First file buffer is not needed */
-    if (file->buf != NULL) {
-	brel(file->buf);
-	file->buf = NULL;
-    }
-
-    /* Clear cluster chain in the fat */
-    for (clust = rrfile->firstclust;;) {
-
-	/* Get fat block associated with cluster number */
-	if ((result = rrfs_readfatblk(file->fs, clust)) < 0) {
-#if _DEBUG
-	    kprintf("rrfile_unlink: read fatblk failed (%s)\n",
-		    strerror(result));
-#endif
-	    goto unlink_done;
+	if (file->flags & F_DIR) {
+		file_close(file);
+		return EISDIR;
 	}
-	/* Get next cluster number */
-	nextclust = rrfs->fatblk[clust % FAT_BLK_ENTRIES];
+	rrfs = (rrfs_t) file->fs->data;
+	rrfile = (rrfile_t) file->data;
 
-	/* Clear current cluster number */
-	rrfs->fatblk[clust % FAT_BLK_ENTRIES] = 0;
-	rrfs->flags |= RFS_FATBLK_DIRTY;
+	/* First file buffer is not needed */
+	if (file->buf != NULL) {
+		brel(file->buf);
+		file->buf = NULL;
+	}
 
-	if (nextclust >= rrfs->mbr->params.clusters)
-	    break;
-	clust = nextclust;
-    }
-    /* Clear directory entry */
-    clustsize = rrfs->mbr->params.sectorsperclust * SECTOR_SIZE;
+	/* Clear cluster chain in the fat */
+	for (clust = rrfile->firstclust;;) {
+
+		/* Get fat block associated with cluster number */
+		if ((result = rrfs_readfatblk(file->fs, clust)) < 0) {
 #if _DEBUG
-    kprintf("rrfile_unlink: clustsize %d declust %u deoff %u\n",
-	    clustsize, rrfile->declust, rrfile->deoff);
+			kprintf("rrfile_unlink: read fatblk failed (%s)\n",
+				strerror(result));
+#endif
+			goto unlink_done;
+		}
+		/* Get next cluster number */
+		nextclust = rrfs->fatblk[clust % FAT_BLK_ENTRIES];
+
+		/* Clear current cluster number */
+		rrfs->fatblk[clust % FAT_BLK_ENTRIES] = 0;
+		rrfs->flags |= RFS_FATBLK_DIRTY;
+
+		if (nextclust >= rrfs->mbr->params.clusters)
+			break;
+		clust = nextclust;
+	}
+	/* Clear directory entry */
+	clustsize = rrfs->mbr->params.sectorsperclust * SECTOR_SIZE;
+#if _DEBUG
+	kprintf("rrfile_unlink: clustsize %d declust %u deoff %u\n",
+		clustsize, rrfile->declust, rrfile->deoff);
 #endif
 
-    /*
-     * Find the directory cluster containing the directory entry and adjust
-     * the offset to be from the beginning of that cluster
-     */
-    for (clust = rrfile->declust, off = rrfile->deoff;
-	 off >= clustsize;
-	 clust = rrfs_nextclust(file->fs, clust), off -= clustsize);
+	/*
+	 * Find the directory cluster containing the directory entry and adjust
+	 * the offset to be from the beginning of that cluster
+	 */
+	for (clust = rrfile->declust, off = rrfile->deoff;
+	     off >= clustsize;
+	     clust = rrfs_nextclust(file->fs, clust), off -= clustsize) ;
 #if _DEBUG
-    kprintf("rrfile_unlink: directory entry clust %u off %u\n", clust, off);
+	kprintf("rrfile_unlink: directory entry clust %u off %u\n", clust, off);
 #endif
 
-    /* file->buf holds the cluster containing the directory entry */
-    file->buf = bget(clustsize);
-    blen(file->buf) = clustsize;
+	/* file->buf holds the cluster containing the directory entry */
+	file->buf = bget(clustsize);
+	blen(file->buf) = clustsize;
 
-    result = rrfs_readclust(file, clust, &(file->buf));
-    if (result < 0) {
+	result = rrfs_readclust(file, clust, &(file->buf));
+	if (result < 0) {
 #if _DEBUG
-	kprintf
-	    ("rrfile_unlink: read directory entry clust failed (%s)\n",
-	     strerror(result));
+		kprintf
+		    ("rrfile_unlink: read directory entry clust failed (%s)\n",
+		     strerror(result));
 #endif
-	brel(file->buf);
-	file->buf = NULL;
-	goto unlink_done;
-    }
+		brel(file->buf);
+		file->buf = NULL;
+		goto unlink_done;
+	}
 #if _DEBUG
-    rrfs_direntrydump((direntry_t) (bstart(file->buf) + off));
+	rrfs_direntrydump((direntry_t) (bstart(file->buf) + off));
 #endif
-    bzero(bstart(file->buf) + off, DE_SIZE);
-    ((u_char *) bstart(file->buf))[off] = DE_DELETED;
+	bzero(bstart(file->buf) + off, DE_SIZE);
+	((u_char *) bstart(file->buf))[off] = DE_DELETED;
 
-    result = rrfs_writeclust(file, clust, &(file->buf));
-    if (result < 0) {
+	result = rrfs_writeclust(file, clust, &(file->buf));
+	if (result < 0) {
 #if _DEBUG
-	kprintf
-	    ("rrfile_unlink: write directory entry clust failed (%s)\n",
-	     strerror(result));
+		kprintf
+		    ("rrfile_unlink: write directory entry clust failed (%s)\n",
+		     strerror(result));
 #endif
-    }
+	}
 
-  unlink_done:
-    file_close(file);
-    return result;
+ unlink_done:
+	file_close(file);
+	return result;
 }

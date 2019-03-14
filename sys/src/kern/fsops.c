@@ -31,59 +31,55 @@
 struct fsops fsopstab[FILE_SYSTEM_TYPES];
 struct mutex fsopstabmutex;
 
-int
-fsops_init(fsops_t fsops)
+int fsops_init(fsops_t fsops)
 {
-    if (fsops->init != NULL)
-	return fsops->init();
-    return ENOSYS;
+	if (fsops->init != NULL)
+		return fsops->init();
+	return ENOSYS;
 }
 
-fsops_t
-fsops_inst(fsops_t fsops)
+fsops_t fsops_inst(fsops_t fsops)
 {
-    int fsopsno;
+	int fsopsno;
 
-    mutex_lock(&fsopstabmutex);
+	mutex_lock(&fsopstabmutex);
 
-    for (fsopsno = 0; fsopsno < FILE_SYSTEM_TYPES; fsopsno++)
-	if (strcmp(fsopstab[fsopsno].name, fsops->name) == 0) {
-	    mutex_unlock(&fsopstabmutex);
-	    return NULL;
+	for (fsopsno = 0; fsopsno < FILE_SYSTEM_TYPES; fsopsno++)
+		if (strcmp(fsopstab[fsopsno].name, fsops->name) == 0) {
+			mutex_unlock(&fsopstabmutex);
+			return NULL;
+		}
+	for (fsopsno = 0;
+	     fsopsno < FILE_SYSTEM_TYPES
+	     && fsopstab[fsopsno].name[0] != '\0'; fsopsno++) ;
+	if (fsopsno == FILE_SYSTEM_TYPES) {
+		mutex_unlock(&fsopstabmutex);
+		return NULL;
 	}
-    for (fsopsno = 0;
-	 fsopsno < FILE_SYSTEM_TYPES
-	 && fsopstab[fsopsno].name[0] != '\0'; fsopsno++);
-    if (fsopsno == FILE_SYSTEM_TYPES) {
+	strncpy(fsopstab[fsopsno].name, fsops->name, FS_NAME_LEN);
+	fsopstab[fsopsno].init = fsops->init;
+	fsopstab[fsopsno].shut = fsops->shut;
+	fsopstab[fsopsno].mount = fsops->mount;
+	fsopstab[fsopsno].unmount = fsops->unmount;
+	fsopstab[fsopsno].open = fsops->open;
+	fsopstab[fsopsno].close = fsops->close;
+	fsopstab[fsopsno].ioctl = fsops->ioctl;
+	fsopstab[fsopsno].read = fsops->read;
+	fsopstab[fsopsno].write = fsops->write;
+	fsopstab[fsopsno].attr = fsops->attr;
+	fsopstab[fsopsno].readdir = fsops->readdir;
+	fsopstab[fsopsno].unlink = fsops->unlink;
+
 	mutex_unlock(&fsopstabmutex);
-	return NULL;
-    }
-    strncpy(fsopstab[fsopsno].name, fsops->name, FS_NAME_LEN);
-    fsopstab[fsopsno].init = fsops->init;
-    fsopstab[fsopsno].shut = fsops->shut;
-    fsopstab[fsopsno].mount = fsops->mount;
-    fsopstab[fsopsno].unmount = fsops->unmount;
-    fsopstab[fsopsno].open = fsops->open;
-    fsopstab[fsopsno].close = fsops->close;
-    fsopstab[fsopsno].ioctl = fsops->ioctl;
-    fsopstab[fsopsno].read = fsops->read;
-    fsopstab[fsopsno].write = fsops->write;
-    fsopstab[fsopsno].attr = fsops->attr;
-    fsopstab[fsopsno].readdir = fsops->readdir;
-    fsopstab[fsopsno].unlink = fsops->unlink;
-
-    mutex_unlock(&fsopstabmutex);
-    return &(fsopstab[fsopsno]);
+	return &(fsopstab[fsopsno]);
 }
 
-int
-fsops_shut(fsops_t fsops)
+int fsops_shut(fsops_t fsops)
 {
-    return ENOSYS;
+	return ENOSYS;
 }
 
-int
-fsops_uninst(fsops_t fsops)
+int fsops_uninst(fsops_t fsops)
 {
-    return ENOSYS;
+	return ENOSYS;
 }

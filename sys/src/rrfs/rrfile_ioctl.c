@@ -27,12 +27,11 @@
 #include <fs/rrfs.h>
 #include <sys/ioctl.h>
 
-int
-rrfile_ioctl(file_t file, int cmd, void *args)
+int rrfile_ioctl(file_t file, int cmd, void *args)
 {
-    if (cmd == GET_BUFFER_SIZE) {
-	*((u_long *) args) = file->bufsize;
-	return 0;
-    }
-    return ENOTTY;
+	if (cmd == GET_BUFFER_SIZE) {
+		*((u_long *) args) = file->bufsize;
+		return 0;
+	}
+	return ENOTTY;
 }

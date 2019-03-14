@@ -26,8 +26,7 @@
 #include <errno.h>
 #include <stdio.h>
 
-int
-ferror(FILE * stream)
+int ferror(FILE * stream)
 {
-    return 0;
+	return 0;
 }

@@ -39,83 +39,82 @@ void dump_proctab(char *s);
 void dump_regiontab(char *s);
 void dump_vm(char *s, pt_t pd);
 
-static int
-sysfile_specific(file_t file, int sysfilenameno)
+static int sysfile_specific(file_t file, int sysfilenameno)
 {
-    char s[32];
+	char s[32];
 
-    bzero(s, 32);
-    strcpy(s, "/");
-    strcat(s, sysfs_filenames[sysfilenameno]);
+	bzero(s, 32);
+	strcpy(s, "/");
+	strcat(s, sysfs_filenames[sysfilenameno]);
 
-    if (strcmp(file->path, sysfs_filenames[sysfilenameno]) == 0 ||
-	strcmp(file->path, s) == 0) {
+	if (strcmp(file->path, sysfs_filenames[sysfilenameno]) == 0 ||
+	    strcmp(file->path, s) == 0) {
 
-	file->data = malloc(PAGE_SIZE);
-	if (file->data == NULL) {
+		file->data = malloc(PAGE_SIZE);
+		if (file->data == NULL) {
 #if _DEBUG
-	    kprintf("sysfile_specific: could not alloc file buffer\n");
+			kprintf
+			    ("sysfile_specific: could not alloc file buffer\n");
 #endif
-	    return ENOMEM;
-	}
-	bzero(file->data, PAGE_SIZE);
-	switch (sysfilenameno) {
-	case SYSFILE_NAME_BLKS:
-	    dump_blks(file->data);
-	    break;
-	case SYSFILE_NAME_BUFS:
-	    dump_bufs(file->data);
-	    break;
-	case SYSFILE_NAME_FILES:
-	    dump_filetab(file->data);
-	    break;
-	case SYSFILE_NAME_FILESYSTEMS:
-	    dump_fstab(file->data);
-	    break;
-	case SYSFILE_NAME_PROCS:
-	    dump_proctab(file->data);
-	    break;
-	case SYSFILE_NAME_REGIONS:
-	    dump_regiontab(file->data);
-	    break;
-	case SYSFILE_NAME_VM:
-	    dump_vm(file->data, (pt_t) current->context.tss->cr3);
-	    break;
-	//default:
-	}
-	file->filesize = strlen(file->data);
-	file->bufsize = PAGE_SIZE;
+			return ENOMEM;
+		}
+		bzero(file->data, PAGE_SIZE);
+		switch (sysfilenameno) {
+		case SYSFILE_NAME_BLKS:
+			dump_blks(file->data);
+			break;
+		case SYSFILE_NAME_BUFS:
+			dump_bufs(file->data);
+			break;
+		case SYSFILE_NAME_FILES:
+			dump_filetab(file->data);
+			break;
+		case SYSFILE_NAME_FILESYSTEMS:
+			dump_fstab(file->data);
+			break;
+		case SYSFILE_NAME_PROCS:
+			dump_proctab(file->data);
+			break;
+		case SYSFILE_NAME_REGIONS:
+			dump_regiontab(file->data);
+			break;
+		case SYSFILE_NAME_VM:
+			dump_vm(file->data, (pt_t) current->context.tss->cr3);
+			break;
+			//default:
+		}
+		file->filesize = strlen(file->data);
+		file->bufsize = PAGE_SIZE;
 #if _DEBUG
-	kprintf("sysfile_specific: filesize %d\n", file->filesize);
+		kprintf("sysfile_specific: filesize %d\n", file->filesize);
 #endif
-	return 0;
-    }
-    return EFAIL;
+		return 0;
+	}
+	return EFAIL;
 }
 
-int
-sysfile_open(file_t file)
+int sysfile_open(file_t file)
 {
-    int i;
+	int i;
 
-    if (!(file->flags & O_RDONLY))
-	return EINVAL;
+	if (!(file->flags & O_RDONLY))
+		return EINVAL;
 
-    /* Special case for root directory */
-    if (strcmp(file->path, "/") == 0 || strcmp(file->path, "") == 0) {
-	file->data = (void *) 0;
-	file->flags |= F_EOF | F_DIR;
-	return 0;
-    }
+	/* Special case for root directory */
+	if (strcmp(file->path, "/") == 0 || strcmp(file->path, "") == 0) {
+		file->data = (void *)0;
+		file->flags |= F_EOF | F_DIR;
+		return 0;
+	}
 
-    for (i = 0; i < SYSFILE_NAMES; i++)
-	if (sysfile_specific(file, i) == 0)
-	    break;
-    if (i == SYSFILE_NAMES) {
+	for (i = 0; i < SYSFILE_NAMES; i++)
+		if (sysfile_specific(file, i) == 0)
+			break;
+	if (i == SYSFILE_NAMES) {
 #if _DEBUG
-	kprintf("sysfile_open: %s not found\n", file->path);
+		kprintf("sysfile_open: %s not found\n", file->path);
 #endif
-	return ENOENT;
-    }
-    return 0;
+		return ENOENT;
+	}
+	return 0;
 }

@@ -26,64 +26,59 @@
 #include <stdlib.h>
 #include <sys/queue.h>
 
-void
-initq(queue_t q)
+void initq(queue_t q)
 {
-    q->h = NULL;
-    q->t = NULL;
+	q->h = NULL;
+	q->t = NULL;
 }
 
-proc_t
-firstq(queue_t q)
+proc_t firstq(queue_t q)
 {
-    return q->h;
+	return q->h;
 }
 
-proc_t
-remfirstq(queue_t q)
+proc_t remfirstq(queue_t q)
 {
-    proc_t p = q->h;
+	proc_t p = q->h;
 
-    if (p == NULL)
-	return NULL;
+	if (p == NULL)
+		return NULL;
 
-    if (p->next == NULL)
-	q->h = q->t = NULL;
-    else
-	q->h = p->next;
+	if (p->next == NULL)
+		q->h = q->t = NULL;
+	else
+		q->h = p->next;
 
-    p->next = NULL;
-    return p;
+	p->next = NULL;
+	return p;
 }
 
-void
-remq(proc_t p, queue_t q)
+void remq(proc_t p, queue_t q)
 {
-    proc_t prev, curr;
+	proc_t prev, curr;
 
-    for (prev = NULL, curr = q->h; curr != NULL;
-	 prev = curr, curr = curr->next) {
-	if (curr == p) {
-	    if (prev == NULL)
-		q->h = curr->next;
-	    else
-		prev->next = curr->next;
+	for (prev = NULL, curr = q->h; curr != NULL;
+	     prev = curr, curr = curr->next) {
+		if (curr == p) {
+			if (prev == NULL)
+				q->h = curr->next;
+			else
+				prev->next = curr->next;
 
-	    if (curr == q->t)
-		q->t = prev;
+			if (curr == q->t)
+				q->t = prev;
 
-	    p->next = NULL;
-	    return;
+			p->next = NULL;
+			return;
+		}
 	}
-    }
 }
 
-void
-insq(proc_t p, queue_t q)
+void insq(proc_t p, queue_t q)
 {
-    if (q->t == NULL)
-	q->h = p;
-    else
-	q->t->next = p;
-    q->t = p;
+	if (q->t == NULL)
+		q->h = p;
+	else
+		q->t->next = p;
+	q->t = p;
 }

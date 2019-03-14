@@ -17,4 +17,6 @@ clean:
 	$(RM) *~ $(OBJS) $(TGT)
 
 indent: clean
-	Indent
+	indent $(INDENT_RULES) *.c
+	$(RM) *~
+

@@ -25,31 +25,30 @@
 
 #include <curses.h>
 
-char *
-getstr(char *s)
+char *getstr(char *s)
 {
-    char ch;
-    int i = 0;
-    int x, y;
+	char ch;
+	int i = 0;
+	int x, y;
 
-    getyx(&y, &x);
+	getyx(&y, &x);
 
-    while ((ch = getch()) != '\n') {
-	if (ch == '\b' && i > 0) {
-	    s[--i] = '\0';
+	while ((ch = getch()) != '\n') {
+		if (ch == '\b' && i > 0) {
+			s[--i] = '\0';
 
-	    move(--y, x);
-	    addch(' ');
-	    move(y, x);
+			move(--y, x);
+			addch(' ');
+			move(y, x);
 
-	} else if (ch != '\b') {
-	    s[i++] = ch;
+		} else if (ch != '\b') {
+			s[i++] = ch;
 
-	    move(y++, x);
-	    addch(ch);
-	    move(y, x);
+			move(y++, x);
+			addch(ch);
+			move(y, x);
+		}
 	}
-    }
-    s[i] = '\0';
-    return s;
+	s[i] = '\0';
+	return s;
 }

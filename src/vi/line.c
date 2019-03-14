@@ -35,43 +35,39 @@
  * the left one position.
  */
 
-int
-dist_to_start_of_line(int pos)
+int dist_to_start_of_line(int pos)
 {
-    int dist;
+	int dist;
 
-    for (dist = 0; pos > 0 && buf[--pos] != '\n'; dist++);
-    return dist;
+	for (dist = 0; pos > 0 && buf[--pos] != '\n'; dist++) ;
+	return dist;
 }
 
-int
-dist_to_end_of_line(int pos)
+int dist_to_end_of_line(int pos)
 {
-    int dist;
+	int dist;
 
-    for (dist = 0; pos < buflen && buf[pos++] != '\n'; dist++);
-    return dist;
+	for (dist = 0; pos < buflen && buf[pos++] != '\n'; dist++) ;
+	return dist;
 }
 
-void
-shift_left(char *dst, char *src, int len)
+void shift_left(char *dst, char *src, int len)
 {
-    if (len <= 0)
-	return;
+	if (len <= 0)
+		return;
 
-    bcopy(src, dst, len);
-    src[len - 1] = 0;
+	bcopy(src, dst, len);
+	src[len - 1] = 0;
 }
 
-void
-shift_right(char *dst, char *src, int len)
+void shift_right(char *dst, char *src, int len)
 {
-    int i;
+	int i;
 
-    if (len <= 0)
-	return;
+	if (len <= 0)
+		return;
 
-    for (i = len - 1; i >= 0; i--)
-	dst[i] = src[i];
-    src[0] = 0;
+	for (i = len - 1; i >= 0; i--)
+		dst[i] = src[i];
+	src[0] = 0;
 }

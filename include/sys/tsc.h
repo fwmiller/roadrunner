@@ -26,15 +26,16 @@
 #ifndef __TSC_H
 #define __TSC_H
 
-struct tsc {
-    u_long hi;
-    u_long lo;
+struct tsc
+{
+  u_long hi;
+  u_long lo;
 };
 
 typedef struct tsc *tsc_t;
 
-void tscread(tsc_t counter);
-void tscsub(tsc_t result, tsc_t cnt1, tsc_t cnt2);
-void tsccalibrate();
+void tscread (tsc_t counter);
+void tscsub (tsc_t result, tsc_t cnt1, tsc_t cnt2);
+void tsccalibrate ();
 
 #endif

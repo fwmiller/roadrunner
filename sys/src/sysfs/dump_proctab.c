@@ -30,89 +30,87 @@
 
 #define PROC_HDR "pid  state  stdin  stdout  stderr  name"
 
-static void
-dump_proc(char **s, proc_t proc)
+static void dump_proc(char **s, proc_t proc)
 {
-    sprintf(*s, "%3d      ", proc->slot);
-    *s += 9;
+	sprintf(*s, "%3d      ", proc->slot);
+	*s += 9;
 
-    switch (proc->state) {
-    case PS_READY:
-	sprintf(*s, "r");
-	break;
-    case PS_RUN:
-	sprintf(*s, "x");
-	break;
-    case PS_WAIT:
-	sprintf(*s, "w");
-	break;
-    case PS_MUTEX:
-	sprintf(*s, "m");
-	break;
-    case PS_EVENT:
-	sprintf(*s, "e");
-	break;
-    case PS_SOCKET:
-	sprintf(*s, "s");
-	break;
-    default:
-	sprintf(*s, "E");
-    }
-    (*s)++;
-
-    if (proc->fd[PFD_STDIN] < 0)
-	sprintf(*s, "      -");
-    else
-	sprintf(*s, "  %5d", proc->fd[PFD_STDIN]);
-    *s += 7;
-
-    if (proc->fd[PFD_STDOUT] < 0)
-	sprintf(*s, "       -");
-    else
-	sprintf(*s, "  %6d", proc->fd[PFD_STDOUT]);
-    *s += 8;
-
-    if (proc->fd[PFD_STDERR] < 0)
-	sprintf(*s, "       -");
-    else
-	sprintf(*s, "  %6d", proc->fd[PFD_STDERR]);
-    *s += 8;
-
-    if (proc->context.argc > 0 && proc->context.argv != NULL) {
-	int argvlen;
-
-	/* Map the argv array of the process temporarily */
-	argvlen = PAGE_SIZE + proc->context.argc * LINE_LENGTH;
-	vm_map_range((pt_t) current->context.tss->cr3,
-		     proc->context.argv, argvlen, PTE_PRESENT);
-
-	if (proc->context.argv[0] != NULL) {
-	    sprintf(*s, "  %s", proc->context.argv[0]);
-	    *s += strlen(proc->context.argv[0]) + 2;
+	switch (proc->state) {
+	case PS_READY:
+		sprintf(*s, "r");
+		break;
+	case PS_RUN:
+		sprintf(*s, "x");
+		break;
+	case PS_WAIT:
+		sprintf(*s, "w");
+		break;
+	case PS_MUTEX:
+		sprintf(*s, "m");
+		break;
+	case PS_EVENT:
+		sprintf(*s, "e");
+		break;
+	case PS_SOCKET:
+		sprintf(*s, "s");
+		break;
+	default:
+		sprintf(*s, "E");
 	}
+	(*s)++;
 
-	/* Remove mapping of argv array */
-	vm_unmap_range((pt_t) current->context.tss->cr3,
-		       proc->context.argv, argvlen);
-    }
-    sprintf(*s, "\n");
-    (*s)++;
+	if (proc->fd[PFD_STDIN] < 0)
+		sprintf(*s, "      -");
+	else
+		sprintf(*s, "  %5d", proc->fd[PFD_STDIN]);
+	*s += 7;
+
+	if (proc->fd[PFD_STDOUT] < 0)
+		sprintf(*s, "       -");
+	else
+		sprintf(*s, "  %6d", proc->fd[PFD_STDOUT]);
+	*s += 8;
+
+	if (proc->fd[PFD_STDERR] < 0)
+		sprintf(*s, "       -");
+	else
+		sprintf(*s, "  %6d", proc->fd[PFD_STDERR]);
+	*s += 8;
+
+	if (proc->context.argc > 0 && proc->context.argv != NULL) {
+		int argvlen;
+
+		/* Map the argv array of the process temporarily */
+		argvlen = PAGE_SIZE + proc->context.argc * LINE_LENGTH;
+		vm_map_range((pt_t) current->context.tss->cr3,
+			     proc->context.argv, argvlen, PTE_PRESENT);
+
+		if (proc->context.argv[0] != NULL) {
+			sprintf(*s, "  %s", proc->context.argv[0]);
+			*s += strlen(proc->context.argv[0]) + 2;
+		}
+
+		/* Remove mapping of argv array */
+		vm_unmap_range((pt_t) current->context.tss->cr3,
+			       proc->context.argv, argvlen);
+	}
+	sprintf(*s, "\n");
+	(*s)++;
 }
 
-void
-dump_proctab(char *s)
+void dump_proctab(char *s)
 {
-    proc_t proc;
-    int i, proccnt;
+	proc_t proc;
+	int i, proccnt;
 
-    for (proccnt = 0, i = 0; i < PROCS; i++) {
-	proc = &(proctab[i]);
-	if (proc->state != PS_NULL) {
-	    if (proccnt++ == 0) {
-		sprintf(s, "%s\n", PROC_HDR);
-		s += strlen(s);
-	    }
-	    dump_proc(&s, proc);
+	for (proccnt = 0, i = 0; i < PROCS; i++) {
+		proc = &(proctab[i]);
+		if (proc->state != PS_NULL) {
+			if (proccnt++ == 0) {
+				sprintf(s, "%s\n", PROC_HDR);
+				s += strlen(s);
+			}
+			dump_proc(&s, proc);
+		}
 	}
-    }
 }

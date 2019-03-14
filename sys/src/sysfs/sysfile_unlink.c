@@ -26,8 +26,7 @@
 #include <errno.h>
 #include <fs/sysfs.h>
 
-int
-sysfile_unlink(char *path)
+int sysfile_unlink(char *path)
 {
-    return ENOSYS;
+	return ENOSYS;
 }

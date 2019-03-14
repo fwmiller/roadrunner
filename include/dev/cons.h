@@ -28,13 +28,13 @@
 
 #if _KERNEL
 
-void clear_screen();
-void put(char c);
-int cons_init(void *dev);
-int cons_shut(void *dev);
-int cons_ioctl(void *dev, int cmd, void *args);
-int cons_put(void *dev, int c);
+void clear_screen ();
+void put (char c);
+int cons_init (void *dev);
+int cons_shut (void *dev);
+int cons_ioctl (void *dev, int cmd, void *args);
+int cons_put (void *dev, int c);
 
-#endif				/* _KERNEL */
+#endif /* _KERNEL */
 
 #endif

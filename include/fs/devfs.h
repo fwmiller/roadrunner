@@ -31,21 +31,21 @@
 #include <fs.h>
 
 #define DEVFS_FILE_ATTRIBUTES	3
-#define DEVFS_FILE_KEY_ATTR	2      /* Name */
+#define DEVFS_FILE_KEY_ATTR	2	/* Name */
 
-int devfs_init();
-int devfs_shut();
-int devfs_mount(fs_t fs);
-int devfs_unmount(fs_t fs);
-int devfile_open(file_t file);
-int devfile_close(file_t file);
-int devfile_ioctl(file_t file, int cmd, void *args);
-int devfile_read(file_t file);
-int devfile_write(file_t file);
-int devfile_attr(file_t file, attrlist_t attr);
-int devfile_readdir(file_t file, char *entry);
-int devfile_unlink(char *path);
+int devfs_init ();
+int devfs_shut ();
+int devfs_mount (fs_t fs);
+int devfs_unmount (fs_t fs);
+int devfile_open (file_t file);
+int devfile_close (file_t file);
+int devfile_ioctl (file_t file, int cmd, void *args);
+int devfile_read (file_t file);
+int devfile_write (file_t file);
+int devfile_attr (file_t file, attrlist_t attr);
+int devfile_readdir (file_t file, char *entry);
+int devfile_unlink (char *path);
 
-#endif				/* _KERNEL */
+#endif /* _KERNEL */
 
 #endif

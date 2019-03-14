@@ -32,14 +32,14 @@ clean:
 	rm -f $(RAMFS) $(RAMFS_C)
 
 indent: clean
-	cd cat; Indent
-	cd cp; Indent
-	cd fdisk; Indent
-	cd format; Indent
-	cd ls; Indent
-	cd mkdir; Indent
-	cd mount; Indent
-	cd rm; Indent
-	cd sh; Indent
-	cd umount; Indent
-	cd vi; Indent
+	cd cat; make indent
+	cd cp; make indent
+	cd fdisk; make indent
+	cd format; make indent
+	cd ls; make indent
+	cd mkdir; make indent
+	cd mount; make indent
+	cd rm; make indent
+	cd sh; make indent
+	cd umount; make indent
+	cd vi; make indent

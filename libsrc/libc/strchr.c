@@ -26,15 +26,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-const char *
-strchr(const char *s, int c)
+const char *strchr(const char *s, int c)
 {
-    int i;
+	int i;
 
-    for (i = 0; s[i] != '\0'; i++)
-	if (c == s[i])
-	    break;
-    if (s[i] == '\0')
-	return NULL;
-    return s + i;
+	for (i = 0; s[i] != '\0'; i++)
+		if (c == s[i])
+			break;
+	if (s[i] == '\0')
+		return NULL;
+	return s + i;
 }

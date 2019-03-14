@@ -1,3 +1,6 @@
+ROOTDIR = ../..
+include $(ROOTDIR)/Makefile.rules
+
 CC = gcc
 RM = rm -f
 
@@ -19,7 +22,8 @@ clean:
 	$(RM) *~ $(LIBOBJS) $(TGTOBJS) $(TGTS)
 
 indent: clean
-	Indent
+	indent $(INDENT_RULES) *.c
+	$(RM) *~
 
 .c.o: $<
 	$(CC) $(CFLAGS) -I. -o $@ $<

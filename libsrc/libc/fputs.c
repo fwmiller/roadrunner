@@ -26,8 +26,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-char *
-fputs(const char *s, FILE * stream)
+char *fputs(const char *s, FILE * stream)
 {
-    return NULL;
+	return NULL;
 }

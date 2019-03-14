@@ -26,22 +26,21 @@
 #include <stdlib.h>
 #include <string.h>
 
-const char *
-strstr(const char *haystack, const char *needle)
+const char *strstr(const char *haystack, const char *needle)
 {
-    int haystacklen, i, j, needlelen;
+	int haystacklen, i, j, needlelen;
 
-    haystacklen = strlen(haystack);
-    needlelen = strlen(needle);
-    if (needlelen > haystacklen)
+	haystacklen = strlen(haystack);
+	needlelen = strlen(needle);
+	if (needlelen > haystacklen)
+		return NULL;
+
+	for (i = 0; i < haystacklen - needlelen; i++) {
+		for (j = 0; j < needlelen; j++)
+			if (needle[j] != haystack[i + j])
+				break;
+		if (j == needlelen)
+			return haystack + i;
+	}
 	return NULL;
-
-    for (i = 0; i < haystacklen - needlelen; i++) {
-	for (j = 0; j < needlelen; j++)
-	    if (needle[j] != haystack[i + j])
-		break;
-	if (j == needlelen)
-	    return haystack + i;
-    }
-    return NULL;
 }

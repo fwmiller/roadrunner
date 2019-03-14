@@ -17,8 +17,7 @@ static int pos = 0;
 
 extern unsigned char ___bin_ramfs[];
 
-int
-ramfs_init()
+int ramfs_init()
 {
 	unsigned char buf[DENAME_LEN];
 	int i, j;
@@ -34,7 +33,7 @@ ramfs_init()
 		}
 		buf[i] = ___bin_ramfs[pos];
 	}
-	entries = atoi((const char *) buf);
+	entries = atoi((const char *)buf);
 
 	/* Allocate a file table to hold the entries */
 	dir = (direntry_t) malloc(entries * sizeof(struct direntry));
@@ -52,7 +51,7 @@ ramfs_init()
 			}
 			buf[j] = ___bin_ramfs[pos];
 		}
-		strcpy(dir[i].name, (const char *) buf);
+		strcpy(dir[i].name, (const char *)buf);
 
 		memset(buf, 0, DENAME_LEN);
 		for (j = 0;; j++, pos++) {
@@ -62,7 +61,7 @@ ramfs_init()
 			}
 			buf[j] = ___bin_ramfs[pos];
 		}
-		dir[i].size = atoi((const char *) buf);
+		dir[i].size = atoi((const char *)buf);
 	}
 
 	/* Dump the file table entries */

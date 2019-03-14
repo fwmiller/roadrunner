@@ -28,12 +28,11 @@
 #include <stdlib.h>
 #include <sys/ioctl.h>
 
-void
-move(int y, int x)
+void move(int y, int x)
 {
-    struct cursor c;
+	struct cursor c;
 
-    c.y = y;
-    c.x = x;
-    ioctl(STDOUT, SET_CURSOR_POS, &c);
+	c.y = y;
+	c.x = x;
+	ioctl(STDOUT, SET_CURSOR_POS, &c);
 }

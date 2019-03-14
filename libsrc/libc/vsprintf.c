@@ -26,8 +26,7 @@
 #include <errno.h>
 #include <stdio.h>
 
-int
-vsprintf(char *s, const char *fmt, va_list arg)
+int vsprintf(char *s, const char *fmt, va_list arg)
 {
-    return ENOSYS;
+	return ENOSYS;
 }

@@ -62,7 +62,7 @@
 
 #if _KERNEL
 
-#define CLOCK			50     /* Hz */
+#define CLOCK			50	/* Hz */
 #define REGIONS			2048
 #define VM_KMAP_ENTRIES		32
 #define INTRS			64
@@ -80,6 +80,6 @@
 #define FILE_SYSTEMS		8
 #define FILES			32
 
-#endif				/* _KERNEL */
+#endif /* _KERNEL */
 
 #endif

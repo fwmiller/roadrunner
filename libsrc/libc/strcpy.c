@@ -25,13 +25,12 @@
 
 #include <string.h>
 
-char *
-strcpy(char *dst, const char *src)
+char *strcpy(char *dst, const char *src)
 {
-    int i;
+	int i;
 
-    for (i = 0; src[i] != '\0'; i++)
-	dst[i] = src[i];
-    dst[i] = '\0';
-    return dst;
+	for (i = 0; src[i] != '\0'; i++)
+		dst[i] = src[i];
+	dst[i] = '\0';
+	return dst;
 }

@@ -25,8 +25,7 @@
 
 #include <fs/devfs.h>
 
-int
-devfs_init()
+int devfs_init()
 {
-    return 0;
+	return 0;
 }

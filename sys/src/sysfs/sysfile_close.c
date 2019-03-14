@@ -27,12 +27,11 @@
 #include <fs/sysfs.h>
 #include <stdlib.h>
 
-int
-sysfile_close(file_t file)
+int sysfile_close(file_t file)
 {
-    if (file->buf != NULL) {
-	brel(file->buf);
-	file->buf = NULL;
-    }
-    return 0;
+	if (file->buf != NULL) {
+		brel(file->buf);
+		file->buf = NULL;
+	}
+	return 0;
 }

@@ -25,29 +25,28 @@
 
 #include <string.h>
 
-void
-getdir(char *path, char *dir)
+void getdir(char *path, char *dir)
 {
-    int len, i;
+	int len, i;
 
-    if (strlen(path) == 0 || path[0] != '/') {
-	strcpy(dir, "");
-	return;
-    }
-    if (strcmp(path, "/") == 0) {
-	strcpy(dir, "/");
-	return;
-    }
-    i = strlen(path);
-    if (path[i - 1] == '/')
-	i--;
+	if (strlen(path) == 0 || path[0] != '/') {
+		strcpy(dir, "");
+		return;
+	}
+	if (strcmp(path, "/") == 0) {
+		strcpy(dir, "/");
+		return;
+	}
+	i = strlen(path);
+	if (path[i - 1] == '/')
+		i--;
 
-    for (;;)
-	if (path[--i] == '/')
-	    break;
-    strncpy(dir, path, i + 1);
-    dir[i + 1] = '\0';
+	for (;;)
+		if (path[--i] == '/')
+			break;
+	strncpy(dir, path, i + 1);
+	dir[i + 1] = '\0';
 
-    if (strcmp(dir, "/") != 0 && dir[(len = strlen(dir)) - 1] == '/')
-	dir[len - 1] = '\0';
+	if (strcmp(dir, "/") != 0 && dir[(len = strlen(dir)) - 1] == '/')
+		dir[len - 1] = '\0';
 }

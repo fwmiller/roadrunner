@@ -25,8 +25,7 @@
 
 #include <stdio.h>
 
-void
-rewind(FILE * stream)
+void rewind(FILE * stream)
 {
-    return;
+	return;
 }

@@ -26,8 +26,7 @@
 #include <errno.h>
 #include <stdio.h>
 
-int
-remove(const char *path)
+int remove(const char *path)
 {
-    return ENOSYS;
+	return ENOSYS;
 }

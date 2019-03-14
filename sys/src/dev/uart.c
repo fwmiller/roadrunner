@@ -28,8 +28,7 @@
 static char rx_fifo[RX_FIFO_LEN];
 static int rx_fifo_head, rx_fifo_tail, rx_fifo_len;
 
-int
-uart_init(void *dev)
+int uart_init(void *dev)
 {
 	memset(rx_fifo, 0, RX_FIFO_LEN);
 	rx_fifo_head = 0;
@@ -45,14 +44,12 @@ uart_init(void *dev)
 	outb(COM1_BASE + COM_IER, 0x01);	/* Enable IRQs */
 }
 
-int
-uart_shut(void *dev)
+int uart_shut(void *dev)
 {
 	return;
 }
 
-void
-uart_isr()
+void uart_isr()
 {
 	char ch;
 
@@ -64,19 +61,17 @@ uart_isr()
 			rx_fifo[rx_fifo_tail] = ch;
 			rx_fifo_tail = (rx_fifo_tail + 1) % RX_FIFO_LEN;
 			rx_fifo_len++;
-		}	
+		}
 		enable;
 	}
 }
 
-int
-uart_ioctl(void *dev, int cmd, void *args)
+int uart_ioctl(void *dev, int cmd, void *args)
 {
 	return 0;
 }
 
-int
-uart_getchar()
+int uart_getchar()
 {
 	int ch = 0;
 
@@ -86,7 +81,7 @@ uart_getchar()
 			enable;
 			continue;
 		}
-		ch = (int) rx_fifo[rx_fifo_head];
+		ch = (int)rx_fifo[rx_fifo_head];
 		rx_fifo_head = (rx_fifo_head + 1) % RX_FIFO_LEN;
 		rx_fifo_len--;
 
@@ -96,21 +91,18 @@ uart_getchar()
 	return ch;
 }
 
-void
-uart_putchar(int ch)
+void uart_putchar(int ch)
 {
 	outb(COM1_BASE + COM_TBH, ch);
 }
 
-int
-uart_put(void *dev, int c)
+int uart_put(void *dev, int c)
 {
 	uart_putchar(c);
 	return 0;
 }
 
-int
-uart_get(void *dev, int *c)
+int uart_get(void *dev, int *c)
 {
 	*c = uart_getchar();
 	return 0;

@@ -30,21 +30,21 @@
 #include <string.h>
 #include <unistd.h>
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
-    int result;
+	int result;
 
-    if (argc < 2) {
-	printf("missing mount point\n");
-	return EINVAL;
-    }
-    if (argc > 2) {
-	printf("too many arguments\n");
-	return EINVAL;
-    }
-    result = unmount(argv[1]);
-    if (result < 0)
-	printf("could not unmount %s (%s)\n", argv[1], strerror(result));
-    return result;
+	if (argc < 2) {
+		printf("missing mount point\n");
+		return EINVAL;
+	}
+	if (argc > 2) {
+		printf("too many arguments\n");
+		return EINVAL;
+	}
+	result = unmount(argv[1]);
+	if (result < 0)
+		printf("could not unmount %s (%s)\n", argv[1],
+		       strerror(result));
+	return result;
 }

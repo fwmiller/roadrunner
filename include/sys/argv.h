@@ -26,7 +26,7 @@
 #ifndef __ARGV_H
 #define __ARGV_H
 
-int argv_alloc(char *cmd, int *argc, char ***argv);
-void argv_free(int argc, char **argv);
+int argv_alloc (char *cmd, int *argc, char ***argv);
+void argv_free (int argc, char **argv);
 
 #endif

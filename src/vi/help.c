@@ -30,32 +30,31 @@
 #define HELP_LINES	13
 
 static char *help_text[HELP_LINES] = {
-    "Command  Description",
-    "ZZ       Exit",
-    "h        Move cursor left",
-    "i        Enter insert mode (ESC to exit insert mode)",
-    "j        Move cursor down",
-    "k        Move cursor up",
-    "l        Move cursor right",
-    "x        Delete character",
-    ":        Enter command mode",
-    "           Command       Description",
-    "           w <filename>  Save file as <filename>",
-    "",
-    "?        Help screen",
+	"Command  Description",
+	"ZZ       Exit",
+	"h        Move cursor left",
+	"i        Enter insert mode (ESC to exit insert mode)",
+	"j        Move cursor down",
+	"k        Move cursor up",
+	"l        Move cursor right",
+	"x        Delete character",
+	":        Enter command mode",
+	"           Command       Description",
+	"           w <filename>  Save file as <filename>",
+	"",
+	"?        Help screen",
 };
 
-void
-help()
+void help()
 {
-    int i;
+	int i;
 
-    clear();
-    for (i = 0; i < HELP_LINES; i++) {
-	move(i, 0);
-	addstr(help_text[i]);
-    }
-    getchar();
-    clear();
-    refresh();
+	clear();
+	for (i = 0; i < HELP_LINES; i++) {
+		move(i, 0);
+		addstr(help_text[i]);
+	}
+	getchar();
+	clear();
+	refresh();
 }

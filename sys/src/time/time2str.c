@@ -27,16 +27,15 @@
 #include <string.h>
 #include <sys/time.h>
 
-void
-time2str(const time_t clock, char *s)
+void time2str(const time_t clock, char *s)
 {
-    struct tm tm;
+	struct tm tm;
 
-    if (s == NULL)
-	return;
+	if (s == NULL)
+		return;
 
-    bzero(&tm, sizeof(struct tm));
+	bzero(&tm, sizeof(struct tm));
 
-    time2tm(clock, &tm);
-    tm2str(&tm, s);
+	time2tm(clock, &tm);
+	tm2str(&tm, s);
 }

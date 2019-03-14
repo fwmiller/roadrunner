@@ -28,15 +28,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-int
-has_pattern(char *path)
+int has_pattern(char *path)
 {
-    int i, len;
+	int i, len;
 
-    for (len = strlen(path), i = 0; i < len; i++)
-	if (path[i] == '*')
-	    return i;
-    return (-1);
+	for (len = strlen(path), i = 0; i < len; i++)
+		if (path[i] == '*')
+			return i;
+	return (-1);
 }
 
 /*
@@ -46,53 +45,52 @@ has_pattern(char *path)
  * element containing the pattern.
  */
 int
-pattern_break(char *path, int pos, char **prefix,
-	      char **pattern, char **suffix)
+pattern_break(char *path, int pos, char **prefix, char **pattern, char **suffix)
 {
-    int i, j;
+	int i, j;
 
-    *prefix = NULL;
-    *pattern = NULL;
-    *suffix = NULL;
-
-    *prefix = (char *) malloc(PATH_LENGTH);
-    if (*prefix == NULL)
-	return ENOMEM;
-
-    *pattern = (char *) malloc(PATH_LENGTH);
-    if (*pattern == NULL) {
-	free(*prefix);
 	*prefix = NULL;
-	return ENOMEM;
-    }
-    *suffix = (char *) malloc(PATH_LENGTH);
-    if (*suffix == NULL) {
-	free(*pattern);
 	*pattern = NULL;
-	free(*prefix);
-	*prefix = NULL;
-	return ENOMEM;
-    }
-    bzero(*prefix, PATH_LENGTH);
-    bzero(*pattern, PATH_LENGTH);
-    bzero(*suffix, PATH_LENGTH);
+	*suffix = NULL;
 
-    for (i = pos;;)
-	if (--i < 0 || path[i] == '/')
-	    break;
-    if (i >= 0) {
-	strncpy(*prefix, path, i);
-    }
-    for (j = pos + 1;; j++)
-	if (j >= PATH_LENGTH || path[j] == '\0' || path[j] == '/')
-	    break;
+	*prefix = (char *)malloc(PATH_LENGTH);
+	if (*prefix == NULL)
+		return ENOMEM;
 
-    if (i < 0)
-	i = 0;
-    else
-	i = i + 1;
+	*pattern = (char *)malloc(PATH_LENGTH);
+	if (*pattern == NULL) {
+		free(*prefix);
+		*prefix = NULL;
+		return ENOMEM;
+	}
+	*suffix = (char *)malloc(PATH_LENGTH);
+	if (*suffix == NULL) {
+		free(*pattern);
+		*pattern = NULL;
+		free(*prefix);
+		*prefix = NULL;
+		return ENOMEM;
+	}
+	bzero(*prefix, PATH_LENGTH);
+	bzero(*pattern, PATH_LENGTH);
+	bzero(*suffix, PATH_LENGTH);
 
-    strncpy(*pattern, path + i, j - i);
-    strncpy(*suffix, path + j, strlen(path) - j);
-    return 0;
+	for (i = pos;;)
+		if (--i < 0 || path[i] == '/')
+			break;
+	if (i >= 0) {
+		strncpy(*prefix, path, i);
+	}
+	for (j = pos + 1;; j++)
+		if (j >= PATH_LENGTH || path[j] == '\0' || path[j] == '/')
+			break;
+
+	if (i < 0)
+		i = 0;
+	else
+		i = i + 1;
+
+	strncpy(*pattern, path + i, j - i);
+	strncpy(*suffix, path + j, strlen(path) - j);
+	return 0;
 }

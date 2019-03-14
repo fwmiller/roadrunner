@@ -30,61 +30,59 @@
 
 #define REGION_HDR "addr       pages  pid"
 
-static void
-dump_region(char **s, region_t region, int free)
+static void dump_region(char **s, region_t region, int free)
 {
-    sprintf(*s, "%08x", (u_int) region->start);
-    *s += 8;
+	sprintf(*s, "%08x", (u_int) region->start);
+	*s += 8;
 
-    if (free)
-	sprintf(*s, "*  ");
-    else
-	sprintf(*s, "   ");
-    *s += 3;
+	if (free)
+		sprintf(*s, "*  ");
+	else
+		sprintf(*s, "   ");
+	*s += 3;
 
-    sprintf(*s, "%5u  ", (u_int) region->len / PAGE_SIZE);
-    *s += 7;
+	sprintf(*s, "%5u  ", (u_int) region->len / PAGE_SIZE);
+	*s += 7;
 
-    if (region->proc < 0)
-	sprintf(*s, "     -");
-    else
-	sprintf(*s, "%6d", region->proc);
-    *s += 6;
+	if (region->proc < 0)
+		sprintf(*s, "     -");
+	else
+		sprintf(*s, "%6d", region->proc);
+	*s += 6;
 
-    sprintf(*s, "\n");
-    (*s)++;
+	sprintf(*s, "\n");
+	(*s)++;
 }
 
-void
-dump_regiontab(char *s)
+void dump_regiontab(char *s)
 {
-    region_t r1, r2;
-    int regioncnt = 0;
-    char s0[80];
+	region_t r1, r2;
+	int regioncnt = 0;
+	char s0[80];
 
-    for (r1 = freelist, r2 = alloclist;;) {
-	if (r1 == NULL && r2 == NULL)
-	    break;
-	if (r1 == NULL)
-	    goto r2print;
-	if (r2 == NULL || r1->start < r2->start)
-	    goto r1print;
-      r2print:
-	if (regioncnt++ == 0) {
-	    sprintf(s0, "%s\n", REGION_HDR);
-	    strcat(s, s0);
-	    s += strlen(s0);
+	for (r1 = freelist, r2 = alloclist;;) {
+		if (r1 == NULL && r2 == NULL)
+			break;
+		if (r1 == NULL)
+			goto r2print;
+		if (r2 == NULL || r1->start < r2->start)
+			goto r1print;
+ r2print:
+		if (regioncnt++ == 0) {
+			sprintf(s0, "%s\n", REGION_HDR);
+			strcat(s, s0);
+			s += strlen(s0);
+		}
+		dump_region(&s, r2, 0);
+		r2 = r2->next;
+		continue;
+ r1print:
+		if (regioncnt++ == 0) {
+			sprintf(s0, "%s\n", REGION_HDR);
+			strcat(s, s0);
+			s += strlen(s0);
+		}
+		dump_region(&s, r1, 1);
+		r1 = r1->next;
 	}
-	dump_region(&s, r2, 0);
-	r2 = r2->next;
-	continue;
-      r1print:
-	if (regioncnt++ == 0) {
-	    sprintf(s0, "%s\n", REGION_HDR);
-	    strcat(s, s0);
-	    s += strlen(s0);
-	}
-	dump_region(&s, r1, 1);
-	r1 = r1->next;
-    }
 }

@@ -25,11 +25,10 @@
 
 #include <string.h>
 
-void
-bcopy(const void *src, void *dst, size_t len)
+void bcopy(const void *src, void *dst, size_t len)
 {
-    int i;
+	int i;
 
-    for (i = 0; i < (int) len; i++)
-	((char *) dst)[i] = ((char *) src)[i];
+	for (i = 0; i < (int)len; i++)
+		((char *)dst)[i] = ((char *)src)[i];
 }

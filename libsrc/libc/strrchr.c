@@ -26,19 +26,18 @@
 #include <stdlib.h>
 #include <string.h>
 
-const char *
-strrchr(const char *s, int c)
+const char *strrchr(const char *s, int c)
 {
-    int i, len;
+	int i, len;
 
-    len = strlen(s);
-    if (len == 0)
-	return NULL;
+	len = strlen(s);
+	if (len == 0)
+		return NULL;
 
-    for (i = len - 1; i >= 0; i--)
-	if (c == s[i])
-	    break;
-    if (i < 0)
-	return NULL;
-    return s + i;
+	for (i = len - 1; i >= 0; i--)
+		if (c == s[i])
+			break;
+	if (i < 0)
+		return NULL;
+	return s + i;
 }

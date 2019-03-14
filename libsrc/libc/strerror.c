@@ -27,13 +27,12 @@
 #include <string.h>
 #include <sys/errstr.h>
 
-char *
-strerror(int errno)
+char *strerror(int errno)
 {
-    if (errno == 0)
-	return errstr[0];
+	if (errno == 0)
+		return errstr[0];
 
-    if (errno > 0 || errno < EMIN)
-	return errstr[-(EMIN - 1)];
-    return errstr[-errno];
+	if (errno > 0 || errno < EMIN)
+		return errstr[-(EMIN - 1)];
+	return errstr[-errno];
 }

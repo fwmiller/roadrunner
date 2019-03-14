@@ -30,38 +30,38 @@
 #include <sys/config.h>
 #include <unistd.h>
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
-    char buf[SECTOR_SIZE];
-    size_t len;
-    int fd, i, j, result;
+	char buf[SECTOR_SIZE];
+	size_t len;
+	int fd, i, j, result;
 
-    /* Command line arguments */
-    for (i = 1; i < argc; i++) {
+	/* Command line arguments */
+	for (i = 1; i < argc; i++) {
 #if _DEBUG
-	printf("cat: %s\n", argv[i]);
+		printf("cat: %s\n", argv[i]);
 #endif
-	/* XXX Need to check whether argv[i] is a directory */
+		/* XXX Need to check whether argv[i] is a directory */
 
-	result = open(argv[i], O_RDONLY);
-	if (result < 0) {
+		result = open(argv[i], O_RDONLY);
+		if (result < 0) {
 #if _DEBUG
-	    printf("cat: could not open %s (%s)\n",
-		   argv[i], strerror(result));
+			printf("cat: could not open %s (%s)\n",
+			       argv[i], strerror(result));
 #endif
-	    continue;
-	}
-	for (fd = result;;) {
-	    len = read(fd, buf, SECTOR_SIZE);
-	    if (len <= 0)
-		break;
+			continue;
+		}
+		for (fd = result;;) {
+			len = read(fd, buf, SECTOR_SIZE);
+			if (len <= 0)
+				break;
 
-	    for (j = 0; j < len; j++)
-		if (isprint(buf[j]) || isspace(buf[j]) || buf[j] == '\n')
-		    printf("%c", buf[j]);
+			for (j = 0; j < len; j++)
+				if (isprint(buf[j]) || isspace(buf[j])
+				    || buf[j] == '\n')
+					printf("%c", buf[j]);
+		}
+		close(fd);
 	}
-	close(fd);
-    }
-    return 0;
+	return 0;
 }

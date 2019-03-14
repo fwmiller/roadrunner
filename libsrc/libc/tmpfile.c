@@ -26,8 +26,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-FILE *
-tmpfile()
+FILE *tmpfile()
 {
-    return NULL;
+	return NULL;
 }

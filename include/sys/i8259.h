@@ -38,7 +38,7 @@
 #define I8259_MSTR_ICW2		0x20
 #define I8259_MSTR_ICW3		0x04
 #define I8259_MSTR_ICW4		0x01
-#define I8259_MSTR_DISABLE	0xfb   /* All but cascade */
+#define I8259_MSTR_DISABLE	0xfb	/* All but cascade */
 
 /* Slave commands */
 #define I8259_SLV_ICW1		0x11

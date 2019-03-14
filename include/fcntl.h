@@ -32,6 +32,6 @@
 #define O_CREAT		0x08
 #define O_MKDIR		0x10
 
-int open(const char *path, int flags);
+int open (const char *path, int flags);
 
 #endif

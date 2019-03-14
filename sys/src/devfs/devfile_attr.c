@@ -32,51 +32,50 @@
 #include <stdlib.h>
 #include <string.h>
 
-int
-devfile_attr(file_t file, attrlist_t l)
+int devfile_attr(file_t file, attrlist_t l)
 {
-    int i, size;
+	int i, size;
 
-    l->n = DEVFS_FILE_ATTRIBUTES;
-    l->key = DEVFS_FILE_KEY_ATTR;
+	l->n = DEVFS_FILE_ATTRIBUTES;
+	l->key = DEVFS_FILE_KEY_ATTR;
 
-    size = l->n * (sizeof(attr_t) + sizeof(struct attr));
+	size = l->n * (sizeof(attr_t) + sizeof(struct attr));
 
-    if ((l->attr = (attr_t *) malloc(size)) == NULL)
-	return ENOMEM;
-    bzero(l->attr, size);
+	if ((l->attr = (attr_t *) malloc(size)) == NULL)
+		return ENOMEM;
+	bzero(l->attr, size);
 
-    for (i = 0; i < DEVFS_FILE_ATTRIBUTES; i++) {
-	l->attr[i] = (attr_t) ((u_long) l->attr +
-			       (l->n * sizeof(attr_t)) +
-			       (i * sizeof(struct attr)));
+	for (i = 0; i < DEVFS_FILE_ATTRIBUTES; i++) {
+		l->attr[i] = (attr_t) ((u_long) l->attr +
+				       (l->n * sizeof(attr_t)) +
+				       (i * sizeof(struct attr)));
 
-	switch (i) {
-	case 0:
-	    l->attr[i]->type = ATTR_STRING;
-	    l->attr[i]->len = 8;
-	    strcpy(l->attr[i]->name, "type");
-	    break;
-	case 1:
-	    l->attr[i]->type = ATTR_INT;
-	    l->attr[i]->len = sizeof(int);
+		switch (i) {
+		case 0:
+			l->attr[i]->type = ATTR_STRING;
+			l->attr[i]->len = 8;
+			strcpy(l->attr[i]->name, "type");
+			break;
+		case 1:
+			l->attr[i]->type = ATTR_INT;
+			l->attr[i]->len = sizeof(int);
 
-	    strcpy(l->attr[i]->name, "refcnt");
-	    break;
-	case 2:
-	    l->attr[i]->type = ATTR_STRING;
-	    l->attr[i]->len = DEV_NAME_LEN;
-	    strcpy(l->attr[i]->name, "name");
-	    break;
+			strcpy(l->attr[i]->name, "refcnt");
+			break;
+		case 2:
+			l->attr[i]->type = ATTR_STRING;
+			l->attr[i]->len = DEV_NAME_LEN;
+			strcpy(l->attr[i]->name, "name");
+			break;
 
-	//default:
+			//default:
+		}
 	}
-    }
 #if _DEBUG
-    for (size = 0, i = 0; i < DEVFS_FILE_ATTRIBUTES; i++)
-	size += l->attr[i]->len;
-    kprintf("devfile_attr: n %d size %d\n", l->n, size);
+	for (size = 0, i = 0; i < DEVFS_FILE_ATTRIBUTES; i++)
+		size += l->attr[i]->len;
+	kprintf("devfile_attr: n %d size %d\n", l->n, size);
 #endif
 
-    return 0;
+	return 0;
 }

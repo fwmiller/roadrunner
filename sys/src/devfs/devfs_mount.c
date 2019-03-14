@@ -25,8 +25,7 @@
 
 #include <fs/devfs.h>
 
-int
-devfs_mount(fs_t fs)
+int devfs_mount(fs_t fs)
 {
-    return 0;
+	return 0;
 }

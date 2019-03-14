@@ -39,43 +39,42 @@
  * string[32]   Name
  */
 struct gmentry {
-    char type[8];
-    int refcnt;
-    char name[32];
+	char type[8];
+	int refcnt;
+	char name[32];
 } __attribute__ ((packed));
 
 typedef struct gmentry *gmentry_t;
 
-int
-devfile_readdir(file_t file, char *entry)
+int devfile_readdir(file_t file, char *entry)
 {
-    gmentry_t gm;
-    dev_t dev;
-    int i;
+	gmentry_t gm;
+	dev_t dev;
+	int i;
 
-    disable;
+	disable;
 
-    gm = (gmentry_t) entry;
+	gm = (gmentry_t) entry;
 
-    for (i = (int) file->data; i < DEVICES; i++) {
-	dev = &(devtab[i]);
+	for (i = (int)file->data; i < DEVICES; i++) {
+		dev = &(devtab[i]);
 
-	if (strcmp(dev->name, "") != 0) {
-	    if (dev->type == DEV_TYPE_CHAR)
-		sprintf(gm->type, "char    ");
-	    else if (dev->type == DEV_TYPE_BLK)
-		sprintf(gm->type, "blk     ");
-	    else
-		sprintf(gm->type, "ERROR   ");
+		if (strcmp(dev->name, "") != 0) {
+			if (dev->type == DEV_TYPE_CHAR)
+				sprintf(gm->type, "char    ");
+			else if (dev->type == DEV_TYPE_BLK)
+				sprintf(gm->type, "blk     ");
+			else
+				sprintf(gm->type, "ERROR   ");
 
-	    gm->refcnt = dev->refcnt;
-	    strncpy(gm->name, dev->name, DEV_NAME_LEN);
+			gm->refcnt = dev->refcnt;
+			strncpy(gm->name, dev->name, DEV_NAME_LEN);
 
-	    file->data = (void *) (++i);
-	    enable;
-	    return 0;
+			file->data = (void *)(++i);
+			enable;
+			return 0;
+		}
 	}
-    }
-    enable;
-    return EFILEEOF;
+	enable;
+	return EFILEEOF;
 }

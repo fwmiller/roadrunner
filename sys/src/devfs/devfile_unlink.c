@@ -26,8 +26,7 @@
 #include <errno.h>
 #include <fs/devfs.h>
 
-int
-devfile_unlink(char *path)
+int devfile_unlink(char *path)
 {
-    return ENOSYS;
+	return ENOSYS;
 }

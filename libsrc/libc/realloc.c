@@ -26,14 +26,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-void *
-realloc(void *ptr, size_t size)
+void *realloc(void *ptr, size_t size)
 {
-    char *newptr;
+	char *newptr;
 
-    if ((newptr = (char *) malloc(size)) == NULL)
-	return NULL;
-    bcopy(ptr, newptr, size);
-    free(ptr);
-    return newptr;
+	if ((newptr = (char *)malloc(size)) == NULL)
+		return NULL;
+	bcopy(ptr, newptr, size);
+	free(ptr);
+	return newptr;
 }

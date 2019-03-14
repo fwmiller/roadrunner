@@ -90,22 +90,23 @@
 #define PCI_VENDOR_ADAPTEC		0x9004
 #define PCI_VENDOR_ADAPTEC2		0x9005
 
-struct pci_func {
-    int bus, dev, func;		       /* Function logical address */
-    u_short vendorid;		       /* Vendor id */
-    u_short deviceid;		       /* Device id */
-    u_long iobase;		       /* I/O registers base addr */
-    int irq;			       /* Interrupt number */
+struct pci_func
+{
+  int bus, dev, func;		/* Function logical address */
+  u_short vendorid;		/* Vendor id */
+  u_short deviceid;		/* Device id */
+  u_long iobase;		/* I/O registers base addr */
+  int irq;			/* Interrupt number */
 };
 
 typedef struct pci_func *pci_func_t;
 
-u_long pci_config_read(int bus, int dev, int func, int dword);
-void pci_config_write(int bus, int dev, int func, int dword, u_long val);
-void pci_busmaster_enable(int bus, int dev, int func);
-pci_func_t pci_lookup(u_short vendor, u_short device);
-int pci_init();
+u_long pci_config_read (int bus, int dev, int func, int dword);
+void pci_config_write (int bus, int dev, int func, int dword, u_long val);
+void pci_busmaster_enable (int bus, int dev, int func);
+pci_func_t pci_lookup (u_short vendor, u_short device);
+int pci_init ();
 
-#endif				/* _KERNEL */
+#endif /* _KERNEL */
 
 #endif

@@ -30,16 +30,17 @@
 
 #define NULL	((void *) 0)
 
-typedef struct {
-    int quot;			       /* Quotient */
-    int rem;			       /* Remainder */
+typedef struct
+{
+  int quot;			/* Quotient */
+  int rem;			/* Remainder */
 } div_t;
 
-div_t div(int num, int denom);
-int atoi(const char *nptr);
-void *malloc(size_t size);
-void free(void *ptr);
-void *realloc(void *ptr, size_t size);
-void exit(int status);
+div_t div (int num, int denom);
+int atoi (const char *nptr);
+void *malloc (size_t size);
+void free (void *ptr);
+void *realloc (void *ptr, size_t size);
+void exit (int status);
 
 #endif

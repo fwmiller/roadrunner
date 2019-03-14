@@ -27,41 +27,39 @@
 #include <stdio.h>
 #include "rrfs.h"
 
-void
-printdirentry(direntry_t de)
+void printdirentry(direntry_t de)
 {
-    int hour;
+	int hour;
 
-    if (de->attr & DE_ATTR_DIR)
-	printf("d");
-    else
-	printf("-");
-    if (de->attr & DE_ATTR_READ)
-	printf("r");
-    else
-	printf("-");
-    if (de->attr & DE_ATTR_WRITE)
-	printf("w");
-    else
-	printf("-");
-    if (de->attr & DE_ATTR_EXEC)
-	printf("x");
-    else
-	printf("-");
+	if (de->attr & DE_ATTR_DIR)
+		printf("d");
+	else
+		printf("-");
+	if (de->attr & DE_ATTR_READ)
+		printf("r");
+	else
+		printf("-");
+	if (de->attr & DE_ATTR_WRITE)
+		printf("w");
+	else
+		printf("-");
+	if (de->attr & DE_ATTR_EXEC)
+		printf("x");
+	else
+		printf("-");
 
-    printf(" %8u", (uint32_t) de->size);
+	printf(" %8u", (uint32_t) de->size);
 
-    hour = (int) de->time[DE_TIME_HOUR];
-    if (hour == 0)
-	hour = 24;
-    printf(" %2d", (hour > 12 ? hour - 12 : hour));
+	hour = (int)de->time[DE_TIME_HOUR];
+	if (hour == 0)
+		hour = 24;
+	printf(" %2d", (hour > 12 ? hour - 12 : hour));
 
-    printf(":%02d:%02d %2d-%02d-%04d",
-	   (int) de->time[DE_TIME_MIN],
-	   (int) de->time[DE_TIME_SEC],
-	   (int) de->date[DE_DATE_MON] + 1,
-	   (int) de->date[DE_DATE_DAY],
-	   (int) de->date[DE_DATE_YEAR] + 1900);
+	printf(":%02d:%02d %2d-%02d-%04d",
+	       (int)de->time[DE_TIME_MIN],
+	       (int)de->time[DE_TIME_SEC],
+	       (int)de->date[DE_DATE_MON] + 1,
+	       (int)de->date[DE_DATE_DAY], (int)de->date[DE_DATE_YEAR] + 1900);
 
-    printf(" %6u %s\n", (uint32_t) de->start, de->name);
+	printf(" %6u %s\n", (uint32_t) de->start, de->name);
 }

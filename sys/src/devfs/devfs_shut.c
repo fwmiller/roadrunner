@@ -26,8 +26,7 @@
 #include <errno.h>
 #include <fs/devfs.h>
 
-int
-devfs_shut()
+int devfs_shut()
 {
-    return ENOSYS;
+	return ENOSYS;
 }

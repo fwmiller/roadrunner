@@ -28,51 +28,51 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int
-rrfile_write(file_t file)
+int rrfile_write(file_t file)
 {
-    rrfile_t rrfile = (rrfile_t) file->data;
-    int result;
+	rrfile_t rrfile = (rrfile_t) file->data;
+	int result;
 
-    if (file->buf == NULL)
-	return EINVAL;
+	if (file->buf == NULL)
+		return EINVAL;
 
-    if (rrfile->flags & RF_NEEDCLUST) {
-	if (rrfile->currclust == FAT_CHAIN_END) {
-	    rrfile->firstclust = rrfs_clustalloc(file->fs);
+	if (rrfile->flags & RF_NEEDCLUST) {
+		if (rrfile->currclust == FAT_CHAIN_END) {
+			rrfile->firstclust = rrfs_clustalloc(file->fs);
 #if _DEBUG
-	    kprintf("rrfile_write: alloc cluster %u\n", rrfile->firstclust);
+			kprintf("rrfile_write: alloc cluster %u\n",
+				rrfile->firstclust);
 #endif
-	    rrfile->currclust = rrfile->firstclust;
-	} else {
+			rrfile->currclust = rrfile->firstclust;
+		} else {
 #if _DEBUG
-	    u_long prevclust = rrfile->currclust;
+			u_long prevclust = rrfile->currclust;
 #endif
-	    rrfile->currclust =
-		rrfs_clustappend(file->fs, rrfile->currclust);
+			rrfile->currclust =
+			    rrfs_clustappend(file->fs, rrfile->currclust);
 #if _DEBUG
-	    kprintf
-		("rrfile_write: append cluster %u after %u\n",
-		 rrfile->currclust, prevclust);
+			kprintf
+			    ("rrfile_write: append cluster %u after %u\n",
+			     rrfile->currclust, prevclust);
 #endif
+		}
+
+		if (rrfile->currclust == FAT_CHAIN_END)
+			return ENOSPC;
+		rrfile->flags &= ~RF_NEEDCLUST;
 	}
+	result = rrfs_writeclust(file, rrfile->currclust, &(file->buf));
+	if (result < 0)
+		return result;
 
-	if (rrfile->currclust == FAT_CHAIN_END)
-	    return ENOSPC;
-	rrfile->flags &= ~RF_NEEDCLUST;
-    }
-    result = rrfs_writeclust(file, rrfile->currclust, &(file->buf));
-    if (result < 0)
-	return result;
+	/* Update directory containing file */
+	result = rrfs_updatedir(file, rrfile->firstclust);
+	if (result < 0) {
+		file->flags |= F_ERR;
+		return result;
+	}
+	/* Another cluster needs to be added to the file */
+	rrfile->flags |= RF_NEEDCLUST;
 
-    /* Update directory containing file */
-    result = rrfs_updatedir(file, rrfile->firstclust);
-    if (result < 0) {
-	file->flags |= F_ERR;
-	return result;
-    }
-    /* Another cluster needs to be added to the file */
-    rrfile->flags |= RF_NEEDCLUST;
-
-    return 0;
+	return 0;
 }

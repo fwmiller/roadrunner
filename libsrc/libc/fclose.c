@@ -27,11 +27,10 @@
 #include <stdio.h>
 #include <unistd.h>
 
-int
-fclose(FILE * stream)
+int fclose(FILE * stream)
 {
-    errno = close((int) stream);
-    if (errno < 0)
-	return (-1);
-    return 0;
+	errno = close((int)stream);
+	if (errno < 0)
+		return (-1);
+	return 0;
 }

@@ -51,63 +51,68 @@ typedef int (*dev_read_func_t) (void *dev, buf_t * b);
 typedef int (*dev_write_func_t) (void *dev, buf_t * b);
 
 /* Character device specific operations */
-struct char_ops {
-    dev_get_func_t get;
-    dev_put_func_t put;
+struct char_ops
+{
+  dev_get_func_t get;
+  dev_put_func_t put;
 };
 
 /* Block device specific operations */
-struct blk_ops {
-    dev_read_func_t read;
-    dev_write_func_t write;
+struct blk_ops
+{
+  dev_read_func_t read;
+  dev_write_func_t write;
 };
 
 /* Device operations */
-typedef struct dev_ops {
-    dev_init_func_t init;
-    dev_shut_func_t shut;
-    dev_ioctl_func_t ioctl;
-    union {
-	struct char_ops char_ops;
-	struct blk_ops blk_ops;
-    } specific;
+typedef struct dev_ops
+{
+  dev_init_func_t init;
+  dev_shut_func_t shut;
+  dev_ioctl_func_t ioctl;
+  union
+  {
+    struct char_ops char_ops;
+    struct blk_ops blk_ops;
+  } specific;
 } *dev_ops_t;
 
-typedef struct dev {
-    char name[DEV_NAME_LEN];
-    int type;
-    struct dev_ops ops;
-    void *dev;			       /* Device specific parameters */
-    int refcnt;
+typedef struct dev
+{
+  char name[DEV_NAME_LEN];
+  int type;
+  struct dev_ops ops;
+  void *dev;			/* Device specific parameters */
+  int refcnt;
 } *dev_t;
 
 extern struct dev devtab[];
 
-void dumpdevtab();
-void devtab_init();
-int dev_inst(char *name, int type, dev_ops_t ops, void *dev);
-int dev_uninst(char *name);
-int dev_init(char *name);
-int dev_shut(char *name);
+void dumpdevtab ();
+void devtab_init ();
+int dev_inst (char *name, int type, dev_ops_t ops, void *dev);
+int dev_uninst (char *name);
+int dev_init (char *name);
+int dev_shut (char *name);
 
-#endif				/* _KERNEL */
+#endif /* _KERNEL */
 
-int dev_open(char *name);
-int dev_close(int devno);
-int dev_ioctl(int devno, int cmd, void *args);
-int dev_get(int devno, int *c);
-int dev_put(int devno, int c);
+int dev_open (char *name);
+int dev_close (int devno);
+int dev_ioctl (int devno, int cmd, void *args);
+int dev_get (int devno, int *c);
+int dev_put (int devno, int c);
 
 #if _KERNEL
 
-int dev_read(int devno, buf_t * b);
-int dev_write(int devno, buf_t * b);
+int dev_read (int devno, buf_t * b);
+int dev_write (int devno, buf_t * b);
 
 #else
 
-int dev_read(int devno, char *buf, int *len);
-int dev_write(int devno, char *buf, int *len);
+int dev_read (int devno, char *buf, int *len);
+int dev_write (int devno, char *buf, int *len);
 
-#endif				/* _KERNEL */
+#endif /* _KERNEL */
 
 #endif

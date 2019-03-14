@@ -26,8 +26,7 @@
 #include <curses.h>
 #include <stdio.h>
 
-void
-addstr(char *s)
+void addstr(char *s)
 {
-    printf(s);
+	printf(s);
 }

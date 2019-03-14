@@ -29,23 +29,22 @@
 #include <stdlib.h>
 #include <string.h>
 
-int
-rrfs_unmount(fs_t fs)
+int rrfs_unmount(fs_t fs)
 {
-    rrfs_t rrfs = (rrfs_t) fs->data;
-    int result;
+	rrfs_t rrfs = (rrfs_t) fs->data;
+	int result;
 
-    /* Flush the current fat block if there is one */
-    if (rrfs->fatbuf != NULL) {
-	result = rrfs_writefatblk(fs);
+	/* Flush the current fat block if there is one */
+	if (rrfs->fatbuf != NULL) {
+		result = rrfs_writefatblk(fs);
 #if _DEBUG
-	if (result < 0) {
-	    kprintf
-		("rrfs_unmount: flush fat block failed (%s)\n",
-		 strerror(result));
-	}
+		if (result < 0) {
+			kprintf
+			    ("rrfs_unmount: flush fat block failed (%s)\n",
+			     strerror(result));
+		}
 #endif
-    }
-    rrfs_clear(rrfs);
-    return 0;
+	}
+	rrfs_clear(rrfs);
+	return 0;
 }

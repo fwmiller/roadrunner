@@ -25,11 +25,10 @@
 
 #include <string.h>
 
-void
-bzero(void *b, size_t len)
+void bzero(void *b, size_t len)
 {
-    int i;
+	int i;
 
-    for (i = 0; i < (int) len; i++)
-	((char *) b)[i] = 0;
+	for (i = 0; i < (int)len; i++)
+		((char *)b)[i] = 0;
 }

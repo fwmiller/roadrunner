@@ -26,8 +26,7 @@
 #include <errno.h>
 #include <stdio.h>
 
-int
-fseek(FILE * stream, long offset, int origin)
+int fseek(FILE * stream, long offset, int origin)
 {
-    return ENOSYS;
+	return ENOSYS;
 }

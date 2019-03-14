@@ -28,16 +28,16 @@
 
 #if _KERNEL
 
-#define TIMER_ISR_PERIOD	100000 /* usec */
+#define TIMER_ISR_PERIOD	100000	/* usec */
 
 typedef void (*timer_func_t) (void *);
 
-void timer_isr();
-void timer_init();
-int timer_start(char *name, timeval_t dur, timer_func_t f, void *arg);
-int timer_loop(char *name, timeval_t period, timer_func_t f, void *arg);
-int timer_cancel(char *name);
+void timer_isr ();
+void timer_init ();
+int timer_start (char *name, timeval_t dur, timer_func_t f, void *arg);
+int timer_loop (char *name, timeval_t period, timer_func_t f, void *arg);
+int timer_cancel (char *name);
 
-#endif				/* _KERNEL */
+#endif /* _KERNEL */
 
 #endif

@@ -26,8 +26,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-FILE *
-freopen(const char *path, const char *mode, FILE * stream)
+FILE *freopen(const char *path, const char *mode, FILE * stream)
 {
-    return NULL;
+	return NULL;
 }

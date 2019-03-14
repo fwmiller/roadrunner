@@ -47,19 +47,19 @@
 
 extern char *sysfs_filenames[];
 
-int sysfs_init();
-int sysfs_shut();
-int sysfs_mount(fs_t fs);
-int sysfs_unmount(fs_t fs);
-int sysfile_open(file_t file);
-int sysfile_close(file_t file);
-int sysfile_ioctl(file_t file, int cmd, void *args);
-int sysfile_read(file_t file);
-int sysfile_write(file_t file);
-int sysfile_attr(file_t file, attrlist_t attr);
-int sysfile_readdir(file_t file, char *entry);
-int sysfile_unlink(char *path);
+int sysfs_init ();
+int sysfs_shut ();
+int sysfs_mount (fs_t fs);
+int sysfs_unmount (fs_t fs);
+int sysfile_open (file_t file);
+int sysfile_close (file_t file);
+int sysfile_ioctl (file_t file, int cmd, void *args);
+int sysfile_read (file_t file);
+int sysfile_write (file_t file);
+int sysfile_attr (file_t file, attrlist_t attr);
+int sysfile_readdir (file_t file, char *entry);
+int sysfile_unlink (char *path);
 
-#endif				/* _KERNEL */
+#endif /* _KERNEL */
 
 #endif

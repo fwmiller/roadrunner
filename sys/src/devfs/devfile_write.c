@@ -29,29 +29,28 @@
 #include <stdlib.h>
 #include <sys/intr.h>
 
-int
-devfile_write(file_t file)
+int devfile_write(file_t file)
 {
-    int devno = (int) file->data;
-    dev_t dev;
-    int result;
+	int devno = (int)file->data;
+	dev_t dev;
+	int result;
 
-    /* Assume fs layer has provided a buffer */
+	/* Assume fs layer has provided a buffer */
 
-    disable;
+	disable;
 
-    dev = &(devtab[devno]);
+	dev = &(devtab[devno]);
 
-    if (dev->type == DEV_TYPE_CHAR) {
-	enable;
-	result = dev_put(devno, (int) *(bstart(file->buf)));
-	brel(file->buf);
-	file->buf = NULL;
-    } else if (dev->type == DEV_TYPE_BLK) {
-	enable;
-	result = dev_write(devno, &(file->buf));
-    } else
-	enable;
+	if (dev->type == DEV_TYPE_CHAR) {
+		enable;
+		result = dev_put(devno, (int)*(bstart(file->buf)));
+		brel(file->buf);
+		file->buf = NULL;
+	} else if (dev->type == DEV_TYPE_BLK) {
+		enable;
+		result = dev_write(devno, &(file->buf));
+	} else
+		enable;
 
-    return result;
+	return result;
 }

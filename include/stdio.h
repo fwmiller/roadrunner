@@ -45,48 +45,48 @@ extern FILE *stdierr;
 
 #if _KERNEL
 
-void print(char *string, int *pos, const char *fmt, va_list args);
-void kprintf(const char *fmt, ...);
+void print (char *string, int *pos, const char *fmt, va_list args);
+void kprintf (const char *fmt, ...);
 
-#endif				/* _KERNEL */
+#endif /* _KERNEL */
 
-FILE *fopen(const char *path, const char *mode);
-FILE *freopen(const char *path, const char *mode, FILE * stream);
-int fflush(FILE * stream);
-int fclose(FILE * stream);
-int remove(const char *path);
-int rename(const char *oldname, const char *newname);
-FILE *tmpfile();
-int fprintf(FILE * stream, const char *fmt, ...);
-int printf(const char *fmt, ...);
-int sprintf(char *s, const char *fmt, ...);
-int vfprintf(FILE * stream, const char *fmt, va_list arg);
-int vprintf(const char *fmt, va_list arg);
-int vsprintf(char *s, const char *fmt, va_list arg);
-int fscanf(FILE * stream, const char *fmt, ...);
-int scanf(const char *fmt, ...);
-int sscanf(char *s, const char *fmt, ...);
-int fgetc(FILE * stream);
-char *fgets(char *s, int n, FILE * stream);
-int fputc(int c, FILE * stream);
-char *fputs(const char *s, FILE * stream);
-int getc(FILE * stream);
-int getchar();
-char *gets(char *s);
-int putc(int c, FILE * stream);
-int putchar(int c);
-int puts(const char *s);
-int unget(int c, FILE * stream);
-size_t fread(void *ptr, size_t size, size_t nobj, FILE * stream);
-size_t fwrite(void *ptr, size_t size, size_t nobj, FILE * stream);
-int fseek(FILE * stream, long offset, int origin);
-long ftell(FILE * stream);
-void rewind(FILE * stream);
-int fgetpos(FILE * stream, fpos_t * ptr);
-int fsetpos(FILE * stream, const fpos_t * ptr);
-void clearerr(FILE * stream);
-int feof(FILE * stream);
-int ferror(FILE * stream);
-void perror(const char *s);
+FILE *fopen (const char *path, const char *mode);
+FILE *freopen (const char *path, const char *mode, FILE * stream);
+int fflush (FILE * stream);
+int fclose (FILE * stream);
+int remove (const char *path);
+int rename (const char *oldname, const char *newname);
+FILE *tmpfile ();
+int fprintf (FILE * stream, const char *fmt, ...);
+int printf (const char *fmt, ...);
+int sprintf (char *s, const char *fmt, ...);
+int vfprintf (FILE * stream, const char *fmt, va_list arg);
+int vprintf (const char *fmt, va_list arg);
+int vsprintf (char *s, const char *fmt, va_list arg);
+int fscanf (FILE * stream, const char *fmt, ...);
+int scanf (const char *fmt, ...);
+int sscanf (char *s, const char *fmt, ...);
+int fgetc (FILE * stream);
+char *fgets (char *s, int n, FILE * stream);
+int fputc (int c, FILE * stream);
+char *fputs (const char *s, FILE * stream);
+int getc (FILE * stream);
+int getchar ();
+char *gets (char *s);
+int putc (int c, FILE * stream);
+int putchar (int c);
+int puts (const char *s);
+int unget (int c, FILE * stream);
+size_t fread (void *ptr, size_t size, size_t nobj, FILE * stream);
+size_t fwrite (void *ptr, size_t size, size_t nobj, FILE * stream);
+int fseek (FILE * stream, long offset, int origin);
+long ftell (FILE * stream);
+void rewind (FILE * stream);
+int fgetpos (FILE * stream, fpos_t * ptr);
+int fsetpos (FILE * stream, const fpos_t * ptr);
+void clearerr (FILE * stream);
+int feof (FILE * stream);
+int ferror (FILE * stream);
+void perror (const char *s);
 
 #endif

@@ -30,38 +30,40 @@
 
 #define BP_DRV_HD	0x80
 
-struct vbe_info {
-    u_char signature[4];
-    u_short version;
-    u_long oem_string_ptr;
-    u_char capabilities[4];
-    u_long video_mode_ptr;
-    u_short total_memory;
-    u_char reserved[236];
+struct vbe_info
+{
+  u_char signature[4];
+  u_short version;
+  u_long oem_string_ptr;
+  u_char capabilities[4];
+  u_long video_mode_ptr;
+  u_short total_memory;
+  u_char reserved[236];
 } __attribute__ ((packed));
 
-struct bootparams {
-    /*
-     * These elements are filled in by the boot program.  Do not change the
-     * order or offset of these fields!
-     */
-    u_char drv;
-    u_char cyl_lo;
-    u_char sec_cyl_hi;
-    u_char hd;
-    u_char drvs;
-    u_long offset;
-    u_char reserved;
-    struct vbe_info vbe;
+struct bootparams
+{
+  /*
+   * These elements are filled in by the boot program.  Do not change the
+   * order or offset of these fields!
+   */
+  u_char drv;
+  u_char cyl_lo;
+  u_char sec_cyl_hi;
+  u_char hd;
+  u_char drvs;
+  u_long offset;
+  u_char reserved;
+  struct vbe_info vbe;
 
-    /* These elements are filled in during kernel initialization */
-    int part;
+  /* These elements are filled in during kernel initialization */
+  int part;
 } __attribute__ ((packed));
 
 typedef struct bootparams *bootparams_t;
 
 extern struct bootparams bootparams;
 
-void get_boot_params();
+void get_boot_params ();
 
 #endif

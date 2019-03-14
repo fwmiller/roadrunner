@@ -29,32 +29,31 @@
 #include <stdlib.h>
 #include <string.h>
 
-int
-rrfs_mount(fs_t fs)
+int rrfs_mount(fs_t fs)
 {
-    rrfs_t rrfs;
-    int rrfsno, result;
+	rrfs_t rrfs;
+	int rrfsno, result;
 
-    mutex_lock(&rrfstabmutex);
+	mutex_lock(&rrfstabmutex);
 
-    for (rrfsno = 0;
-	 rrfsno < RR_FILE_SYSTEMS && rrfstab[rrfsno].mbrbuf != NULL;
-	 rrfsno++);
-    if (rrfsno == RR_FILE_SYSTEMS) {
-	mutex_unlock(&rrfstabmutex);
-	return EAGAIN;
-    }
-    rrfs = (rrfs_t) & (rrfstab[rrfsno]);
-    fs->data = rrfs;
+	for (rrfsno = 0;
+	     rrfsno < RR_FILE_SYSTEMS && rrfstab[rrfsno].mbrbuf != NULL;
+	     rrfsno++) ;
+	if (rrfsno == RR_FILE_SYSTEMS) {
+		mutex_unlock(&rrfstabmutex);
+		return EAGAIN;
+	}
+	rrfs = (rrfs_t) & (rrfstab[rrfsno]);
+	fs->data = rrfs;
 
-    if ((result = rrfs_readmbr(fs)) < 0) {
+	if ((result = rrfs_readmbr(fs)) < 0) {
 #if _DEBUG
-	kprintf("rrfs_mount: failed (%s)\n", strerror(result));
+		kprintf("rrfs_mount: failed (%s)\n", strerror(result));
 #endif
-	rrfs_clear(rrfs);
+		rrfs_clear(rrfs);
+		mutex_unlock(&rrfstabmutex);
+		return result;
+	}
 	mutex_unlock(&rrfstabmutex);
-	return result;
-    }
-    mutex_unlock(&rrfstabmutex);
-    return 0;
+	return 0;
 }

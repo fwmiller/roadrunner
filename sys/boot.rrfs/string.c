@@ -25,53 +25,49 @@
 
 #include <string.h>
 
-int
-strcmp(const char *s1, const char *s2)
+int strcmp(const char *s1, const char *s2)
 {
-    int i = 0;
+	int i = 0;
 
-    for (;;) {
-	if (s1[i] == '\0' && s2[i] == '\0')
-	    return 0;
-	else if (s1[i] == '\0' && s2[i] != '\0')
-	    return -1;
-	else if (s1[i] != '\0' && s2[i] == '\0')
-	    return 1;
+	for (;;) {
+		if (s1[i] == '\0' && s2[i] == '\0')
+			return 0;
+		else if (s1[i] == '\0' && s2[i] != '\0')
+			return -1;
+		else if (s1[i] != '\0' && s2[i] == '\0')
+			return 1;
 
-	if (s1[i] == s2[i])
-	    i++;
-	else if (s1[i] < s2[i])
-	    return -1;
-	else
-	    return 1;
-    }
+		if (s1[i] == s2[i])
+			i++;
+		else if (s1[i] < s2[i])
+			return -1;
+		else
+			return 1;
+	}
 }
 
-char *
-strcpy(char *dst, const char *src)
+char *strcpy(char *dst, const char *src)
 {
-    int i;
+	int i;
 
-    for (i = 0; src[i] != '\0'; i++)
-	dst[i] = src[i];
-    dst[i] = '\0';
-    return dst;
+	for (i = 0; src[i] != '\0'; i++)
+		dst[i] = src[i];
+	dst[i] = '\0';
+	return dst;
 }
 
-void
-bzero(void *b, size_t len)
+void bzero(void *b, size_t len)
 {
-    int i;
+	int i;
 
-    for (i = 0; i < len; i++)
-	((u_char *) b)[i] = 0;
+	for (i = 0; i < len; i++)
+		((u_char *) b)[i] = 0;
 }
 
-void
-bcopy(const void *src, void *dst, size_t len)
+void bcopy(const void *src, void *dst, size_t len)
 {
-    int i;
+	int i;
 
-    for (i = 0; i < len; i++)
-	((u_char *) dst)[i] = ((u_char *) src)[i];
+	for (i = 0; i < len; i++)
+		((u_char *) dst)[i] = ((u_char *) src)[i];
 }

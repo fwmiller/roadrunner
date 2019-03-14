@@ -37,68 +37,73 @@
 #define blen(B) ((B)->len)
 #define bpos(B) ((B)->pos)
 
-typedef struct blk {
-    struct blk *next;
-    void *blkpool;		       /* Owning blk pool */
-    int index;			       /* Index of blk in blk pool */
-    int refcnt;			       /* Buf reference count */
-    char *data;			       /* Data */
+typedef struct blk
+{
+  struct blk *next;
+  void *blkpool;		/* Owning blk pool */
+  int index;			/* Index of blk in blk pool */
+  int refcnt;			/* Buf reference count */
+  char *data;			/* Data */
 } *blk_t;
 
-typedef struct blkpool {
-    int nblks;			       /* Number of blks in pool */
-    int size;			       /* Block size */
-    blk_t blks;			       /* List of blks */
-    char *blkbase;		       /* Block desc array base addr */
-    char *database;		       /* Block data array base addr */
+typedef struct blkpool
+{
+  int nblks;			/* Number of blks in pool */
+  int size;			/* Block size */
+  blk_t blks;			/* List of blks */
+  char *blkbase;		/* Block desc array base addr */
+  char *database;		/* Block data array base addr */
 } *blkpool_t;
 
-typedef struct buf {
-    struct buf *prev, *next;
-    char *start;		       /* Start ptr in blk */
-    int len;			       /* Data len in blk */
-    int pos;			       /* Current position in blk */
-    blk_t blk;			       /* Blk ptr */
+typedef struct buf
+{
+  struct buf *prev, *next;
+  char *start;			/* Start ptr in blk */
+  int len;			/* Data len in blk */
+  int pos;			/* Current position in blk */
+  blk_t blk;			/* Blk ptr */
 } *buf_t;
 
-typedef struct bufpool {
-    int total;
-    int nbufs;
-    buf_t bufs;
-    char *base;
+typedef struct bufpool
+{
+  int total;
+  int nbufs;
+  buf_t bufs;
+  char *base;
 } *bufpool_t;
 
-typedef struct bufq {
-    int len;			       /* Number of buffers in queue */
-    buf_t h, t;			       /* Head and tail ptrs */
+typedef struct bufq
+{
+  int len;			/* Number of buffers in queue */
+  buf_t h, t;			/* Head and tail ptrs */
 } *bufq_t;
 
 extern struct blkpool blkpool;
 extern struct bufpool bufpool;
 
-void blkpool_init(int size, int nblks);
-void blk_clear(blk_t blk);
-void blk_push(blk_t blk);
-blk_t blk_pop();
+void blkpool_init (int size, int nblks);
+void blk_clear (blk_t blk);
+void blk_push (blk_t blk);
+blk_t blk_pop ();
 
-void bufpool_init(int nbufs);
-void buf_clear(buf_t buf);
-void buf_push(buf_t buf);
-buf_t buf_pop();
-buf_t _balloc();
-buf_t balloc();
-void _bfree(buf_t buf);
-int bfree(buf_t buf);
-buf_t _bget(int size);
-buf_t bget(int size);
-int brel(buf_t buf);
+void bufpool_init (int nbufs);
+void buf_clear (buf_t buf);
+void buf_push (buf_t buf);
+buf_t buf_pop ();
+buf_t _balloc ();
+buf_t balloc ();
+void _bfree (buf_t buf);
+int bfree (buf_t buf);
+buf_t _bget (int size);
+buf_t bget (int size);
+int brel (buf_t buf);
 
-void binitq(bufq_t q);
-int blenq(bufq_t q);
-void benq(buf_t b, bufq_t q);
-buf_t bdeq(bufq_t q);
-void bremq(buf_t b, bufq_t q);
+void binitq (bufq_t q);
+int blenq (bufq_t q);
+void benq (buf_t b, bufq_t q);
+buf_t bdeq (bufq_t q);
+void bremq (buf_t b, bufq_t q);
 
-#endif				/* _KERNEL */
+#endif /* _KERNEL */
 
 #endif

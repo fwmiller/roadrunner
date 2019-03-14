@@ -50,30 +50,33 @@
 typedef int (*proc_func_t) (int, char **);
 typedef int proc_state_t;
 
-struct context {
-    tss_t tss;			       /* x86 Task State Segment */
-    tssdesc_t tssdesc;		       /* x86 Task State Segment desc */
-    pt_rec_t ptrec;		       /* Page tables record */
-    void *kstk;			       /* Kernel stack */
-    void *stk;			       /* User stack */
-    proc_func_t start;		       /* Process function */
-    int argc;			       /* Argv array count */
-    char **argv;		       /* Argv array */
+struct context
+{
+  tss_t tss;			/* x86 Task State Segment */
+  tssdesc_t tssdesc;		/* x86 Task State Segment desc */
+  pt_rec_t ptrec;		/* Page tables record */
+  void *kstk;			/* Kernel stack */
+  void *stk;			/* User stack */
+  proc_func_t start;		/* Process function */
+  int argc;			/* Argv array count */
+  char **argv;			/* Argv array */
 };
 
-struct proc {
-    struct context context;	       /* Machine dependent context */
-    int slot;
-    struct proc *next;
-    void *q;
-    proc_state_t state;
-    struct proc *wait;
-    char *cwd;
-    int fd[PFDS];
+struct proc
+{
+  struct context context;	/* Machine dependent context */
+  int slot;
+  struct proc *next;
+  void *q;
+  proc_state_t state;
+  struct proc *wait;
+  char *cwd;
+  int fd[PFDS];
 };
 
-struct queue {
-    struct proc *h, *t;
+struct queue
+{
+  struct proc *h, *t;
 };
 
 typedef struct proc *proc_t;
@@ -83,25 +86,25 @@ extern struct proc proctab[];
 extern proc_t current;
 extern struct queue ready;
 
-void proc_clear(proc_t proc);
-void proc_sysinit();
-void proc_transfer();
-void proc_start();
-int proc_init(proc_t * proc, void *start, int argc, char **argv);
-pid_t proc_exec(const char *path, int argc, char **argv);
-char *proc_getcwd(char *buf, size_t size);
-int proc_chdir(const char *path);
-int proc_wait(pid_t pid);
-void proc_exit(int status);
-pid_t proc_getpid();
-int proc_getstdpath(pid_t pid, int stdpath);
-void proc_setstdpath(pid_t pid, int stdpath, int fd);
+void proc_clear (proc_t proc);
+void proc_sysinit ();
+void proc_transfer ();
+void proc_start ();
+int proc_init (proc_t * proc, void *start, int argc, char **argv);
+pid_t proc_exec (const char *path, int argc, char **argv);
+char *proc_getcwd (char *buf, size_t size);
+int proc_chdir (const char *path);
+int proc_wait (pid_t pid);
+void proc_exit (int status);
+pid_t proc_getpid ();
+int proc_getstdpath (pid_t pid, int stdpath);
+void proc_setstdpath (pid_t pid, int stdpath, int fd);
 
 #else
 
-int getstdpath(pid_t pid, int stdpath);
-void setstdpath(pid_t pid, int stdpath, int fd);
+int getstdpath (pid_t pid, int stdpath);
+void setstdpath (pid_t pid, int stdpath, int fd);
 
-#endif				/* _KERNEL */
+#endif /* _KERNEL */
 
 #endif

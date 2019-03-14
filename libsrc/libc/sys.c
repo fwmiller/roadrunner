@@ -25,44 +25,38 @@
 
 #include <sys.h>
 
-u_char
-loadbyte(u_char * ptr)
+u_char loadbyte(u_char * ptr)
 {
-    return *ptr;
+	return *ptr;
 }
 
-u_int
-loadword(u_char * ptr)
+u_int loadword(u_char * ptr)
 {
-    return (u_int) * ptr | (u_int) (*(ptr + 1) << 8);
+	return (u_int) * ptr | (u_int) (*(ptr + 1) << 8);
 }
 
-u_int
-loaddword(u_char * ptr)
+u_int loaddword(u_char * ptr)
 {
-    return (u_int) * ptr |
-	(u_int) (*(ptr + 1) << 8) |
-	(u_int) (*(ptr + 2) << 16) | (u_int) (*(ptr + 3) << 24);
+	return (u_int) * ptr |
+	    (u_int) (*(ptr + 1) << 8) |
+	    (u_int) (*(ptr + 2) << 16) | (u_int) (*(ptr + 3) << 24);
 }
 
-void
-storebyte(u_char val, u_char * ptr)
+void storebyte(u_char val, u_char * ptr)
 {
-    *ptr = val;
+	*ptr = val;
 }
 
-void
-storeword(u_int val, u_char * ptr)
+void storeword(u_int val, u_char * ptr)
 {
-    *ptr = (u_char) (val & 0xff);
-    *(ptr + 1) = (u_char) ((val >> 8) & 0xff);
+	*ptr = (u_char) (val & 0xff);
+	*(ptr + 1) = (u_char) ((val >> 8) & 0xff);
 }
 
-void
-storedword(u_int val, u_char * ptr)
+void storedword(u_int val, u_char * ptr)
 {
-    *ptr = (u_char) (val & 0xff);
-    *(ptr + 1) = (u_char) ((val >> 8) & 0xff);
-    *(ptr + 2) = (u_char) ((val >> 16) & 0xff);
-    *(ptr + 3) = (u_char) ((val >> 24) & 0xff);
+	*ptr = (u_char) (val & 0xff);
+	*(ptr + 1) = (u_char) ((val >> 8) & 0xff);
+	*(ptr + 2) = (u_char) ((val >> 16) & 0xff);
+	*(ptr + 3) = (u_char) ((val >> 24) & 0xff);
 }

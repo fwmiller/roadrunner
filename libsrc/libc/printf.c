@@ -28,13 +28,12 @@
 
 void print(char *string, int *pos, const char *fmt, va_list args);
 
-int
-printf(const char *format, ...)
+int printf(const char *format, ...)
 {
-    va_list va;
+	va_list va;
 
-    va_start(va, format);
-    print(NULL, NULL, format, va);
+	va_start(va, format);
+	print(NULL, NULL, format, va);
 
-    return 0;
+	return 0;
 }
