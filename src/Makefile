@@ -1,5 +1,5 @@
 RAMFS = ../bin/ramfs
-RAMFS_C = ../sys/src/ramfs/ramfs.c
+RAMFS_C = ../sys/src/ramfs/ramfs_content.c
 
 all:
 	cd cat; make

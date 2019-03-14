@@ -17,6 +17,9 @@ static int pos = 0;
 
 extern unsigned char ___bin_ramfs[];
 
+struct ramfile ramfiletab[RAM_FILES];
+struct mutex ramfiletabmutex;
+
 int ramfs_init()
 {
 	unsigned char buf[DENAME_LEN];
@@ -67,6 +70,12 @@ int ramfs_init()
 	/* Dump the file table entries */
 	for (i = 0; i < entries; i++)
 		kprintf("%s %u\n", dir[i].name, dir[i].size);
+
+	/* Clear ramfile table */
+	for (i = 0; i < RAM_FILES; i++)
+		ramfile_clear(&(ramfiletab[i]));
+
+	mutex_clear(&ramfiletabmutex);
 
 	return 0;
 }

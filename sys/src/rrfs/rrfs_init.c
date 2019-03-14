@@ -41,8 +41,12 @@ int rrfs_init()
 	for (rrfsno = 0; rrfsno < RR_FILE_SYSTEMS; rrfsno++)
 		rrfs_clear(&(rrfstab[rrfsno]));
 
+	mutex_clear(&rrfstabmutex);
+
 	for (rrfileno = 0; rrfileno < RR_FILES; rrfileno++)
 		rrfile_clear(&(rrfiletab[rrfileno]));
+
+	mutex_clear(&rrfiletabmutex);
 
 	return 0;
 }

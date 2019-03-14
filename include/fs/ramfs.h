@@ -5,6 +5,20 @@
 
 #include <fs.h>
 
+#define RAM_FILES	16
+
+struct ramfile {
+#define RAMF_INUSE	0x01
+	int flags;
+
+	u_long offset;
+	u_long size;
+};
+
+typedef struct ramfile *ramfile_t;
+
+void ramfile_clear(ramfile_t rf);
+
 int ramfs_init ();
 int ramfs_shut ();
 int ramfs_mount (fs_t fs);
