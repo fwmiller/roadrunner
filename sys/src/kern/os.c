@@ -155,11 +155,11 @@ void os()
 	devops.specific.blk_ops.write = fd_write;
 	dev_inst("fd", DEV_TYPE_BLK, &devops, NULL);
 	dev_init("fd");
-
+#if 0
 	/* Install hard disk support */
 	hdtab_init();
 	ata_init();
-
+#endif
 	/* Install and initialize /sys file system */
 	strcpy(fsops.name, "sysfs");
 	fsops.init = sysfs_init;
@@ -232,6 +232,10 @@ void os()
 	fs_mount(sysfsops, "/sys", (-1), &sysfs);
 	fs_mount(devfsops, "/dev", (-1), &devfs);
 
+	/* Mount initial programs in ramfs at /bin */
+	fs_mount(ramfsops, "/bin", (-1), &ramfs);
+
+#if 0
 	/* Mount root file system */
 	if ((bootparams.drv & BP_DRV_HD) == BP_DRV_HD) {
 		char device[16];
@@ -245,6 +249,7 @@ void os()
 		kprintf("root file system on /dev/fd\n");
 		fs_mount(rrfsops, "/", dev_open("fd"), &rrfs);
 	}
+#endif
 	/* Setup stdpaths for init process */
 	file_open("/dev/kbd", O_RDONLY, &fdin);
 	file_open("/dev/cons", O_WRONLY, &fdout);

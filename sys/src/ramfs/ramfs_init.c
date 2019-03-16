@@ -3,22 +3,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define DENAME_LEN	80
-
-struct direntry {
-	char name[DENAME_LEN];
-	u_long size;
-};
-
-typedef struct direntry *direntry_t;
-
-static direntry_t dir;
-static int pos = 0;
-
-extern unsigned char ___bin_ramfs[];
-
+ramfs_direntry_t dir;
+int ramfiles_pos = 0;
 struct ramfile ramfiletab[RAM_FILES];
 struct mutex ramfiletabmutex;
+
+extern unsigned char ___bin_ramfs[];
 
 int ramfs_init()
 {
@@ -29,43 +19,46 @@ int ramfs_init()
 	memset(buf, 0, DENAME_LEN);
 
 	/* Get number of file entries */
-	for (i = 0;; i++, pos++) {
-		if (___bin_ramfs[pos] == '\n') {
-			pos++;
+	for (i = 0;; i++, ramfiles_pos++) {
+		if (___bin_ramfs[ramfiles_pos] == '\n') {
+			ramfiles_pos++;
 			break;
 		}
-		buf[i] = ___bin_ramfs[pos];
+		buf[i] = ___bin_ramfs[ramfiles_pos];
 	}
 	entries = atoi((const char *)buf);
 
 	/* Allocate a file table to hold the entries */
-	dir = (direntry_t) malloc(entries * sizeof(struct direntry));
+	dir = (ramfs_direntry_t) malloc(entries * sizeof(struct ramfs_direntry));
 	if (dir == NULL)
 		return (-1);
 
-	memset(dir, 0, entries * sizeof(struct direntry));
+	memset(dir, 0, entries * sizeof(struct ramfs_direntry));
 
 	for (i = 0; i < entries; i++) {
+		/* Retrieve file name */
 		memset(buf, 0, DENAME_LEN);
-		for (j = 0;; j++, pos++) {
-			if (___bin_ramfs[pos] == ',') {
-				pos++;
+		for (j = 0;; j++, ramfiles_pos++) {
+			if (___bin_ramfs[ramfiles_pos] == ',') {
+				ramfiles_pos++;
 				break;
 			}
-			buf[j] = ___bin_ramfs[pos];
+			buf[j] = ___bin_ramfs[ramfiles_pos];
 		}
 		strcpy(dir[i].name, (const char *)buf);
 
+		/* Retrieve file size */
 		memset(buf, 0, DENAME_LEN);
-		for (j = 0;; j++, pos++) {
-			if (___bin_ramfs[pos] == '\n') {
-				pos++;
+		for (j = 0;; j++, ramfiles_pos++) {
+			if (___bin_ramfs[ramfiles_pos] == '\n') {
+				ramfiles_pos++;
 				break;
 			}
-			buf[j] = ___bin_ramfs[pos];
+			buf[j] = ___bin_ramfs[ramfiles_pos];
 		}
 		dir[i].size = atoi((const char *)buf);
 	}
+	/* ramfiles_pos now points at the beginning of the files area */
 
 	/* Dump the file table entries */
 	for (i = 0; i < entries; i++)

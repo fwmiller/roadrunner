@@ -2,5 +2,5 @@
 
 int ramfs_mount(fs_t fs)
 {
-	return (-1);
+	return 0;
 }

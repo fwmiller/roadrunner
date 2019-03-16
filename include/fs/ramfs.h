@@ -5,7 +5,14 @@
 
 #include <fs.h>
 
+#define DENAME_LEN	80
 #define RAM_FILES	16
+#define RAMFILE_BUFSIZE	0x1000
+
+struct ramfs_direntry {
+	char name[DENAME_LEN];
+	u_long size;
+};
 
 struct ramfile {
 #define RAMF_INUSE	0x01
@@ -15,9 +22,19 @@ struct ramfile {
 	u_long size;
 };
 
+typedef struct ramfs_direntry *ramfs_direntry_t;
 typedef struct ramfile *ramfile_t;
 
+extern ramfs_direntry_t dir;
+extern int ramfiles_pos;
+
+extern unsigned char ___bin_ramfs[];
+
+extern struct ramfile ramfiletab[];
+extern struct mutex ramfiletabmutex;
+
 void ramfile_clear(ramfile_t rf);
+int ramfs_lookup(file_t file, char *path);
 
 int ramfs_init ();
 int ramfs_shut ();
