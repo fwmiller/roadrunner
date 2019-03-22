@@ -30,6 +30,7 @@
 #include <dev/fd.h>
 #include <dev/hd.h>
 #include <dev/kbd.h>
+#include <dev/rd.h>
 #include <dev/uart.h>
 #include <event.h>
 #include <fcntl.h>
@@ -37,7 +38,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <fs/devfs.h>
-#include <fs/ramfs.h>
 #include <fs/rrfs.h>
 #include <fs/sysfs.h>
 #include <sys/boot.h>
@@ -55,8 +55,8 @@ void os()
 	struct utsname name;
 	struct dev_ops devops;
 	struct fsops fsops;
-	fsops_t sysfsops, devfsops, ramfsops, rrfsops;
-	fs_t sysfs, devfs, ramfs, rrfs;
+	fsops_t sysfsops, devfsops, rrfsops;
+	fs_t sysfs, devfs, rrfs;
 	file_t fdin = NULL, fdout = NULL, fderr = NULL;
 
 	intr_init();
@@ -147,6 +147,15 @@ void os()
 	devops.specific.char_ops.put = uart_put;
 	dev_inst("uart", DEV_TYPE_CHAR, &devops, NULL);
 
+	/* Install ramdisk device */
+	devops.init = rd_init;
+	devops.shut = rd_shut;
+	devops.ioctl = rd_ioctl;
+	devops.specific.blk_ops.read = rd_read;
+	devops.specific.blk_ops.write = rd_write;
+	dev_inst("rd", DEV_TYPE_BLK, &devops, NULL);
+	dev_init("rd");
+
 	/* Install floppy disk device */
 	devops.init = fd_init;
 	devops.shut = fd_shut;
@@ -194,23 +203,6 @@ void os()
 	devfsops = fsops_inst(&fsops);
 	fsops_init(devfsops);
 
-	/* Install and initialize ramfs file system */
-	strcpy(fsops.name, "ramfs");
-	fsops.init = ramfs_init;
-	fsops.shut = ramfs_shut;
-	fsops.mount = ramfs_mount;
-	fsops.unmount = ramfs_unmount;
-	fsops.open = ramfile_open;
-	fsops.close = ramfile_close;
-	fsops.ioctl = ramfile_ioctl;
-	fsops.read = ramfile_read;
-	fsops.write = ramfile_write;
-	fsops.attr = ramfile_attr;
-	fsops.readdir = ramfile_readdir;
-	fsops.unlink = ramfile_unlink;
-	ramfsops = fsops_inst(&fsops);
-	fsops_init(ramfsops);
-
 	/* Install and initialize rrfs file system */
 	strcpy(fsops.name, "rrfs");
 	fsops.init = rrfs_init;
@@ -231,9 +223,6 @@ void os()
 	/* Mount /dev and /sys file systems */
 	fs_mount(sysfsops, "/sys", (-1), &sysfs);
 	fs_mount(devfsops, "/dev", (-1), &devfs);
-
-	/* Mount initial programs in ramfs at /bin */
-	fs_mount(ramfsops, "/bin", (-1), &ramfs);
 
 #if 0
 	/* Mount root file system */
