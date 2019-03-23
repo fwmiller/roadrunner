@@ -2,7 +2,8 @@
 
 int rd_init(void *dev)
 {
-	return (-1);
+	
+	return 0;
 }
 
 int rd_shut(void *dev)

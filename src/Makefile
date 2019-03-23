@@ -1,5 +1,5 @@
-RAMFS = ../bin/ramfs
-RAMFS_C = ../sys/src/ramfs/ramfs_content.c
+RAMDISK = ../bin/ramdisk
+RAMDISK_C = ../sys/src/dev/ramdisk.c
 
 all:
 	cd cat; make
@@ -13,8 +13,8 @@ all:
 	cd sh; make
 	cd umount; make
 	cd vi; make
-	./mkramfs.py
-	xxd --include $(RAMFS) > $(RAMFS_C)
+	./mkramdisk.py
+	xxd --include $(RAMDISK) > $(RAMDISK_C)
 
 clean:
 	$(RM) *~
@@ -29,7 +29,7 @@ clean:
 	cd sh; make clean
 	cd umount; make clean
 	cd vi; make clean
-	rm -f $(RAMFS) $(RAMFS_C)
+	rm -f $(RAMDISK) $(RAMDISK_C)
 
 indent: clean
 	cd cat; make indent
