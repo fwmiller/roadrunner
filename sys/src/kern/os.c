@@ -156,6 +156,7 @@ void os()
 	dev_inst("rd", DEV_TYPE_BLK, &devops, NULL);
 	dev_init("rd");
 
+#if 0
 	/* Install floppy disk device */
 	devops.init = fd_init;
 	devops.shut = fd_shut;
@@ -164,7 +165,7 @@ void os()
 	devops.specific.blk_ops.write = fd_write;
 	dev_inst("fd", DEV_TYPE_BLK, &devops, NULL);
 	dev_init("fd");
-#if 0
+
 	/* Install hard disk support */
 	hdtab_init();
 	ata_init();

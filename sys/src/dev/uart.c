@@ -42,11 +42,13 @@ int uart_init(void *dev)
 	outb(COM1_BASE + COM_LCR, 0x03);	/* 8 bits,no parity,1 stop */
 	outb(COM1_BASE + COM_FCR, 0x00);	/* Disable FIFOs */
 	outb(COM1_BASE + COM_IER, 0x01);	/* Enable IRQs */
+
+	return 0;
 }
 
 int uart_shut(void *dev)
 {
-	return;
+	return 0;
 }
 
 void uart_isr()
