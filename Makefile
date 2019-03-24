@@ -1,6 +1,6 @@
 #BOOT = sys/boot/boot
 KERNEL = sys/src/kern/os
-IMAGE = ./image
+#IMAGE = ./image
 
 #all: elements
 #	rm -f $(IMAGE)
@@ -25,11 +25,14 @@ all:
 #	cd sys/boot; make
 	cd sys/src/kern; make
 
+run: all
+	cd sys/src/kern; make run
+
 doc:
 	cd doc; make
 
 clean:
-	rm -f *~ $(IMAGE)
+#	rm -f *~ $(IMAGE)
 #	cd bsd; make clean
 	cd doc; make clean
 	cd libsrc; make clean

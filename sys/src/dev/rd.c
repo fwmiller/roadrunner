@@ -1,4 +1,5 @@
 #include <dev/rd.h>
+#include "ramdisk.c"
 
 int rd_init(void *dev)
 {
