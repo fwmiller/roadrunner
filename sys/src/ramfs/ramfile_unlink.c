@@ -1,6 +1,7 @@
 #include <fs/ramfs.h>
 
-int ramfile_unlink(char *path)
+int
+ramfile_unlink(char *path)
 {
 	return (-1);
 }

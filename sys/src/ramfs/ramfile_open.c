@@ -3,7 +3,8 @@
 #include <fs/ramfs.h>
 #include <stdio.h>
 
-int ramfile_open(file_t file)
+int
+ramfile_open(file_t file)
 {
 	ramfile_t ramfile;
 	int ramfileno, result;

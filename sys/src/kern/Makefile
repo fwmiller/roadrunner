@@ -16,7 +16,7 @@ QEMUFLAGS = -m 256M -nographic -no-reboot -drive format=raw,file=$(ISOIMG)
 # init.o must be first
 #
 OBJS = mb2.o init.o asm.o blk.o boot.o buf.o bufq.o cpuid.o dev.o event.o file.o fs.o fsops.o intr.o mem.o mutex.o nextlex.o os.o path.o print.o proc.o queue.o region.o segment.o string.o sys.o syscall.o tsc.o uname.o vm.o
-LIBS = -lload -lrrfs -ldevfs -ldev -lsysfs -ltime
+LIBS = -lload -lrrfs -lramfs -ldevfs -ldev -lsysfs -ltime
 
 TGT = os
 
@@ -24,6 +24,7 @@ all: kern
 	cd $(ROOTDIR)/sys/src/dev; make
 	cd $(ROOTDIR)/sys/src/devfs; make
 	cd $(ROOTDIR)/sys/src/load; make
+	cd $(ROOTDIR)/sys/src/ramfs; make
 	cd $(ROOTDIR)/sys/src/rrfs; make
 	cd $(ROOTDIR)/sys/src/sysfs; make
 	cd $(ROOTDIR)/sys/src/time; make
@@ -44,6 +45,7 @@ clean: kernclean
 	cd $(ROOTDIR)/sys/src/dev; make clean
 	cd $(ROOTDIR)/sys/src/devfs; make clean
 	cd $(ROOTDIR)/sys/src/load; make clean
+	cd $(ROOTDIR)/sys/src/ramfs; make clean
 	cd $(ROOTDIR)/sys/src/rrfs; make clean
 	cd $(ROOTDIR)/sys/src/sysfs; make clean
 	cd $(ROOTDIR)/sys/src/time; make clean
@@ -57,6 +59,7 @@ indent: clean
 	cd $(ROOTDIR)/sys/src/dev; make indent
 	cd $(ROOTDIR)/sys/src/devfs; make indent
 	cd $(ROOTDIR)/sys/src/load; make indent
+	cd $(ROOTDIR)/sys/src/ramfs; make indent
 	cd $(ROOTDIR)/sys/src/rrfs; make indent
 	cd $(ROOTDIR)/sys/src/sysfs; make indent
 	cd $(ROOTDIR)/sys/src/time; make indent

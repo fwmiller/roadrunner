@@ -38,7 +38,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <fs/devfs.h>
+#include <fs/ramfs.h>
+#if 0
 #include <fs/rrfs.h>
+#endif
 #include <fs/sysfs.h>
 #include <sys/boot.h>
 #include <sys/intr.h>
@@ -55,8 +58,10 @@ void os()
 	struct utsname name;
 	struct dev_ops devops;
 	struct fsops fsops;
-	fsops_t sysfsops, devfsops, rrfsops;
-	fs_t sysfs, devfs, rrfs;
+	//fsops_t sysfsops, devfsops, ramfsops, rrfsops;
+	fsops_t sysfsops, devfsops, ramfsops;
+	//fs_t sysfs, devfs, ramfs, rrfs;
+	fs_t sysfs, devfs, ramfs;
 	file_t fdin = NULL, fdout = NULL, fderr = NULL;
 
 	intr_init();
@@ -155,7 +160,6 @@ void os()
 	devops.specific.blk_ops.write = rd_write;
 	dev_inst("rd", DEV_TYPE_BLK, &devops, NULL);
 	dev_init("rd");
-
 #if 0
 	/* Install floppy disk device */
 	devops.init = fd_init;
@@ -204,6 +208,23 @@ void os()
 	devfsops = fsops_inst(&fsops);
 	fsops_init(devfsops);
 
+	/* Install and initialize ram file system */
+	strcpy(fsops.name, "ramfs");
+	fsops.init = ramfs_init;
+	fsops.shut = ramfs_shut;
+	fsops.mount = ramfs_mount;
+	fsops.unmount = ramfs_unmount;
+	fsops.open = ramfile_open;
+	fsops.close = ramfile_close;
+	fsops.ioctl = ramfile_ioctl;
+	fsops.read = ramfile_read;
+	fsops.write = ramfile_write;
+	fsops.attr = ramfile_attr;
+	fsops.readdir = ramfile_readdir;
+	fsops.unlink = ramfile_unlink;
+	ramfsops = fsops_inst(&fsops);
+	fsops_init(ramfsops);
+#if 0
 	/* Install and initialize rrfs file system */
 	strcpy(fsops.name, "rrfs");
 	fsops.init = rrfs_init;
@@ -220,11 +241,13 @@ void os()
 	fsops.unlink = rrfile_unlink;
 	rrfsops = fsops_inst(&fsops);
 	fsops_init(rrfsops);
-
+#endif
 	/* Mount /dev and /sys file systems */
 	fs_mount(sysfsops, "/sys", (-1), &sysfs);
 	fs_mount(devfsops, "/dev", (-1), &devfs);
 
+	/* Mount /bin on ram file system */
+	fs_mount(ramfsops, "/bin", dev_open("rd"), &ramfs);
 #if 0
 	/* Mount root file system */
 	if ((bootparams.drv & BP_DRV_HD) == BP_DRV_HD) {
