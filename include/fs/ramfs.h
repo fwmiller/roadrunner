@@ -5,9 +5,9 @@
 
 #include <fs.h>
 
-#define DENAME_LEN	80
-#define RAM_FILES	16
-#define RAMFILE_BUFSIZE	0x1000
+#define DENAME_LEN		80
+#define RAM_FILES		16
+#define RAMFILE_BUFSIZE		1
 
 struct ramfs_direntry {
 	char name[DENAME_LEN];
