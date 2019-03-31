@@ -86,11 +86,12 @@ int rrfs_lookup(file_t file, char *path)
 
 #if 0
 		/* 
-		 * As the file system directories are traversed, each will be flocked
-		 * in turn.  A technique called `crabbing' from database systems is
-		 * used to make sure things work right.  As we move to a new
-		 * directory, the lock for the old directory is held until the lock
-		 * for the new directory is aquired.
+		 * As the file system directories are traversed, each will
+		 * be flocked in turn.  A technique called `crabbing' from
+		 * database systems is used to make sure things work right.
+		 * As we move to a new directory, the lock for the old
+		 * directory is held until the lock for the new directory
+		 * is aquired.
 		 */
 		if ((result = flock(rfs.fsno, currpath)) < 0) {
 			frelease(lastpath);
@@ -115,12 +116,13 @@ int rrfs_lookup(file_t file, char *path)
 				goto readclusterror;
 			}
 			/* 
-			 * Search a directory cluster.  The search will find a matching
-			 * entry or exhaust the entries in the cluster.  If a matching
-			 * entry is found, it can be a directory or a file.  If it is a
-			 * directory, it might be the end of the search or just one step
-			 * along the full path.  If it is not a directory, it must be the
-			 * end of the search.
+			 * Search a directory cluster.  The search will find
+			 * a matching entry or exhaust the entries in the
+			 * cluster.  If a matching entry is found, it can be
+			 * a directory or a file.  If it is a directory, it
+			 * might be the end of the search or just one step
+			 * along the full path.  If it is not a directory,
+			 * it must be the end of the search.
 			 */
 			for (i = 0; i < file->bufsize; i += DE_SIZE) {
 				de = (direntry_t) (bstart(b) + i);
@@ -139,30 +141,37 @@ int rrfs_lookup(file_t file, char *path)
 
 					if (path[pos] == '/') {
 						/* 
-						 * There are more elements on the specified full path
-						 * to consider so this entry must be a directory.
+						 * There are more elements on
+						 * the specified full path to
+						 * consider so this entry must
+						 * be a directory.
 						 */
 						if (!(de->attr & DE_ATTR_DIR)) {
 #if _DEBUG
 							kprintf
-							    ("rrfs_lookup: directory expected\n");
+							    ("rrfs_lookup: ");
+							kprintf
+							    ("directory expected\n");
 #endif
 							result = ENOENT;
 							goto filenotfound;
 						}
 					} else {
 						/* 
-						 * Reached the end of the specified full path with a
-						 * matching entry.  Set a flag if the entry is for a
-						 * directory.
+						 * Reached the end of the
+						 * specified full path with
+						 * a matching entry.  Set a
+						 * flag if the entry is for
+						 * a directory.
 						 */
 						if (de->attr & DE_ATTR_DIR)
 							file->flags |= F_DIR;
 						goto filefound;
 					}
 					/* 
-					 * Found a directory somewhere before the end of the
-					 * specified full path so continue the search with the
+					 * Found a directory somewhere before
+					 * the end of the specified full path
+					 * so continue the search with the
 					 * new directory.
 					 */
 					break;

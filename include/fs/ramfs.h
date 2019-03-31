@@ -25,6 +25,7 @@ struct ramfile {
 typedef struct ramfs_direntry *ramfs_direntry_t;
 typedef struct ramfile *ramfile_t;
 
+extern int ramfs_entries;
 extern ramfs_direntry_t dir;
 extern int ramfiles_pos;
 
@@ -34,6 +35,7 @@ extern struct ramfile ramfiletab[];
 extern struct mutex ramfiletabmutex;
 
 void ramfile_clear(ramfile_t rf);
+void ramfs_file_table_dump(int entries);
 int ramfs_lookup(file_t file, char *path);
 
 int ramfs_init ();
