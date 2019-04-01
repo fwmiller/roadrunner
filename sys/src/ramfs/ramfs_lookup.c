@@ -7,17 +7,17 @@
 int
 ramfs_lookup(file_t file, char *path)
 {
-	int pos = 0;
+	int filepos = 0;
 	int i;
 
-	kprintf("ramfs_lookup: file->name [%s] path [%s]\n",
+	kprintf("ramfs_lookup: file->path [%s] path [%s]\n",
 		file->path, path);
 
 	if (path[0] == '/')
-		pos = 1;
+		filepos = 1;
 
 	for (i = 0; i < ramfs_entries; i++) {
-		if (strcmp(path + pos, dir[i].name) == 0) {
+		if (strcmp(path + filepos, dir[i].name) == 0) {
 			kprintf("ramfs_lookup: found\n");
 			return 0;
 		}
