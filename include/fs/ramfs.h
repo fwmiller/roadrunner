@@ -9,17 +9,20 @@
 #define RAM_FILES		16
 #define RAMFILE_BUFSIZE		1
 
-struct ramfs_direntry {
-	char name[DENAME_LEN];
-	u_long size;
+struct ramfs_direntry
+{
+  char name[DENAME_LEN];
+  u_long size;
 };
 
-struct ramfile {
+struct ramfile
+{
 #define RAMF_INUSE	0x01
-	int flags;
+  int flags;
 
-	u_long offset;
-	u_long size;
+  char name[DENAME_LEN];
+  u_long offset;
+  u_long size;
 };
 
 typedef struct ramfs_direntry *ramfs_direntry_t;
@@ -31,12 +34,12 @@ extern int ramfiles_pos;
 
 extern unsigned char ___bin_ramfs[];
 
-extern struct ramfile ramfiletab[];
+extern ramfile_t ramfiletab;
 extern struct mutex ramfiletabmutex;
 
-void ramfile_clear(ramfile_t rf);
-void ramfs_file_table_dump(int entries);
-int ramfs_lookup(file_t file, char *path);
+void ramfile_clear (ramfile_t rf);
+void ramfs_file_table_dump (int entries);
+int ramfs_lookup (file_t file, char *path);
 
 int ramfs_init ();
 int ramfs_shut ();

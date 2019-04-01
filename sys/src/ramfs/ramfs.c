@@ -2,8 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-void
-ramfile_clear(ramfile_t rf)
+void ramfile_clear(ramfile_t rf)
 {
 	if (rf == NULL)
 		return;

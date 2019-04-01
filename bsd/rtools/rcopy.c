@@ -250,16 +250,14 @@ int main(int argc, char **argv)
 					/* Finished with this cluster */
 					newclust =
 					    rrfs_nextclust(clust, fat,
-							   mbr->params.
-							   clusters);
+							   mbr->
+							   params.clusters);
 					if (newclust == FAT_CHAIN_END) {
 						/* Need to add another cluster */
 						newclust =
 						    rrfs_clustappend(clust,
 								     fat,
-								     mbr->
-								     params.
-								     clusters);
+								     mbr->params.clusters);
 						if (newclust == FAT_CHAIN_END) {
 							printf
 							    ("file system full\n");

@@ -3,8 +3,7 @@
 #include <fs/ramfs.h>
 #include <stdio.h>
 
-int
-ramfile_open(file_t file)
+int ramfile_open(file_t file)
 {
 	ramfile_t ramfile;
 	int ramfileno, result;
@@ -13,8 +12,7 @@ ramfile_open(file_t file)
 
 	for (ramfileno = 0;
 	     ramfileno < RAM_FILES &&
-	     ramfiletab[ramfileno].flags & RAMF_INUSE;
-	     ramfileno++);
+	     ramfiletab[ramfileno].flags & RAMF_INUSE; ramfileno++) ;
 	if (ramfileno == RAM_FILES) {
 #if _DEBUG
 		kprintf("ramfile_open: ramfiletab full\n");
@@ -22,7 +20,7 @@ ramfile_open(file_t file)
 		mutex_unlock(&ramfiletabmutex);
 		return EAGAIN;
 	}
-	ramfile = (ramfile_t) &(ramfiletab[ramfileno]);
+	ramfile = (ramfile_t) & (ramfiletab[ramfileno]);
 	ramfile->flags |= RAMF_INUSE;
 	mutex_unlock(&ramfiletabmutex);
 
@@ -36,7 +34,7 @@ ramfile_open(file_t file)
 	}
 	return EINVAL;
 
-openerror:
+ openerror:
 	mutex_lock(&ramfiletabmutex);
 	ramfile_clear(ramfile);
 	mutex_unlock(&ramfiletabmutex);

@@ -7,17 +7,16 @@
 #include <sys/ioctl.h>
 
 int ramfs_entries = 0;
-ramfs_direntry_t dir = NULL;
 int ramfiles_pos = 0;
-struct ramfile ramfiletab[RAM_FILES];
+ramfile_t ramfiletab;
 struct mutex ramfiletabmutex;
 
-int
-ramfs_mount(fs_t fs)
+int ramfs_mount(fs_t fs)
 {
 	buf_t b;
 	unsigned char buf[DENAME_LEN];
 	int i, j;
+	int offset = 0;
 	int result;
 
 	b = bget(RAMFILE_BUFSIZE);
@@ -43,13 +42,13 @@ ramfs_mount(fs_t fs)
 	kprintf("ramfs_mount: %d files\n", ramfs_entries);
 
 	/* Allocate a file table to hold the entries */
-	dir = (ramfs_direntry_t)
-		malloc(ramfs_entries * sizeof(struct ramfs_direntry));
-	if (dir == NULL) {
+	ramfiletab = (ramfile_t)
+	    malloc(ramfs_entries * sizeof(struct ramfile));
+	if (ramfiletab == NULL) {
 		dev_ioctl(fs->devno, UNLOCK, NULL);
 		return (-1);
 	}
-	memset(dir, 0, ramfs_entries * sizeof(struct ramfs_direntry));
+	memset(ramfiletab, 0, ramfs_entries * sizeof(struct ramfile));
 
 	for (i = 0; i < ramfs_entries; i++) {
 		/* Retrieve file name */
@@ -66,7 +65,10 @@ ramfs_mount(fs_t fs)
 			}
 			buf[j] = *(bstart(b));
 		}
-		strcpy(dir[i].name, (const char *)buf);
+		strcpy(ramfiletab[i].name, (const char *)buf);
+
+		/* Retrieve file size */
+		ramfiletab[i].offset = offset;
 
 		/* Retrieve file size */
 		memset(buf, 0, DENAME_LEN);
@@ -82,7 +84,9 @@ ramfs_mount(fs_t fs)
 			}
 			buf[j] = *(bstart(b));
 		}
-		dir[i].size = atoi((const char *)buf);
+		ramfiletab[i].size = atoi((const char *)buf);
+
+		offset += ramfiletab[i].size;
 	}
 	dev_ioctl(fs->devno, UNLOCK, NULL);
 

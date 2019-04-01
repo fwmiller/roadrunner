@@ -50,7 +50,7 @@ int rd_ioctl(void *dev, int cmd, void *args)
 			if (args == NULL)
 				return EINVAL;
 
-			pos = (int) args;
+			pos = (int)args;
 			if (pos < 0 || pos >= sizeof(___bin_ramdisk))
 				return EINVAL;
 
