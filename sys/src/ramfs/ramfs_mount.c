@@ -22,6 +22,7 @@ int ramfs_mount(fs_t fs)
 	b = bget(RAMFILE_BUFSIZE);
 	blen(b) = RAMFILE_BUFSIZE;
 
+	/* Buffer to store strings temporarily */
 	memset(buf, 0, DENAME_LEN);
 
 	dev_ioctl(fs->devno, LOCK, NULL);
@@ -91,10 +92,8 @@ int ramfs_mount(fs_t fs)
 	dev_ioctl(fs->devno, UNLOCK, NULL);
 
 	/* ramfiles_pos now points at the beginning of the files area */
-
-	/* Dump the file table entries */
 	ramfs_file_table_dump(ramfs_entries);
-
 	mutex_clear(&ramfiletabmutex);
+
 	return 0;
 }

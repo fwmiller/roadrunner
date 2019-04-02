@@ -51,3 +51,6 @@ indent:
 	cd include/fs; indent $(INDENT_RULES) *.h; $(RM) *~
 	cd include/sys; indent $(INDENT_RULES) *.h; $(RM) *~
 	cd sys/src/kern; make indent
+
+wc:
+	wc -l include/*.h include/bus/*.h include/dev/*.h include/fs/*.h include/sys/*.h libsrc/libc/*.c libsrc/libcurses/*.c src/cat/*.c src/cp/*.c src/fdisk/*.c src/format/*.c src/ls/*.c src/mkdir/*.c src/mount/*.c src/rm/*.c src/sh/*.c src/umount/*.c src/vi/*.c sys/src/dev/*.c sys/src/devfs/*.c sys/src/kern/*.c sys/src/load/*.c sys/src/ramfs/*.c sys/src/rrfs/*.c sys/src/sysfs/*.c sys/src/time/*.c

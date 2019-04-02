@@ -55,7 +55,7 @@ int rd_ioctl(void *dev, int cmd, void *args)
 			pos = (int)seekargs->offset;
 #if _DEBUG
 			kprintf("rd_ioctl: seek to pos %d\n", pos);
-			bufdump(___bin_ramdisk + pos, 16);
+			bufdump(___bin_ramdisk + pos, 32);
 #endif
 			if (pos < 0 || pos >= sizeof(___bin_ramdisk))
 				return EINVAL;

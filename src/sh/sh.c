@@ -86,6 +86,8 @@ int main(int argc, char **argv)
 	pid_t pid;
 	int i, join, len, result;
 
+	printf("Roadrunner shell\n");
+
 	/* Process command line arguments */
 	for (i = 1; i < argc; i++)
 		if (strcmp(argv[i], "-stdin") == 0 && i + 1 < argc) {
