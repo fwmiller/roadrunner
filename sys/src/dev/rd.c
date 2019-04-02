@@ -45,12 +45,18 @@ int rd_ioctl(void *dev, int cmd, void *args)
 
 	case SEEK_BLOCK:
 		{
+			struct seek *seekargs;
 			int pos;
 
 			if (args == NULL)
 				return EINVAL;
 
-			pos = (int)args;
+			seekargs = (struct seek *) args;
+			pos = (int)seekargs->offset;
+#if _DEBUG
+			kprintf("rd_ioctl: seek to pos %d\n", pos);
+			bufdump(___bin_ramdisk + pos, 16);
+#endif
 			if (pos < 0 || pos >= sizeof(___bin_ramdisk))
 				return EINVAL;
 

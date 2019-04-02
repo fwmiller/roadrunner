@@ -1,7 +1,11 @@
+#include <dev.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <fs/ramfs.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/ioctl.h>
 
 int ramfile_open(file_t file)
 {
@@ -28,11 +32,41 @@ int ramfile_open(file_t file)
 	file->bufsize = RAMFILE_BUFSIZE;
 
 	if (file->flags & O_RDONLY) {
+		struct seek seekargs;
+
 		result = ramfs_lookup(file, file->path);
 		if (result < 0)
 			goto openerror;
+
+		/* Lock device */
+		result = dev_ioctl(file->fs->devno, LOCK, NULL);
+		if (result < 0) {
+#if _DEBUG
+			kprintf("ramfile_open: device lock failed (%s)\n",
+				strerror(result));
+#endif
+			goto openerror;
+		}
+		/* Seek to device position */
+#if _DEBUG
+		kprintf("ramfile_open: ramfiles_pos %d ramfile->offset %d\n",
+			ramfiles_pos, ramfile->offset);
+#endif
+		seekargs.offset = ramfiles_pos + ramfile->offset;
+		seekargs.whence = SEEK_SET;
+		result = dev_ioctl(file->fs->devno, SEEK_BLOCK, &seekargs);
+
+		dev_ioctl(file->fs->devno, UNLOCK, NULL);
+
+		if (result < 0) {
+#if _DEBUG
+			kprintf("ramfile_open: device seek failed (%s)\n",
+				strerror(result));
+#endif
+			goto openerror;
+		}
 	}
-	return EINVAL;
+	return 0;
 
  openerror:
 	mutex_lock(&ramfiletabmutex);

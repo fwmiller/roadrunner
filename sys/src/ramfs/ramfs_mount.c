@@ -95,10 +95,6 @@ int ramfs_mount(fs_t fs)
 	/* Dump the file table entries */
 	ramfs_file_table_dump(ramfs_entries);
 
-	/* Clear ramfile table */
-	for (i = 0; i < RAM_FILES; i++)
-		ramfile_clear(&(ramfiletab[i]));
-
 	mutex_clear(&ramfiletabmutex);
 	return 0;
 }
