@@ -6,6 +6,7 @@
 
 int ramfs_lookup(file_t file, char *path)
 {
+#if 0
 	int i;
 	int k = 0;
 
@@ -20,6 +21,6 @@ int ramfs_lookup(file_t file, char *path)
 			file->filesize = ramfiletab[i].size;
 			return 0;
 		}
-
+#endif
 	return ENOENT;
 }
