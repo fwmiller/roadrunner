@@ -13,6 +13,7 @@ struct ramfs_direntry
 {
   char name[DENAME_LEN];
   u_long size;
+  u_long offset;
 };
 
 struct ramfile
@@ -21,7 +22,6 @@ struct ramfile
   int flags;
 
   struct ramfs_direntry *direntry;
-  u_long offset;
 };
 
 typedef struct ramfs_direntry *ramfs_direntry_t;

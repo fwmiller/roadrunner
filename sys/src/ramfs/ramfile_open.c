@@ -12,6 +12,7 @@ int ramfile_open(file_t file)
 	ramfile_t ramfile;
 	int ramfileno, result;
 
+	/* Grab an open ramfiletab slot */
 	mutex_lock(&ramfiletabmutex);
 
 	for (ramfileno = 0;
@@ -49,10 +50,12 @@ int ramfile_open(file_t file)
 		}
 		/* Seek to device position */
 #if _DEBUG
-		kprintf("ramfile_open: ramfiles_pos %d ramfile->offset %d\n",
-			ramfiles_pos, ramfile->offset);
+		kprintf("ramfile_open: ramfiles_pos %d offset %d\n",
+			ramfiles_pos,
+			ramfile->direntry->offset);
 #endif
-		seekargs.offset = ramfiles_pos + ramfile->offset;
+		seekargs.offset =
+			ramfiles_pos + ramfile->direntry->offset;
 		seekargs.whence = SEEK_SET;
 		result = dev_ioctl(file->fs->devno, SEEK_BLOCK, &seekargs);
 

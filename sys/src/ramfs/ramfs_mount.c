@@ -32,7 +32,7 @@ ramfs_rootdir_read(fs_t fs)
 {
 	buf_t b;
 	unsigned char buf[DENAME_LEN];
-	int i, j, result;
+	int i, j, offset, result;
 
 	b = bget(RAMFILE_BUFSIZE);
 	blen(b) = RAMFILE_BUFSIZE;
@@ -67,7 +67,7 @@ ramfs_rootdir_read(fs_t fs)
 	}
 	memset(rootdir, 0, rootdir_entries * sizeof(struct ramfs_direntry));
 
-	for (i = 0; i < rootdir_entries; i++) {
+	for (i = 0, offset = 0; i < rootdir_entries; i++) {
 		/* Retrieve file name */
 		memset(buf, 0, DENAME_LEN);
 		for (j = 0;; j++, ramfiles_pos++) {
@@ -99,6 +99,9 @@ ramfs_rootdir_read(fs_t fs)
 			buf[j] = *(bstart(b));
 		}
 		rootdir[i].size = atoi((const char *)buf);
+
+		rootdir[i].offset = offset;
+		offset += rootdir[i].size;
 	}
 	dev_ioctl(fs->devno, UNLOCK, NULL);
 
