@@ -10,8 +10,6 @@ ramfs_direntry_t rootdir;
 int rootdir_entries = 0;
 
 int ramfiles_pos = 0;
-ramfile_t ramfiletab;
-struct mutex ramfiletabmutex;
 
 static int ramfs_rootdir_read(fs_t fs);
 

@@ -20,9 +20,8 @@ struct ramfile
 #define RAMF_INUSE	0x01
   int flags;
 
-  char name[DENAME_LEN];
+  struct ramfs_direntry *direntry;
   u_long offset;
-  u_long size;
 };
 
 typedef struct ramfs_direntry *ramfs_direntry_t;
@@ -34,7 +33,7 @@ extern ramfs_direntry_t rootdir;
 extern int rootdir_entries;
 
 extern int ramfiles_pos;
-extern ramfile_t ramfiletab;
+extern struct ramfile ramfiletab[];
 extern struct mutex ramfiletabmutex;
 
 void ramfile_clear (ramfile_t rf);
