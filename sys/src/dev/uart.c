@@ -1,6 +1,8 @@
 #include <dev/uart.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys.h>
+#include <sys/i8259.h>
 #include <sys/intr.h>
 
 /* COM port I/O base addresses */
@@ -28,29 +30,6 @@
 static char rx_fifo[RX_FIFO_LEN];
 static int rx_fifo_head, rx_fifo_tail, rx_fifo_len;
 
-int uart_init(void *dev)
-{
-	memset(rx_fifo, 0, RX_FIFO_LEN);
-	rx_fifo_head = 0;
-	rx_fifo_tail = 0;
-	rx_fifo_len = 0;
-
-	outb(COM1_BASE + COM_IER, 0x00);	/* Disable interrupts */
-	outb(COM1_BASE + COM_LCR, 0x80);	/* Enable DLAB */
-	outb(COM1_BASE + COM_DLL, 0x01);	/* 115200 baud rate lo */
-	outb(COM1_BASE + COM_DLH, 0x00);	/* 115200 baud rate hi */
-	outb(COM1_BASE + COM_LCR, 0x03);	/* 8 bits,no parity,1 stop */
-	outb(COM1_BASE + COM_FCR, 0x00);	/* Disable FIFOs */
-	outb(COM1_BASE + COM_IER, 0x01);	/* Enable IRQs */
-
-	return 0;
-}
-
-int uart_shut(void *dev)
-{
-	return 0;
-}
-
 void uart_isr()
 {
 	char ch;
@@ -66,6 +45,38 @@ void uart_isr()
 		}
 		enable;
 	}
+	/* Issue uart eoi */
+	outb(I8259_MSTR_CTRL, I8259_EOI_SERPRI);
+}
+
+int uart_init(void *dev)
+{
+	memset(rx_fifo, 0, RX_FIFO_LEN);
+	rx_fifo_head = 0;
+	rx_fifo_tail = 0;
+	rx_fifo_len = 0;
+
+	isr_inst(INTR_SERPRI, uart_isr, NULL);
+	intr_unmask(INTR_SERPRI);
+
+	outb(COM1_BASE + COM_IER, 0x00); /* Disable all interrupts */
+	outb(COM1_BASE + COM_LCR, 0x80); /* Enable DLAB */
+	outb(COM1_BASE + COM_DLL, 0x01); /* 115200 baud rate lo */
+	outb(COM1_BASE + COM_DLH, 0x00); /* 115200 baud rate hi */
+	outb(COM1_BASE + COM_LCR, 0x03); /* 8 bits,no parity,1 stop */
+	outb(COM1_BASE + COM_FCR, 0x00); /* Disable FIFOs */
+
+	/* Set bit 3 of the MCR to allow interrupt servicing */
+	outb(COM1_BASE + COM_MCR, inb(COM1_BASE + COM_MCR) & 0x80);
+
+	outb(COM1_BASE + COM_IER, 0x01); /* Enable rcvd data interrupt */
+
+	return 0;
+}
+
+int uart_shut(void *dev)
+{
+	return 0;
 }
 
 int uart_ioctl(void *dev, int cmd, void *args)

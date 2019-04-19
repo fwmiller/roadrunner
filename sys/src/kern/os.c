@@ -151,6 +151,7 @@ void os()
 	devops.specific.char_ops.get = uart_get;
 	devops.specific.char_ops.put = uart_put;
 	dev_inst("uart", DEV_TYPE_CHAR, &devops, NULL);
+	dev_init("uart");
 
 	/* Install ramdisk device */
 	devops.init = rd_init;

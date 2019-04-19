@@ -210,6 +210,7 @@ int file_open(char *path, int flags, file_t * file)
 	}
 	if (fullpath != path)
 		free(fullpath);
+
 	return result;
 }
 
