@@ -186,6 +186,7 @@ struct pci_vendor pci_vendors[] = {
 	{PCI_VENDOR_ROCKWELL, "Rockwell"},
 	{PCI_VENDOR_NETGEAR, "Netgear"},
 	{PCI_VENDOR_VMWARE, "VMware"},
+	{PCI_VENDOR_VIRTIO, "Virtio"},
 	{PCI_VENDOR_S3, "S3"},
 	{PCI_VENDOR_INTEL, "Intel"},
 	{PCI_VENDOR_ADAPTEC, "Adaptec"},
