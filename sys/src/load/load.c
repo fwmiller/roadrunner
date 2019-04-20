@@ -40,10 +40,6 @@ static int start_sym_search(sections_t s, char *start_sym, char **start)
 	for (i = 1; i < s->symtabentries; i++)
 		if (strcmp(s->strtab + s->symtab[i].st_name, start_sym) == 0) {
 			*start = (char *)(s->textoff + s->symtab[i].st_value);
-#if _DEBUG
-			kprintf("start_sym_search: %s %08x\n",
-				start_sym, (u_int) * start);
-#endif
 			return 1;
 		}
 #if _DEBUG
@@ -132,6 +128,9 @@ int load(char *path, char **prog, u_long * size, char **start)
 	else if (s.comcnt > 0)
 		*size += ALIGN(s.comsize, PAGE_SIZE);
 
+#if _DEBUG
+	kprintf("load: size = %d\n", *size);
+#endif
 	/* Allocate and zero program memory */
 	*prog = malloc(*size);
 	if (*prog == NULL) {

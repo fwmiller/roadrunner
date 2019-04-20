@@ -67,6 +67,11 @@ int rd_ioctl(void *dev, int cmd, void *args)
 	return ENOTTY;
 }
 
+#if _DEBUG
+char twiddle_char[] = { '/', '-', '\\', '|' };
+int twiddle_pos = 0;
+#endif
+
 int rd_read(void *dev, buf_t * b)
 {
 	if (b == NULL || *b == NULL)
@@ -75,6 +80,10 @@ int rd_read(void *dev, buf_t * b)
 	if (rdpos < 0 || rdpos >= sizeof(___bin_ramdisk))
 		return EINVAL;
 
+#if _DEBUG
+	kprintf("\b%c", twiddle_char[twiddle_pos]);
+	twiddle_pos = (twiddle_pos + 1) % 4;
+#endif
 	*(bstart(*b)) = ___bin_ramdisk[rdpos++];
 	blen(*b) = RDBUFSIZE;
 
