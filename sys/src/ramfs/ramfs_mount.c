@@ -31,11 +31,53 @@ static int
 ramfs_rootdir_read(fs_t fs)
 {
 	buf_t b;
-	unsigned char buf[DENAME_LEN];
-	int i, j, offset, result;
+	unsigned char *buf;
+	int bufsize, i, rootdirsize;
+	int result;
 
-	b = bget(RAMFILE_BUFSIZE);
-	blen(b) = RAMFILE_BUFSIZE;
+	dev_ioctl(fs->devno, GET_BUFFER_SIZE, &bufsize);
+#if _DEBUG
+	kprintf("ramfs_rootdir_read: bufsize = %d\n", bufsize);
+#endif
+	b = bget(bufsize);
+	blen(b) = bufsize;
+
+	/* Get length of rootdir */
+	buf = (unsigned char *) malloc(bufsize);
+	if (buf == NULL) {
+		bfree(b);
+		return (-1);
+	}
+	result = dev_read(fs->devno, &b);
+	if (result < 0) {
+		free(buf);
+		bfree(b);
+		return (-1);
+	}
+	for (i = 0; i < bufsize; i++) {
+		if (*(bstart(b) + bpos(b)) == '\n')
+			break;
+
+		buf[i] = *(bstart(b) + bpos(b));
+		bpos(b) += 1;
+	}
+	rootdirsize = atoi((const char *)buf);
+#if _DEBUG
+	kprintf("ramfs_mount: rootdirsize = %d\n", rootdirsize);
+#endif
+
+	return 0;
+#if 0
+	buf_t b;
+	unsigned char buf[DENAME_LEN];
+	int bufsize, i, j, offset, result;
+
+	dev_ioctl(fs->devno, GET_BUFFER_SIZE, &bufsize);
+#if _DEBUG
+	kprintf("ramfs_rootdir_read: bufsize = %d\n", bufsize);
+#endif
+	b = bget(bufsize);
+	blen(b) = bufsize;
 
 	/* Buffer to store strings temporarily */
 	memset(buf, 0, DENAME_LEN);
@@ -106,4 +148,5 @@ ramfs_rootdir_read(fs_t fs)
 	dev_ioctl(fs->devno, UNLOCK, NULL);
 
 	return 0;
+#endif
 }

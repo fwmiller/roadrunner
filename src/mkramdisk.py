@@ -10,21 +10,21 @@ ramdisk = 'ramdisk'
 files = [f for f in os.listdir(binpath) if isfile(join(binpath, f))]
 
 # Count the list of binary files to include in ramdisk
-count = 0
+rootdir = ""
 for f in files:
-	if f[0] != '.':
-		count += 1
+	if f != ramdisk and f[0] != '.':
+		rootdir += f
+		rootdir += ','
+		rootdir += str(os.path.getsize(join(binpath, f)))
+		rootdir += '\n'
 
 # Create the ramdisk file
 with open(join(binpath, ramdisk), 'wb') as ramdiskfd:
-	# Write the count
-	ramdiskfd.write('%u\n' % count)
+	# Write the length of the root directory string
+	ramdiskfd.write('%u\n' % len(rootdir))
 
-	# Write the filename and size for each binary file
-	for f in files:
-		if f[0] != '.':
-			size = os.path.getsize(join(binpath, f))
-			ramdiskfd.write('%s,%u\n' % (f, size));
+	# Write the root directory string
+	ramdiskfd.write(rootdir)
 
 	# Concatenate each binary file to the ramdisk file
 	for f in files:

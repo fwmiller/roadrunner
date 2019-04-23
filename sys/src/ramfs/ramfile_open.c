@@ -10,7 +10,7 @@
 int ramfile_open(file_t file)
 {
 	ramfile_t ramfile;
-	int ramfileno, result;
+	int bufsize, ramfileno, result;
 
 	/* Grab an open ramfiletab slot */
 	mutex_lock(&ramfiletabmutex);
@@ -29,8 +29,12 @@ int ramfile_open(file_t file)
 	ramfile->flags |= RAMF_INUSE;
 	mutex_unlock(&ramfiletabmutex);
 
+	dev_ioctl(file->fs->devno, GET_BUFFER_SIZE, &bufsize);
+#if _DEBUG
+	kprintf("ramfile_open: bufsize = %d\n", bufsize);
+#endif
 	file->data = ramfile;
-	file->bufsize = RAMFILE_BUFSIZE;
+	file->bufsize = bufsize;
 
 	if (file->flags & O_RDONLY) {
 		struct seek seekargs;

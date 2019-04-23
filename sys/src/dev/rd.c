@@ -6,7 +6,7 @@
 #include <sys/mutex.h>
 #include "ramdisk.c"
 
-#define RDBUFSIZE	1
+#define RDBUFSIZE	512
 
 extern unsigned char ___bin_ramdisk[];
 
@@ -74,6 +74,8 @@ int twiddle_pos = 0;
 
 int rd_read(void *dev, buf_t * b)
 {
+	int len;
+
 	if (b == NULL || *b == NULL)
 		return EINVAL;
 
@@ -84,8 +86,18 @@ int rd_read(void *dev, buf_t * b)
 	kprintf("\b%c", twiddle_char[twiddle_pos]);
 	twiddle_pos = (twiddle_pos + 1) % 4;
 #endif
+#if 0
 	*(bstart(*b)) = ___bin_ramdisk[rdpos++];
-	blen(*b) = RDBUFSIZE;
+#endif
+	if (rdpos + RDBUFSIZE <= sizeof(___bin_ramdisk))
+		len = RDBUFSIZE;
+	else
+		len = sizeof(___bin_ramdisk) - rdpos;
+
+	bcopy(___bin_ramdisk + rdpos, bstart(*b), len);
+	blen(*b) = len;
+
+	rdpos += len;
 
 	return 0;
 }
