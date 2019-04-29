@@ -31,7 +31,7 @@ extern unsigned char ___bin_ramfs[];
 extern ramfs_direntry_t rootdir;
 extern int rootdir_entries;
 
-extern int ramfiles_pos;
+extern int ramfiles_blkno;
 extern struct ramfile ramfiletab[];
 extern struct mutex ramfiletabmutex;
 

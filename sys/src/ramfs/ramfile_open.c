@@ -54,12 +54,11 @@ int ramfile_open(file_t file)
 		}
 		/* Seek to device position */
 #if _DEBUG
-		kprintf("ramfile_open: ramfiles_pos %d offset %d\n",
-			ramfiles_pos,
+		kprintf("ramfile_open: ramfiles_blkno %d offset %d\n",
+			ramfiles_blkno,
 			ramfile->direntry->offset);
 #endif
-		seekargs.offset =
-			ramfiles_pos + ramfile->direntry->offset;
+		seekargs.offset = ramfiles_blkno;
 		seekargs.whence = SEEK_SET;
 		result = dev_ioctl(file->fs->devno, SEEK_BLOCK, &seekargs);
 

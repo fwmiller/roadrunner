@@ -3,6 +3,7 @@
 import os
 from os.path import isfile, join
 
+blksize = 512
 binpath = '../bin'
 ramdisk = 'ramdisk'
 
@@ -20,10 +21,23 @@ for f in files:
 
 # Create the ramdisk file
 with open(join(binpath, ramdisk), 'wb') as ramdiskfd:
-	# Write the length of the root directory string
-	ramdiskfd.write('%u\n' % len(rootdir))
+	# Write bootblk
+	bootblk = "%u" % len(rootdir)
+	bootblklen = len(bootblk)
+	i = 0
+	while i < blksize - bootblklen:
+		bootblk += '\0'
+		i += 1
+
+	ramdiskfd.write(bootblk)
 
 	# Write the root directory string
+	rootdirlen = len(rootdir)
+	i = 0
+	while i < blksize - (rootdirlen % blksize):
+		rootdir += '\0'
+		i += 1
+
 	ramdiskfd.write(rootdir)
 
 	# Concatenate each binary file to the ramdisk file

@@ -2,16 +2,19 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/ioctl.h>
 #include <sys/mutex.h>
 #include "ramdisk.c"
 
-#define RDBUFSIZE	512
+#define RDBLKSIZE	512
 
 extern unsigned char ___bin_ramdisk[];
 
 static struct mutex rdmutex;
-static int rdpos = 0;
+static int rdblkno = 0;
+
+void bufdump(char *buf, int size);
 
 int rd_init(void *dev)
 {
@@ -40,64 +43,47 @@ int rd_ioctl(void *dev, int cmd, void *args)
 		if (args == NULL)
 			return EINVAL;
 
-		*((u_long *) args) = RDBUFSIZE;
+		*((u_long *) args) = RDBLKSIZE;
 		return 0;
 
 	case SEEK_BLOCK:
 		{
 			struct seek *seekargs;
-			int pos;
+			int blkno;
 
 			if (args == NULL)
 				return EINVAL;
 
 			seekargs = (struct seek *) args;
-			pos = (int)seekargs->offset;
+			blkno = (int)seekargs->offset;
 #if _DEBUG
-			kprintf("rd_ioctl: seek to pos %d\n", pos);
-			bufdump(___bin_ramdisk + pos, 32);
+			kprintf("rd_ioctl: seek to blkno %d\n", blkno);
+			bufdump((char *) (___bin_ramdisk + (blkno * RDBLKSIZE)),
+				RDBLKSIZE);
 #endif
-			if (pos < 0 || pos >= sizeof(___bin_ramdisk))
+			if (blkno < 0 ||
+			    (blkno * RDBLKSIZE) >= sizeof(___bin_ramdisk))
 				return EINVAL;
 
-			rdpos = pos;
+			rdblkno = blkno;
 			return 0;
 		}
 	}
 	return ENOTTY;
 }
 
-#if _DEBUG
-char twiddle_char[] = { '/', '-', '\\', '|' };
-int twiddle_pos = 0;
-#endif
-
 int rd_read(void *dev, buf_t * b)
 {
-	int len;
-
 	if (b == NULL || *b == NULL)
 		return EINVAL;
 
-	if (rdpos < 0 || rdpos >= sizeof(___bin_ramdisk))
+	if (rdblkno < 0 || (rdblkno * RDBLKSIZE) >= sizeof(___bin_ramdisk))
 		return EINVAL;
 
-#if _DEBUG
-	kprintf("\b%c", twiddle_char[twiddle_pos]);
-	twiddle_pos = (twiddle_pos + 1) % 4;
-#endif
-#if 0
-	*(bstart(*b)) = ___bin_ramdisk[rdpos++];
-#endif
-	if (rdpos + RDBUFSIZE <= sizeof(___bin_ramdisk))
-		len = RDBUFSIZE;
-	else
-		len = sizeof(___bin_ramdisk) - rdpos;
+	bcopy(___bin_ramdisk + (rdblkno * RDBLKSIZE), bstart(*b), RDBLKSIZE);
+	blen(*b) = RDBLKSIZE;
 
-	bcopy(___bin_ramdisk + rdpos, bstart(*b), len);
-	blen(*b) = len;
-
-	rdpos += len;
+	rdblkno++;
 
 	return 0;
 }
