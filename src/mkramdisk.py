@@ -7,6 +7,12 @@ blksize = 512
 binpath = '../bin'
 ramdisk = 'ramdisk'
 
+def align(val, size):
+	a = val + blksize - 1
+	a = a / blksize
+	a = a * blksize
+	return a
+
 # Get list of binary files to include in ramdisk
 files = [f for f in os.listdir(binpath) if isfile(join(binpath, f))]
 
@@ -45,4 +51,12 @@ with open(join(binpath, ramdisk), 'wb') as ramdiskfd:
 		if f[0] != '.':
 			path = join(binpath,f)
 			fd = open(path, 'rb')
-			ramdiskfd.write(fd.read())
+			binary = fd.read()
+			ramdiskfd.write(binary)
+			binarylen = len(binary)
+			alignedbinarylen = align(binarylen, blksize)
+			pad = alignedbinarylen - binarylen
+			i = 0
+			while i < pad:
+				ramdiskfd.write('\0')
+				i += 1

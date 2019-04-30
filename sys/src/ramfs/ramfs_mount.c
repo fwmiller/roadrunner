@@ -32,7 +32,7 @@ ramfs_rootdir_read(fs_t fs)
 {
 	buf_t b;
 	unsigned char *buf, sizebuf[32];
-	int bufsize, i, j, pos, offset, rootdirsize;
+	int bufsize, i, j, pos, blkoff = 0, rootdirsize;
 	int result;
 
 	dev_ioctl(fs->devno, LOCK, NULL);
@@ -49,6 +49,7 @@ ramfs_rootdir_read(fs_t fs)
 		bfree(b);
 		return (-1);
 	}
+	blkoff++;
 	rootdirsize = atoi((const char *)bstart(b));
 #if _DEBUG
 	kprintf("ramfs_rootdir_read: rootdirsize = %d\n", rootdirsize);
@@ -69,6 +70,7 @@ ramfs_rootdir_read(fs_t fs)
 			bfree(b);
 			return (-1);
 		}
+		blkoff++;
 		bcopy(bstart(b), buf + (i * bufsize), bufsize);
 	}
 	bfree(b);
@@ -96,7 +98,7 @@ ramfs_rootdir_read(fs_t fs)
 	memset(rootdir, 0, rootdir_entries * sizeof(struct ramfs_direntry));
 
 	/* Loop over the directory entries */
-	for (i = 0, pos = 0, offset = 0; i < rootdir_entries; i++) {
+	for (i = 0, pos = 0, blkoff = 0; i < rootdir_entries; i++) {
 		/* Retrieve file name */
 		for (j = 0;; j++, pos++) {
 			if (buf[pos] == ',') {
@@ -117,9 +119,9 @@ ramfs_rootdir_read(fs_t fs)
 		}
 		rootdir[i].size = atoi((const char *)sizebuf);
 
-		/* Set file offset */
-		rootdir[i].offset = offset;
-		offset += rootdir[i].size;
+		/* Set file blk offset */
+		rootdir[i].offset = blkoff;
+		blkoff += ALIGN(rootdir[i].size, bufsize) / bufsize;
 	}
 	free(buf);
 	return 0;
