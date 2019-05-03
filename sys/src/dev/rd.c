@@ -58,8 +58,11 @@ int rd_ioctl(void *dev, int cmd, void *args)
 			blkno = (int)seekargs->offset;
 #if _DEBUG
 			kprintf("rd_ioctl: seek to blkno %d\n", blkno);
-			bufdump((char *) (___bin_ramdisk + (blkno * RDBLKSIZE)),
+#if 0
+			bufdump((char *)
+				(___bin_ramdisk + (blkno * RDBLKSIZE)),
 				RDBLKSIZE);
+#endif
 #endif
 			if (blkno < 0 ||
 			    (blkno * RDBLKSIZE) >= sizeof(___bin_ramdisk))

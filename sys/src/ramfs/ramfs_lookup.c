@@ -25,10 +25,15 @@ int ramfs_lookup(file_t file, char *path)
 
 			file->filesize = rootdir[i].size;
 			ramfile->direntry = &(rootdir[i]);
-
+#if _DEBUG
 			kprintf("ramfs_lookup: found offset %d\n",
 				ramfile->direntry->offset);
-
+#endif
+			ramfile->blkno = rootdir[i].offset;
+#if _DEBUG
+			kprintf("ramfs_lookup: blkno %d\n",
+				ramfile->blkno);
+#endif
 			return 0;
 		}
 	}

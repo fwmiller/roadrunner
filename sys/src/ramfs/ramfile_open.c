@@ -54,16 +54,11 @@ int ramfile_open(file_t file)
 		}
 		/* Seek to device position */
 #if _DEBUG
-		kprintf("ramfile_open: ramfiles_blkno %d offset %d\n",
-			ramfiles_blkno,
-			ramfile->direntry->offset);
+		kprintf("ramfile_open: blkno %d\n",  ramfile->blkno);
 #endif
-		seekargs.offset = ramfiles_blkno;
+		seekargs.offset = ramfile->blkno;
 		seekargs.whence = SEEK_SET;
 		result = dev_ioctl(file->fs->devno, SEEK_BLOCK, &seekargs);
-
-		dev_ioctl(file->fs->devno, UNLOCK, NULL);
-
 		if (result < 0) {
 #if _DEBUG
 			kprintf("ramfile_open: device seek failed (%s)\n",
@@ -71,6 +66,20 @@ int ramfile_open(file_t file)
 #endif
 			goto openerror;
 		}
+
+		/* Get buffer for first cluster */
+		if (file->buf != NULL)
+			brel(file->buf);
+		file->buf = bget(file->bufsize);
+		blen(file->buf) = file->bufsize;
+
+		result = dev_read(file->fs->devno, &(file->buf));
+		if (result < 0) {
+			brel(file->buf);
+			dev_ioctl(file->fs->devno, UNLOCK, NULL);
+			goto openerror;
+		}
+		dev_ioctl(file->fs->devno, UNLOCK, NULL);
 	}
 	return 0;
 
