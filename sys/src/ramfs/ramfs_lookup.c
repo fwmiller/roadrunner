@@ -16,24 +16,13 @@ int ramfs_lookup(file_t file, char *path)
 		k = 1;
 
 	for (i = 0; i < rootdir_entries; i++) {
-
-		kprintf("ramfs_lookup: path [%s] rootdir[i].name [%s]\n",
-			path + k, rootdir[i].name);
-
 		if (strcmp(path + k, rootdir[i].name) == 0) {
 			ramfile_t ramfile = (ramfile_t) file->data;
 
-			file->filesize = rootdir[i].size;
 			ramfile->direntry = &(rootdir[i]);
-#if _DEBUG
-			kprintf("ramfs_lookup: found offset %d\n",
-				ramfile->direntry->offset);
-#endif
-			ramfile->blkno = rootdir[i].offset;
-#if _DEBUG
-			kprintf("ramfs_lookup: blkno %d\n",
-				ramfile->blkno);
-#endif
+			file->filesize = ramfile->direntry->size;
+			ramfile->blkno =
+				ramfile->direntry->offset + ramfiles_blkno;
 			return 0;
 		}
 	}

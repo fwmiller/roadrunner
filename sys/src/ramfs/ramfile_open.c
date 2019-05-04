@@ -30,9 +30,6 @@ int ramfile_open(file_t file)
 	mutex_unlock(&ramfiletabmutex);
 
 	dev_ioctl(file->fs->devno, GET_BUFFER_SIZE, &bufsize);
-#if _DEBUG
-	kprintf("ramfile_open: bufsize = %d\n", bufsize);
-#endif
 	file->data = ramfile;
 	file->bufsize = bufsize;
 
@@ -54,7 +51,7 @@ int ramfile_open(file_t file)
 		}
 		/* Seek to device position */
 #if _DEBUG
-		kprintf("ramfile_open: blkno %d\n",  ramfile->blkno);
+		kprintf("ramfile_open: blkno %d\n", ramfile->blkno);
 #endif
 		seekargs.offset = ramfile->blkno;
 		seekargs.whence = SEEK_SET;
@@ -75,6 +72,10 @@ int ramfile_open(file_t file)
 
 		result = dev_read(file->fs->devno, &(file->buf));
 		if (result < 0) {
+#if _DEBUG
+			kprintf("ramfile_open: read failed (%s)\n",
+				strerror(result));
+#endif
 			brel(file->buf);
 			dev_ioctl(file->fs->devno, UNLOCK, NULL);
 			goto openerror;

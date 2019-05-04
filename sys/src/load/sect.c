@@ -25,28 +25,56 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <sys.h>
 #include <sys/load.h>
 
-static int find_section(sections_t s, char *section)
+static int
+find_section(sections_t s, char *section)
 {
 	Elf32_Ehdr *ehdr = s->ehdr;
 	Elf32_Shdr *shdrtab = s->shdrtab;
 	char *shstrtab = s->shstrtab;
 	int i;
 
-	for (i = 0; i < ehdr->e_shnum; i++)
+	if (s == NULL) {
+#if _DEBUG
+		kprintf("find_section: missing section\n");
+#endif
+		return (-1);
+	}
+	if (section == NULL) {
+#if _DEBUG
+		kprintf("find_section: missing section name\n");
+#endif
+		return (-1);
+	}
+	for (i = 0; i < ehdr->e_shnum; i++) {
 		if (strcmp(shstrtab + shdrtab[i].sh_name, section) == 0)
 			break;
+	}
 	if (i == ehdr->e_shnum)
 		return (-1);
 	return i;
 }
 
-int init_sections(char *filebuf, sections_t s)
+int
+init_sections(char *filebuf, sections_t s)
 {
 	int i, ndx;
 
+	if (filebuf == NULL) {
+#if _DEBUG
+		kprintf("init_sections: missing filebuf\n");
+#endif
+		return (-1);
+	}
+	if (s == NULL) {
+#if _DEBUG
+		kprintf("init_sections: missing sections\n");
+#endif
+		return (-1);
+	}
 	bzero(s, sizeof(struct sections));
 
 	s->ehdr = (Elf32_Ehdr *) filebuf;
@@ -58,12 +86,16 @@ int init_sections(char *filebuf, sections_t s)
 
 	/* Symbol table */
 	ndx = find_section(s, SYMTAB);
-	s->symtab = (Elf32_Sym *) (filebuf + s->shdrtab[ndx].sh_offset);
-	s->symtabentries = s->shdrtab[ndx].sh_size / s->shdrtab[ndx].sh_entsize;
-
+	if (ndx >= 0) {
+		s->symtab =
+			(Elf32_Sym *) (filebuf + s->shdrtab[ndx].sh_offset);
+		s->symtabentries =
+			s->shdrtab[ndx].sh_size / s->shdrtab[ndx].sh_entsize;
+	}
 	/* String table */
 	ndx = find_section(s, STRTAB);
-	s->strtab = filebuf + s->shdrtab[ndx].sh_offset;
+	if (ndx >= 0)
+		s->strtab = filebuf + s->shdrtab[ndx].sh_offset;
 
 	/*
 	 * XXX Assume there is at most one occurence of each of the following
@@ -82,7 +114,6 @@ int init_sections(char *filebuf, sections_t s)
 		s->reltextentries =
 		    s->shdrtab[ndx].sh_size / s->shdrtab[ndx].sh_entsize;
 	}
-
 	/* RODATA relocations */
 	ndx = find_section(s, RELRODATA);
 	if (ndx >= 0) {
@@ -91,7 +122,6 @@ int init_sections(char *filebuf, sections_t s)
 		s->relrodataentries =
 		    s->shdrtab[ndx].sh_size / s->shdrtab[ndx].sh_entsize;
 	}
-
 	/* DATA relocations */
 	ndx = find_section(s, RELDATA);
 	if (ndx >= 0) {
@@ -100,23 +130,18 @@ int init_sections(char *filebuf, sections_t s)
 		s->reldataentries =
 		    s->shdrtab[ndx].sh_size / s->shdrtab[ndx].sh_entsize;
 	}
-
 	/* Count the common symbols */
 	for (i = 0; i < s->symtabentries; i++)
 		if (s->symtab[i].st_shndx == SHN_COMMON) {
 			s->comcnt++;
 			s->comsize += s->symtab[i].st_size;
 		}
-#if _DEBUG
-	if (s->comcnt > 0)
-		kprintf("init_sections: common symbols %d size %d\n",
-			s->comcnt, s->comsize);
-#endif
 
 	return 0;
 }
 
-int load_sections(sections_t s, char *filebuf, char *prog)
+int
+load_sections(sections_t s, char *filebuf, char *prog)
 {
 	Elf32_Shdr *shdrtab = s->shdrtab;
 	u_long offset;

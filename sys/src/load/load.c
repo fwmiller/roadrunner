@@ -77,6 +77,9 @@ int load(char *path, char **prog, u_long * size, char **start)
 		file_close(file);
 		return result;
 	}
+#if _DEBUG
+	kprintf("load: file size %d bytes\n", filesize);
+#endif
 
 	filebuf = (char *)malloc(filesize);
 	if (filebuf == NULL) {
@@ -86,7 +89,6 @@ int load(char *path, char **prog, u_long * size, char **start)
 		file_close(file);
 		return ENOMEM;
 	}
-
 	/* XXX Read program file into memory in its entirety */
 	result = file_read(file, filebuf, (int *)&filesize);
 	if (result < 0) {
@@ -128,9 +130,6 @@ int load(char *path, char **prog, u_long * size, char **start)
 	else if (s.comcnt > 0)
 		*size += ALIGN(s.comsize, PAGE_SIZE);
 
-#if _DEBUG
-	kprintf("load: size = %d\n", *size);
-#endif
 	/* Allocate and zero program memory */
 	*prog = malloc(*size);
 	if (*prog == NULL) {
@@ -156,32 +155,21 @@ int load(char *path, char **prog, u_long * size, char **start)
 
 	/* Perform .text relocations */
 	if (s.reltextentries > 0) {
-#if _DEBUG
-		kprintf("load: relocate %d .text entries\n", s.reltextentries);
-#endif
 		for (i = 0; i < s.reltextentries; i++)
 			relocate(&s, s.textoff, &(s.reltext[i]));
 	}
 
 	/* Perform .rodata relocations */
 	if (s.relrodataentries > 0) {
-#if _DEBUG
-		kprintf("load: relocate %d .rodata entries\n",
-			s.relrodataentries);
-#endif
 		for (i = 0; i < s.relrodataentries; i++)
 			relocate(&s, s.rodataoff, &(s.relrodata[i]));
 	}
 
 	/* Perform .data relocations */
 	if (s.reldataentries > 0) {
-#if _DEBUG
-		kprintf("load: relocate %d .data entries\n", s.reldataentries);
-#endif
 		for (i = 0; i < s.reldataentries; i++)
 			relocate(&s, s.dataoff, &(s.reldata[i]));
 	}
-
 	free(filebuf);
 	return 0;
 }

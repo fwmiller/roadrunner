@@ -259,6 +259,7 @@ pid_t proc_exec(const char *path, int argc, char **argv)
 	insq(proc, &ready);
 	current->state = PS_READY;
 	insq(current, &ready);
+
 	proc_transfer();	/* enables interrupts */
 	return proc->slot;
 }
