@@ -37,9 +37,7 @@ ramfs_rootdir_read(fs_t fs)
 
 	dev_ioctl(fs->devno, LOCK, NULL);
 	dev_ioctl(fs->devno, GET_BUFFER_SIZE, &bufsize);
-#if _DEBUG
-	kprintf("ramfs_rootdir_read: bufsize = %d\n", bufsize);
-#endif
+
 	b = bget(bufsize);
 	blen(b) = bufsize;
 
@@ -51,9 +49,6 @@ ramfs_rootdir_read(fs_t fs)
 	}
 	blkoff++;
 	rootdirsize = atoi((const char *)bstart(b));
-#if _DEBUG
-	kprintf("ramfs_rootdir_read: rootdirsize = %d\n", rootdirsize);
-#endif
 
 	/* Read the rootdir from the ramdisk */
 	buf = (unsigned char *) malloc(ALIGN(rootdirsize, bufsize));
@@ -84,13 +79,9 @@ ramfs_rootdir_read(fs_t fs)
 		if (buf[i] == '\n')
 			rootdir_entries++;
 	}
-#if _DEBUG
-	kprintf("ramfs_rootdir_read: rootdir_entries = %d\n",
-		rootdir_entries);
-#endif
 	/* Allocate in-memory structured root directory */
 	rootdir = (ramfs_direntry_t)
-		malloc(rootdir_entries * sizeof(struct ramfs_direntry));
+		kmalloc(rootdir_entries * sizeof(struct ramfs_direntry));
 	if (rootdir == NULL) {
 		free(buf);
 		return (-1);

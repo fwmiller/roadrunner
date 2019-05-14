@@ -59,6 +59,9 @@ int load(char *path, char **prog, u_long * size, char **start)
 	if (path == NULL || prog == NULL || size == NULL || start == NULL)
 		return EINVAL;
 
+#if _DEBUG
+	kprintf("load: open %s\n", path);
+#endif
 	result = file_open(path, O_RDONLY, &file);
 	if (result < 0) {
 #if _DEBUG
@@ -67,7 +70,6 @@ int load(char *path, char **prog, u_long * size, char **start)
 #endif
 		return result;
 	}
-
 	result = file_ioctl(file, GET_FILE_SIZE, &filesize);
 	if (result < 0) {
 #if _DEBUG
