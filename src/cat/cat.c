@@ -36,10 +36,13 @@ int main(int argc, char **argv)
 	size_t len;
 	int fd, i, j, result;
 
+#if _DEBUG
+	printf("cat: argc %d argv 0x%08x\n", argc, argv);
+#endif
 	/* Command line arguments */
 	for (i = 1; i < argc; i++) {
 #if _DEBUG
-		printf("cat: %s\n", argv[i]);
+		printf("cat: argv[%d] [%s]\n", i, argv[i]);
 #endif
 		/* XXX Need to check whether argv[i] is a directory */
 

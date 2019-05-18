@@ -229,7 +229,7 @@ pid_t proc_exec(const char *path, int argc, char **argv)
 	proc_t proc;
 	char *prog, *start;
 	u_long size;
-	int result;
+	int i, result;
 
 	result = load(path, &prog, &size, &start);
 	if (result < 0) {

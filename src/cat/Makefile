@@ -2,7 +2,7 @@ ROOTDIR = ../..
 include $(ROOTDIR)/Makefile.rules
 LIB = -nostdlib -L../../lib
 
-#CFLAGS += -D_DEBUG
+CFLAGS += -D_DEBUG
 LDFLAGS = -u __startup
 LDFLAGS += -m elf_i386
 

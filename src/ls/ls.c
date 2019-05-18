@@ -325,11 +325,19 @@ int main(int argc, char **argv)
 	int displong = 0;
 	int fd, size, pos, i, j, result;
 
+#if _DEBUG
+	printf("ls: argc %d argv 0x%08x\n", argc, argv);
+	for (i = 0; i < argc; i++)
+		printf("ls: argv[%d] [%s]\n", i, argv[i]);
+#endif
 	cwd = (char *)malloc(PATH_LENGTH);
 	if (cwd == NULL) {
 		printf("could not allocate cwd buffer\n");
 		return ENOMEM;
 	}
+#if _DEBUG
+	printf("ls: cwd 0x%08x\n", cwd);
+#endif
 	bzero(cwd, PATH_LENGTH);
 
 	dir = (char *)malloc(PATH_LENGTH);
@@ -338,10 +346,21 @@ int main(int argc, char **argv)
 		free(cwd);
 		return ENOMEM;
 	}
+#if _DEBUG
+	printf("ls: dir 0x%08x\n", dir);
+#endif
 	bzero(dir, PATH_LENGTH);
 
 	/* Command line arguments */
-	for (getcwd(dir, PATH_LENGTH), i = 1; i < argc; i++) {
+	getcwd(dir, PATH_LENGTH);
+#if _DEBUG
+	printf("ls: getcwd dir [%s]\n", dir);
+#endif
+
+	for (i = 1; i < argc; i++) {
+#if _DEBUG
+		printf("ls: argv[%d] %s\n", i, argv[i]);
+#endif
 		if (strcmp(argv[i], "-l") == 0)
 			displong = 1;
 		else
@@ -349,6 +368,9 @@ int main(int argc, char **argv)
 	}
 	/* Check whether specified path is really a directory */
 	getcwd(cwd, PATH_LENGTH);
+#if _DEBUG
+	printf("ls: getcwd cwd [%s]\n", cwd);
+#endif
 	result = chdir(dir);
 	if (result < 0) {
 		printf("%s\n", strerror(result));

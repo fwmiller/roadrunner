@@ -170,11 +170,11 @@ void os()
 	devops.specific.blk_ops.write = fd_write;
 	dev_inst("fd", DEV_TYPE_BLK, &devops, NULL);
 	dev_init("fd");
-
+#endif
 	/* Install hard disk support */
 	hdtab_init();
 	ata_init();
-#endif
+
 	/* Install and initialize /sys file system */
 	strcpy(fsops.name, "sysfs");
 	fsops.init = sysfs_init;
